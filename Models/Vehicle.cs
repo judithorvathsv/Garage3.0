@@ -4,7 +4,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Garage2._0.Models
+namespace Garage3.Models
 {
     public class Vehicle
     {

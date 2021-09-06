@@ -5,7 +5,7 @@ using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Garage2._0.Models.ViewModels
+namespace Garage3.Models.ViewModels
 {
     public class StatisticsViewModel
     {

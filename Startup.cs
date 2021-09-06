@@ -5,9 +5,9 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.EntityFrameworkCore;
-using Garage2._0.Data;
+using Garage3.Data;
 
-namespace Garage2._0
+namespace Garage3
 {
     public class Startup
     {
@@ -22,7 +22,7 @@ namespace Garage2._0
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddControllersWithViews();
-            services.AddDbContext<Garage2_0Context>(options =>
+            services.AddDbContext<Garage3Context>(options =>
                     options.UseSqlServer(Configuration.GetConnectionString("Garage2_0Context")));
         }
 

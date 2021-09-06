@@ -5,18 +5,18 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using Garage2._0.Data;
-using Garage2._0.Models;
-using Garage2._0.Models.ViewModels;
+using Garage3.Data;
+using Garage3.Models;
+using Garage3.Models.ViewModels;
 using System.Data.Entity.Validation;
 
-namespace Garage2._0.Controllers
+namespace Garage3.Controllers
 {
     public class VehiclesController : Controller
     {
-        private readonly Garage2_0Context db;
+        private readonly Garage3Context db;
 
-        public VehiclesController(Garage2_0Context context)
+        public VehiclesController(Garage3Context context)
         {
             db = context;
         }

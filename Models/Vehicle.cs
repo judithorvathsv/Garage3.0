@@ -11,10 +11,6 @@ namespace Garage3.Models
 
         public int Id { get; set; }
 
-        [Display(Name = "Vehicle type")]
-        [Required(ErrorMessage = "Please choose type!")]         
-        public VehicleTypes VehicleType { get; set; }
-
         [Display(Name = "Registration number")]
         [Required(ErrorMessage = "Please enter registration number!")]
         [MaxLength(10)]
@@ -53,5 +49,22 @@ namespace Garage3.Models
         public DateTime TimeOfArrival { get; set; }
 
         //public TimeSpan TimeParked { get; set; }
+
+
+
+
+        public string SocialSecurityNumber { get; set; }
+        public Owner Owner { get; set; }
+
+        public string VehicleTypeId { get; set; }
+        public VehicleType VehicleType { get; set; }
+
+
+        //det borde vara i annan tabell
+        //[Display(Name = "Vehicle type")]
+        //[Required(ErrorMessage = "Please choose type!")]
+        //public VehicleTypes VehicleType { get; set; }
+
+
     }
 }

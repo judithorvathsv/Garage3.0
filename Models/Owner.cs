@@ -24,8 +24,8 @@ namespace Garage3.Models
         [RegularExpression("[-a-zA-Z]+", ErrorMessage = "Invalid lastname!")]
         public string LastName { get; set; }
 
+        //navigation
         List<Vehicle> Vehicles { get; set; } = new List<Vehicle>();
-
 
     }
 }

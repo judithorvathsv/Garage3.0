@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using Garage3.Data;
 using Garage3.Models;
 using Garage3.Models.ViewModels;
-using System.Data.Entity.Validation;
+
 
 namespace Garage3.Controllers
 {
@@ -103,7 +103,7 @@ namespace Garage3.Controllers
         private async Task<IEnumerable<SelectListItem>> GetVehicleTypesAsync()
         {
             return await db.Vehicle
-                        .Where(w => w.IsParked == true)
+                        //.Where(w => w.IsParked == true)
                         .Select(t => t.VehicleType)
                         .Distinct()
                         .Select(g => new SelectListItem
@@ -124,14 +124,14 @@ namespace Garage3.Controllers
                            vehicles :
                            vehicles.Where(m => m.RegistrationNumber.StartsWith(viewModel.Regnumber.ToUpper()));
 
-            result = viewModel.Types == null ?
-                                    result :
-                                    result.Where(v => v.VehicleType == viewModel.Types);
+          //  result = viewModel.Types == null ?
+                                  //  result :
+                                 //   result.Where(v => v.VehicleType == viewModel.Types);
 
             IQueryable<OverviewViewModel> vehi = result.Select(v => new OverviewViewModel
             {
                 VehicleId = v.Id,
-                VehicleType = v.VehicleType,
+              //  VehicleType = v.VehicleType,
                 VehicleRegistrationNumber = v.RegistrationNumber,
                 VehicleArrivalTime = v.TimeOfArrival,
                 VehicleParkDuration = DateTime.Now - v.TimeOfArrival,
@@ -168,10 +168,10 @@ namespace Garage3.Controllers
             switch (sortingVehicle)
             {
                 case "VehicleTypeSortingAscending":
-                    vehicles = vehicles.OrderBy(x => x.VehicleType);
+                   // vehicles = vehicles.OrderBy(x => x.VehicleType);
                     break;
                 case "VehicleTypeSortingDescending":
-                    vehicles = vehicles.OrderByDescending(x => x.VehicleType);
+                   // vehicles = vehicles.OrderByDescending(x => x.VehicleType);
                     break;
                 case "RegistrationNumberSortingAscending":
                     vehicles = vehicles.OrderBy(x => x.VehicleRegistrationNumber);
@@ -193,7 +193,7 @@ namespace Garage3.Controllers
                     break;
 
                 default:
-                    vehicles = vehicles.OrderBy(x => x.VehicleType);
+                   // vehicles = vehicles.OrderBy(x => x.VehicleType);
                     break;
             }
 
@@ -233,9 +233,9 @@ namespace Garage3.Controllers
         {
             return allVehicles.Select(v => new OverviewViewModel
             {
-                VehicleParked = v.IsParked,
+               // VehicleParked = v.IsParked,
                 VehicleId = v.Id,
-                VehicleType = v.VehicleType,
+               // VehicleType = v.VehicleType,
                 VehicleRegistrationNumber = v.RegistrationNumber,
                 VehicleArrivalTime = v.TimeOfArrival,
                 VehicleParkDuration = DateTime.Now - v.TimeOfArrival
@@ -247,9 +247,9 @@ namespace Garage3.Controllers
         {
             return allVehicles.Select(v => new OverviewViewModel
             {
-                VehicleParked = v.IsParked,
+                //VehicleParked = v.IsParked,
                 VehicleId = v.Id,
-                VehicleType = v.VehicleType,
+               // VehicleType = v.VehicleType,
                 VehicleRegistrationNumber = v.RegistrationNumber,
                 VehicleArrivalTime = v.TimeOfArrival,
                 VehicleParkDuration = DateTime.Now - v.TimeOfArrival
@@ -273,11 +273,9 @@ namespace Garage3.Controllers
                 {
                     RegistrationNumber = vehicle.RegistrationNumber.ToUpper(),
                     VehicleType = vehicle.VehicleType,
-                    Brand = vehicle.Brand,
-                    Color = vehicle.Color,
-                    VehicleModel = vehicle.VehicleModel,
-                    NumberOfWheels = vehicle.NumberOfWheels,
-                    IsParked = true,
+                    Brand = vehicle.Brand,                   
+                    VehicleModel = vehicle.VehicleModel,         
+
                     TimeOfArrival = DateTime.Now
                 };
 
@@ -292,16 +290,7 @@ namespace Garage3.Controllers
                     }
                     catch (Exception ex)
                     {
-                        if (ex.GetType() == typeof(DbEntityValidationException))
-                        {
-                            //Exception thrown from System.Data.Entity.DbContext.SaveChanges when validating entities fails.
-                        }
-                        if (ex.GetType() == typeof(DbUnexpectedValidationException))
-                        {
-                            //Exception thrown from System.Data.Entity.DbContext.GetValidationErrors when an
-                            //exception is thrown from the validation code.
-                        }
-                        else { }
+                       
                     }
                 }
                 return View(model);
@@ -318,7 +307,7 @@ namespace Garage3.Controllers
         public async Task<IActionResult> ParkRegisteredVehicle(int? id)
         {
             var vehicle = await db.Vehicle.FirstOrDefaultAsync(x => x.Id == id);
-            vehicle.IsParked = true;
+            //vehicle.IsParked = true;
             vehicle.TimeOfArrival = DateTime.Now;
 
             try
@@ -344,7 +333,7 @@ namespace Garage3.Controllers
         public async Task<IActionResult> UnPark(int? id)
         {
             var vehicle = await db.Vehicle.FirstOrDefaultAsync(x => x.Id == id);
-            vehicle.IsParked = false;
+            //vehicle.IsParked = false;
             var departureTime = DateTime.Now;
 
             try
@@ -385,8 +374,12 @@ namespace Garage3.Controllers
 
         public bool Equals(Vehicle b1, Vehicle b2)
         {
-            if (b1.RegistrationNumber == b2.RegistrationNumber && b1.Color == b2.Color && b1.Brand == b2.Brand
-                && b1.VehicleModel == b2.VehicleModel && b1.NumberOfWheels == b2.NumberOfWheels && b1.VehicleType == b2.VehicleType)
+            if (b1.RegistrationNumber == b2.RegistrationNumber 
+              //  &&                 b1.Color == b2.Color 
+                && b1.Brand == b2.Brand
+                && b1.VehicleModel == b2.VehicleModel 
+                //&& b1.NumberOfWheels == b2.NumberOfWheels 
+                && b1.VehicleType == b2.VehicleType)
                 return true;
             else
                 return false;
@@ -408,9 +401,9 @@ namespace Garage3.Controllers
                     return NotFound();
                 }
 
-                string str = vehicle.Color;
+                //string str = vehicle.Color;
                 vehicle.RegistrationNumber = v1.RegistrationNumber;
-                vehicle.Color = FirstLetterToUpper(str);
+                //vehicle.Color = FirstLetterToUpper(str);
                 vehicle.TimeOfArrival = v1.TimeOfArrival;
 
                 if (ModelState.IsValid)
@@ -530,7 +523,7 @@ namespace Garage3.Controllers
                 .Select(v => new UnParkResponseViewModel
                 {
                     Id = v.Id,
-                    VehicleType = v.VehicleType,
+                    //VehicleType = v.VehicleType,
                     VehicleRegistrationNumber = v.RegistrationNumber,
                     VehicleArrivalTime = v.TimeOfArrival,
                     VehicleDepartureTime = departureTime,
@@ -565,9 +558,9 @@ namespace Garage3.Controllers
         {
             return new OverviewViewModel
             {
-                VehicleParked = vehicle.IsParked,
+                //VehicleParked = vehicle.IsParked,
                 VehicleId = vehicle.Id,
-                VehicleType = vehicle.VehicleType,
+                //VehicleType = vehicle.VehicleType,
                 VehicleRegistrationNumber = vehicle.RegistrationNumber,
                 VehicleArrivalTime = vehicle.TimeOfArrival,
                 VehicleParkDuration = DateTime.Now - vehicle.TimeOfArrival
@@ -575,6 +568,7 @@ namespace Garage3.Controllers
 
         }
 
+        /*
         public async Task<IActionResult> Statistics()
         {
             var vehicles = await db.Vehicle.ToListAsync();
@@ -602,5 +596,6 @@ namespace Garage3.Controllers
             };
             return View(model);
         }
+        */
     }
 }

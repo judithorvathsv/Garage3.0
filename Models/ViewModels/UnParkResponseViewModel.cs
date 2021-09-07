@@ -11,8 +11,8 @@ namespace Garage3.Models.ViewModels
         [Display(Name = "Id")]
         public int Id { get; set; }
 
-        [Display(Name = "VehicleType")]
-        public VehicleTypes VehicleType { get; set; }
+        //[Display(Name = "VehicleType")]
+        //public VehicleTypes VehicleType { get; set; }
 
 
         [Display(Name = "Registration Plate")]

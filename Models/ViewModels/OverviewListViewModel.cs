@@ -15,7 +15,7 @@ namespace Garage3.Models.ViewModels
 
         //SelectListBox
         public string Regnumber { get; set; }
-        public VehicleTypes? Types { get; set; }
+        //public VehicleTypes? Types { get; set; }
 
         // Radiobuttons
         public bool ParkedStatus { get; set; }

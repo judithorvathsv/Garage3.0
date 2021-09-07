@@ -12,5 +12,7 @@ namespace Garage3.Models
         public int ParkingPlaceId { get; set; }
 
         public bool IsOccupied { get; set; }
+
+        List<Vehicle> Vehicles { get; set; } = new List<Vehicle>();
     }
 }

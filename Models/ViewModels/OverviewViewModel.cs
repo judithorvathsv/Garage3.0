@@ -13,8 +13,8 @@ namespace Garage3.Models.ViewModels
         
         public int VehicleId { get; set; }
 
-        [Display(Name = "Vehicle Type")]
-        public VehicleTypes? VehicleType { get; set; }
+        //[Display(Name = "Vehicle Type")]
+        //public VehicleTypes? VehicleType { get; set; }
         
         [Display(Name = "Registration Plate")]
         public string VehicleRegistrationNumber { get; set; }

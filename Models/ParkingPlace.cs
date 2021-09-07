@@ -13,6 +13,9 @@ namespace Garage3.Models
 
         public bool IsOccupied { get; set; }
 
-        List<Vehicle> Vehicles { get; set; } = new List<Vehicle>();
+        public ICollection<Vehicle> Vehicles { get; set; }
+
+        public ICollection<ParkingEvent> ParkingEvents { get; set; }
+
     }
 }

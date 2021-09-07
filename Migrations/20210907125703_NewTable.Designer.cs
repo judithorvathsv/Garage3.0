@@ -4,14 +4,16 @@ using Garage3.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Garage3.Migrations
 {
     [DbContext(typeof(Garage3Context))]
-    partial class Garage3ContextModelSnapshot : ModelSnapshot
+    [Migration("20210907125703_NewTable")]
+    partial class NewTable
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -35,42 +37,6 @@ namespace Garage3.Migrations
                     b.HasKey("SocialSecurityNumber");
 
                     b.ToTable("Owner");
-                });
-
-            modelBuilder.Entity("Garage3.Models.ParkingEvent", b =>
-                {
-                    b.Property<int>("ParkingPlaceId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("VehicleId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("ParkingPlacesParkingPlaceId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("VehiclesId")
-                        .HasColumnType("int");
-
-                    b.HasKey("ParkingPlaceId", "VehicleId");
-
-                    b.HasIndex("VehicleId");
-
-                    b.ToTable("ParkingEvent");
-                });
-
-            modelBuilder.Entity("Garage3.Models.ParkingPlace", b =>
-                {
-                    b.Property<int>("ParkingPlaceId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
-
-                    b.Property<bool>("IsOccupied")
-                        .HasColumnType("bit");
-
-                    b.HasKey("ParkingPlaceId");
-
-                    b.ToTable("ParkingPlace");
                 });
 
             modelBuilder.Entity("Garage3.Models.Vehicle", b =>
@@ -133,25 +99,6 @@ namespace Garage3.Migrations
                     b.ToTable("VehicleType");
                 });
 
-            modelBuilder.Entity("Garage3.Models.ParkingEvent", b =>
-                {
-                    b.HasOne("Garage3.Models.ParkingPlace", "ParkingPlace")
-                        .WithMany("ParkingEvents")
-                        .HasForeignKey("ParkingPlaceId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("Garage3.Models.Vehicle", "Vehicle")
-                        .WithMany("ParkingEvents")
-                        .HasForeignKey("VehicleId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("ParkingPlace");
-
-                    b.Navigation("Vehicle");
-                });
-
             modelBuilder.Entity("Garage3.Models.Vehicle", b =>
                 {
                     b.HasOne("Garage3.Models.Owner", "Owner")
@@ -165,16 +112,6 @@ namespace Garage3.Migrations
                     b.Navigation("Owner");
 
                     b.Navigation("VehicleType");
-                });
-
-            modelBuilder.Entity("Garage3.Models.ParkingPlace", b =>
-                {
-                    b.Navigation("ParkingEvents");
-                });
-
-            modelBuilder.Entity("Garage3.Models.Vehicle", b =>
-                {
-                    b.Navigation("ParkingEvents");
                 });
 #pragma warning restore 612, 618
         }

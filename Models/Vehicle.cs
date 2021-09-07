@@ -45,7 +45,8 @@ namespace Garage3.Models
         public VehicleType VehicleType { get; set; }
 
         //navigation
-        List<ParkingPlace> ParkingPlaces { get; set; } = new List<ParkingPlace>();
+        public ICollection<ParkingPlace> ParkingPlaces { get; set; }
+        public ICollection<ParkingEvent> ParkingEvents { get; set; }
 
 
     }

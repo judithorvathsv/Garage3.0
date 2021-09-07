@@ -15,5 +15,21 @@ namespace Garage3.Data
         }
 
         public DbSet<Garage3.Models.Vehicle> Vehicle { get; set; }
+        public DbSet<Garage3.Models.ParkingPlace> ParkingPlace { get; set; }
+        public DbSet<Garage3.Models.Owner> Owner { get; set; }
+        public DbSet<Garage3.Models.VehicleType> VehicleType { get; set; }
+        public DbSet<Garage3.Models.ParkingEvent> ParkingEvent { get; set; }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
+            modelBuilder.Entity<Vehicle>()
+                .HasMany(v => v.ParkingPlaces)
+                .WithMany(pp => pp.Vehicles)
+                .UsingEntity<ParkingEvent>(
+                pe=>pe.HasOne(pe => pe.ParkingPlace).WithMany(v => v.ParkingEvents),
+                pe=>pe.HasOne(pe => pe.Vehicle).WithMany(pp => pp.ParkingEvents));      
+
+        }
     }
 }

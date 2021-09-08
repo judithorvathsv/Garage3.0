@@ -67,12 +67,12 @@ namespace Garage3.Controllers
             return View(vehicle);
         }
 
- 
+        
         public async Task<IActionResult> MemberOverview()
         {
-            var listWithEmpty = (from p in db.Owner
+            var listWithEmpty =  (from p in db.Owner
                                  join f in db.Vehicle
-                                 on p.SocialSecurityNumber equals f.SocialSecurityNumber into ThisList
+                                 on p.SocialSecurityNumber equals f.Owner.SocialSecurityNumber into ThisList
                                  from f in ThisList.DefaultIfEmpty()
 
                                  group p by new
@@ -87,7 +87,7 @@ namespace Garage3.Controllers
                                      LastName = gcs.Key.LastName,
                                      NumberOfVehicles = gcs.Select(x => x).Distinct().Count(),
                                  })
-                                .ToList()                                
+                                //.ToListAsync()                                
                                 .Select(x => new MemberDetailsViewModel()
                                    {
                                        FirstName = x.FirstName,
@@ -98,10 +98,9 @@ namespace Garage3.Controllers
 
             var sortedMemberList = listWithEmpty.OrderBy(x => x.FirstName.Substring(0, 1), StringComparer.Ordinal);
      
-            return View(sortedMemberList);
+            return View(await sortedMemberList.ToListAsync());
         }
-
-
+        
 
 
     

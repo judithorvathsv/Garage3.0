@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace Garage3.Migrations
 {
-    public partial class CreateTable : Migration
+    public partial class init : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -37,7 +37,8 @@ namespace Garage3.Migrations
                 name: "VehicleType",
                 columns: table => new
                 {
-                    VehicleTypeId = table.Column<string>(type: "nvarchar(450)", nullable: false),
+                    VehicleTypeId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     Type = table.Column<string>(type: "nvarchar(35)", maxLength: 35, nullable: false),
                     Size = table.Column<int>(type: "int", nullable: false)
                 },
@@ -56,7 +57,7 @@ namespace Garage3.Migrations
                     Brand = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
                     VehicleModel = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
                     OwnerSocialSecurityNumber = table.Column<string>(type: "nvarchar(13)", nullable: true),
-                    VehicleTypeId = table.Column<string>(type: "nvarchar(450)", nullable: true)
+                    VehicleTypeId = table.Column<int>(type: "int", nullable: true)
                 },
                 constraints: table =>
                 {

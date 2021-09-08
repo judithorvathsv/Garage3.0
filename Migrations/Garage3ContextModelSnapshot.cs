@@ -98,8 +98,8 @@ namespace Garage3.Migrations
                         .HasMaxLength(20)
                         .HasColumnType("nvarchar(20)");
 
-                    b.Property<string>("VehicleTypeId")
-                        .HasColumnType("nvarchar(450)");
+                    b.Property<int?>("VehicleTypeId")
+                        .HasColumnType("int");
 
                     b.HasKey("Id");
 
@@ -112,8 +112,10 @@ namespace Garage3.Migrations
 
             modelBuilder.Entity("Garage3.Models.VehicleType", b =>
                 {
-                    b.Property<string>("VehicleTypeId")
-                        .HasColumnType("nvarchar(450)");
+                    b.Property<int>("VehicleTypeId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
                     b.Property<int>("Size")
                         .HasColumnType("int");
@@ -150,7 +152,7 @@ namespace Garage3.Migrations
             modelBuilder.Entity("Garage3.Models.Vehicle", b =>
                 {
                     b.HasOne("Garage3.Models.Owner", "Owner")
-                        .WithMany()
+                        .WithMany("Vehicles")
                         .HasForeignKey("OwnerSocialSecurityNumber");
 
                     b.HasOne("Garage3.Models.VehicleType", "VehicleType")
@@ -160,6 +162,11 @@ namespace Garage3.Migrations
                     b.Navigation("Owner");
 
                     b.Navigation("VehicleType");
+                });
+
+            modelBuilder.Entity("Garage3.Models.Owner", b =>
+                {
+                    b.Navigation("Vehicles");
                 });
 
             modelBuilder.Entity("Garage3.Models.ParkingPlace", b =>

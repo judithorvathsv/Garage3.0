@@ -149,5 +149,40 @@ namespace Garage3.Controllers
         {
             return _context.Owner.Any(e => e.SocialSecurityNumber == id);
         }
+
+
+        [ActionName("MemberOverview")]
+        public async Task<IActionResult> MemberOverview()
+        {
+            var listWithEmpty = (from p in _context.Owner
+                                 join f in _context.Vehicle
+                                 on p.SocialSecurityNumber equals f.Owner.SocialSecurityNumber into ThisList
+                                 from f in ThisList.DefaultIfEmpty()
+
+                                 group p by new
+                                 {
+                                     p.FirstName,
+                                     p.LastName,
+                                     p.SocialSecurityNumber
+                                 } into gcs
+                                 select new
+                                 {
+                                     FirstName = gcs.Key.FirstName,
+                                     LastName = gcs.Key.LastName,
+                                     NumberOfVehicles = gcs.Select(x => x).Distinct().Count(),
+                                 })
+                               .ToList()
+                                .Select(x => new Models.ViewModels.MemberDetailsViewModel()
+                                {
+                                    FirstName = x.FirstName,
+                                    LastName = x.LastName,
+                                    FullName = x.FirstName + " " + x.LastName,
+                                    NumberOfVehicles = x.NumberOfVehicles
+                                });
+
+            var sortedMemberList = listWithEmpty.OrderBy(x => x.FirstName.Substring(0, 1), StringComparer.Ordinal);
+
+            return View(sortedMemberList);
+        }
     }
 }

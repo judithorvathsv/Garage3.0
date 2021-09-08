@@ -22,15 +22,18 @@ namespace Garage3.Migrations
             modelBuilder.Entity("Garage3.Models.Owner", b =>
                 {
                     b.Property<string>("SocialSecurityNumber")
-                        .HasColumnType("nvarchar(450)");
+                        .HasMaxLength(13)
+                        .HasColumnType("nvarchar(13)");
 
                     b.Property<string>("FirstName")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(35)
+                        .HasColumnType("nvarchar(35)");
 
                     b.Property<string>("LastName")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(35)
+                        .HasColumnType("nvarchar(35)");
 
                     b.HasKey("SocialSecurityNumber");
 
@@ -45,11 +48,8 @@ namespace Garage3.Migrations
                     b.Property<int>("VehicleId")
                         .HasColumnType("int");
 
-                    b.Property<int>("ParkingPlacesParkingPlaceId")
-                        .HasColumnType("int");
-
-                    b.Property<int>("VehiclesId")
-                        .HasColumnType("int");
+                    b.Property<DateTime>("TimeOfArrival")
+                        .HasColumnType("datetime2");
 
                     b.HasKey("ParkingPlaceId", "VehicleId");
 
@@ -60,7 +60,7 @@ namespace Garage3.Migrations
 
             modelBuilder.Entity("Garage3.Models.ParkingPlace", b =>
                 {
-                    b.Property<int>("ParkingPlaceId")
+                    b.Property<int>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
@@ -68,7 +68,7 @@ namespace Garage3.Migrations
                     b.Property<bool>("IsOccupied")
                         .HasColumnType("bit");
 
-                    b.HasKey("ParkingPlaceId");
+                    b.HasKey("Id");
 
                     b.ToTable("ParkingPlace");
                 });
@@ -86,18 +86,12 @@ namespace Garage3.Migrations
                         .HasColumnType("nvarchar(20)");
 
                     b.Property<string>("OwnerSocialSecurityNumber")
-                        .HasColumnType("nvarchar(450)");
+                        .HasColumnType("nvarchar(13)");
 
                     b.Property<string>("RegistrationNumber")
                         .IsRequired()
                         .HasMaxLength(10)
                         .HasColumnType("nvarchar(10)");
-
-                    b.Property<string>("SocialSecurityNumber")
-                        .HasColumnType("nvarchar(max)");
-
-                    b.Property<DateTime>("TimeOfArrival")
-                        .HasColumnType("datetime2");
 
                     b.Property<string>("VehicleModel")
                         .IsRequired()
@@ -126,7 +120,8 @@ namespace Garage3.Migrations
 
                     b.Property<string>("Type")
                         .IsRequired()
-                        .HasColumnType("nvarchar(max)");
+                        .HasMaxLength(35)
+                        .HasColumnType("nvarchar(35)");
 
                     b.HasKey("VehicleTypeId");
 

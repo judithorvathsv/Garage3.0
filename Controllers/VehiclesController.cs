@@ -47,6 +47,8 @@ namespace Garage3.Controllers
         }
 
 
+
+
         // GET: Vehicles/Details/5
         public async Task<IActionResult> Details(int? id)
         {
@@ -116,23 +118,23 @@ namespace Garage3.Controllers
             var vehicles = GetOverviewViewModelAsEnumerable(allVehicles);
             parkedStatus = ParkingStatus(parkedStatusStr, model, ref vehicles);
 
-            if (parkedStatus == 3)
-            {
-                model.AllStatus = true;
-                ViewData["PakedStatus"] = "3";
-            }
-            else if (parkedStatus == 2)
-            {
-                model.UnparkedStatus = true;
-                ViewData["PakedStatus"] = "2";
-                vehicles = vehicles.Where(u => u.VehicleParked.Equals(false));
-            }
-            else
-            {
-                model.ParkedStatus = true;
-                ViewData["PakedStatus"] = "1";
-                vehicles = vehicles.Where(u => u.VehicleParked.Equals(true));
-            }
+            //if (parkedStatus == 3)
+            //{
+            //    model.AllStatus = true;
+            //    ViewData["ParkedStatus"] = "3";
+            //}
+            //else if (parkedStatus == 2)
+            //{
+            //    model.UnparkedStatus = true;
+            //    ViewData["ParkedStatus"] = "2";
+            //    vehicles = vehicles.Where(u => u.VehicleParked.Equals(false));
+            //}
+            //else
+            //{
+            //    model.ParkedStatus = true;
+            //    ViewData["ParkedStatus"] = "1";
+            //    vehicles = vehicles.Where(u => u.VehicleParked.Equals(true));
+            //}
             model.VehicleTypesSelectList = await GetVehicleTypesAsync();
             model.Overview = vehicles;
 
@@ -172,8 +174,8 @@ namespace Garage3.Controllers
                 VehicleId = v.Id,
                 //  VehicleType = v.VehicleType,
                 VehicleRegistrationNumber = v.RegistrationNumber,
-                VehicleArrivalTime = v.TimeOfArrival,
-                VehicleParkDuration = DateTime.Now - v.TimeOfArrival,
+                //VehicleArrivalTime = v.TimeOfArrival,
+                //VehicleParkDuration = DateTime.Now - v.TimeOfArrival,
                 VehicleParked = false
 
             }).AsQueryable();
@@ -250,18 +252,18 @@ namespace Garage3.Controllers
                 if (parkedStatus == 3)
                 {
                     model.AllStatus = true;
-                    ViewData["PakedStatus"] = "3";
+                    ViewData["ParkedStatus"] = "3";
                 }
                 else if (parkedStatus == 2)
                 {
                     model.UnparkedStatus = true;
-                    ViewData["PakedStatus"] = "2";
+                    ViewData["ParkedStatus"] = "2";
                     vehicles = vehicles.Where(u => u.VehicleParked.Equals(false));
                 }
                 else
                 {
                     model.ParkedStatus = true;
-                    ViewData["PakedStatus"] = "1";
+                    ViewData["ParkedStatus"] = "1";
                     vehicles = vehicles.Where(u => u.VehicleParked.Equals(true));
                 }
             };
@@ -276,8 +278,8 @@ namespace Garage3.Controllers
                 VehicleId = v.Id,
                 // VehicleType = v.VehicleType,
                 VehicleRegistrationNumber = v.RegistrationNumber,
-                VehicleArrivalTime = v.TimeOfArrival,
-                VehicleParkDuration = DateTime.Now - v.TimeOfArrival
+                //VehicleArrivalTime = v.TimeOfArrival,
+                //VehicleParkDuration = DateTime.Now - v.TimeOfArrival
 
             });
         }
@@ -290,8 +292,8 @@ namespace Garage3.Controllers
                 VehicleId = v.Id,
                 // VehicleType = v.VehicleType,
                 VehicleRegistrationNumber = v.RegistrationNumber,
-                VehicleArrivalTime = v.TimeOfArrival,
-                VehicleParkDuration = DateTime.Now - v.TimeOfArrival
+                //VehicleArrivalTime = v.TimeOfArrival,
+                //VehicleParkDuration = DateTime.Now - v.TimeOfArrival
 
             }).AsEnumerable();
         }
@@ -315,7 +317,7 @@ namespace Garage3.Controllers
                     Brand = vehicle.Brand,
                     VehicleModel = vehicle.VehicleModel,
 
-                    TimeOfArrival = DateTime.Now
+                    //TimeOfArrival = DateTime.Now
                 };
 
                 if (ModelState.IsValid)
@@ -347,7 +349,7 @@ namespace Garage3.Controllers
         {
             var vehicle = await db.Vehicle.FirstOrDefaultAsync(x => x.Id == id);
             //vehicle.IsParked = true;
-            vehicle.TimeOfArrival = DateTime.Now;
+            //vehicle.TimeOfArrival = DateTime.Now;
 
             try
             {
@@ -394,6 +396,25 @@ namespace Garage3.Controllers
             }
             return RedirectToAction("UnparkResponse", new { id = vehicle.Id, departureTime });
         }
+
+        //public async Task<IActionResult> Members(string? socialsecuritynumber)
+        //{
+        //    if (socialsecuritynumber == null)
+        //    {
+        //        return NotFound();
+        //    }
+
+        //    var vehicle = await db.Vehicle.Join(
+        //        db.Owner, 
+        //        v => v.SocialSecurityNumber, m => m.SocialSecurityNumber,
+        //        (v,m) => new { Vehi = v, Memb = m})
+        //        .FirstOrDefaultAsync(m => m.Memb.SocialSecurityNumber == socialsecuritynumber);
+        //    if (vehicle == null)
+        //    {
+        //        return NotFound();
+        //    }
+        //    return View();
+        //}
 
         public async Task<IActionResult> Change(int? Id)
         {
@@ -443,7 +464,7 @@ namespace Garage3.Controllers
                 //string str = vehicle.Color;
                 vehicle.RegistrationNumber = v1.RegistrationNumber;
                 //vehicle.Color = FirstLetterToUpper(str);
-                vehicle.TimeOfArrival = v1.TimeOfArrival;
+                //vehicle.TimeOfArrival = v1.TimeOfArrival;
 
                 if (ModelState.IsValid)
                 {
@@ -564,7 +585,7 @@ namespace Garage3.Controllers
                     Id = v.Id,
                     //VehicleType = v.VehicleType,
                     VehicleRegistrationNumber = v.RegistrationNumber,
-                    VehicleArrivalTime = v.TimeOfArrival,
+                    //VehicleArrivalTime = v.TimeOfArrival,
                     VehicleDepartureTime = departureTime,
                     //VehicleParkDuration=v.
                     //VehicleParkPrice
@@ -584,10 +605,10 @@ namespace Garage3.Controllers
             var model = new ReceiptViewModel
             {
                 VehicleRegistrationNumber = vehicle.RegistrationNumber,
-                VehicleArrivalTime = vehicle.TimeOfArrival,
+                //VehicleArrivalTime = vehicle.TimeOfArrival,
                 VehicleDepartureTime = departureTime,
-                VehicleParkDuration = vehicle.TimeOfArrival - departureTime,
-                VehicleParkPrice = (departureTime - vehicle.TimeOfArrival).TotalHours * 100
+                //VehicleParkDuration = vehicle.TimeOfArrival - departureTime,
+                //VehicleParkPrice = (departureTime - vehicle.TimeOfArrival).TotalHours * 100
             };
 
             return View(model);
@@ -601,8 +622,8 @@ namespace Garage3.Controllers
                 VehicleId = vehicle.Id,
                 //VehicleType = vehicle.VehicleType,
                 VehicleRegistrationNumber = vehicle.RegistrationNumber,
-                VehicleArrivalTime = vehicle.TimeOfArrival,
-                VehicleParkDuration = DateTime.Now - vehicle.TimeOfArrival
+                //VehicleArrivalTime = vehicle.TimeOfArrival,
+                //VehicleParkDuration = DateTime.Now - vehicle.TimeOfArrival
             };
 
         }

@@ -27,8 +27,8 @@ namespace Garage3.Data
                 .HasMany(v => v.ParkingPlaces)
                 .WithMany(pp => pp.Vehicles)
                 .UsingEntity<ParkingEvent>(
-                pe=>pe.HasOne(pe => pe.ParkingPlace).WithMany(v => v.ParkingEvents),
-                pe=>pe.HasOne(pe => pe.Vehicle).WithMany(pp => pp.ParkingEvents));      
+                pe => pe.HasOne(pe => pe.ParkingPlace).WithMany(v => v.ParkingEvents),
+                pe => pe.HasOne(pe => pe.Vehicle).WithMany(pp => pp.ParkingEvents));
 
         }
     }

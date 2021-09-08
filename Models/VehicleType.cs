@@ -13,6 +13,8 @@ namespace Garage3.Models
     
         [Display(Name = "Vehicle type")]
         [Required(ErrorMessage = "Please choose type!")]
+        [MaxLength(35)]
+        [MinLength(3)]
         public string Type { get; set; }
      
         public int Size { get; set; }

@@ -1,10 +1,10 @@
 ﻿@model IEnumerable<Garage3.Models.ViewModels.OwnerDetailsViewModel>
 
 @{
-    ViewData["Title"] = "Members";
+    ViewData["Title"] = "MemberDetails";
 }
 
-<h1>Members</h1>
+<h1>Member Details</h1>
 
 <div>
     <h4>Owner</h4>
@@ -23,16 +23,16 @@
             @Html.DisplayFor(model => model.First().SocialSecurityNumber)
         </dd>
     </dl>
-
-    <h1>Vehicles</h1>
-
+</div>
+<div>
+    <h4>Vehicles</h4>
     <table class="table">
-
         <thead>
             <tr>
                 <th> @Html.DisplayNameFor(model => model.RegistrationNumber)</th>
-
-                @*<th> @Html.DisplayNameFor(model => model.NumberOfVehicles)</th>*@
+                <th> @Html.DisplayNameFor(model => model.Brand)</th>
+                <th> @Html.DisplayNameFor(model => model.VehicleModel)</th>
+                <th> @Html.DisplayNameFor(model => model.VehicleType)</th>
             </tr>
         <thead>
         <tbody>
@@ -40,6 +40,9 @@
             {
                 <tr>
                     <td> @Html.DisplayFor(modelItem => item.RegistrationNumber)  </td>
+                    <td> @Html.DisplayFor(modelItem => item.Brand)  </td>
+                    <td> @Html.DisplayFor(modelItem => item.VehicleModel)</td>
+                    <td> @Html.DisplayFor(modelItem => item.VehicleType)  </td>
 
                     <td>
                         <a class="btn btn-primary" asp-action="Park" asp-route-ssn="@item.RegistrationNumber">Park</a>

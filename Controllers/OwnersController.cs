@@ -146,28 +146,46 @@ namespace Garage3.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        public async Task<IActionResult> Members(string ssn)
+        public async Task<IActionResult> MemberDetails(string ssn)
         {
             if (ssn == null)
             {
                 return NotFound();
             }
 
-            var vehicle = await db.Vehicle.Join(
-                db.Owner,
-                v => v.Owner.SocialSecurityNumber, m => m.SocialSecurityNumber,
-                (v, m) => new { Vehi = v, Memb = m })
-                .Where(m => m.Memb.SocialSecurityNumber == ssn)
-                .Select(o =>  new OwnerDetailsViewModel {
-                   SocialSecurityNumber = o.Memb.SocialSecurityNumber,
-                   FullName = o.Memb.FirstName + " " + o.Memb.LastName,
-                   RegistrationNumber = o.Vehi.RegistrationNumber
-                }).ToListAsync();
-            if (vehicle == null)
+            try
             {
-                return NotFound();
+                var vehicle = await db.Vehicle
+                        .Join( db.Owner,
+                         v => v.Owner.SocialSecurityNumber, m => m.SocialSecurityNumber,
+                         (v,m) => new { Vehi = v, Memb = m })
+                         .Where(m => m.Memb.SocialSecurityNumber == ssn)
+                         .Join(db.VehicleType, 
+                         vh => vh.Vehi.VehicleType.VehicleTypeId,
+                         t => t.VehicleTypeId,
+                         (vh,t) => new {ve = vh, type = t })
+                     
+                         .Select(o => new OwnerDetailsViewModel
+                         {
+                             SocialSecurityNumber = o.ve.Memb.SocialSecurityNumber,
+                             FullName = o.ve.Memb.FirstName + " " + o.ve.Memb.LastName,
+                             RegistrationNumber = o.ve.Vehi.RegistrationNumber,
+                             Brand =  o.ve.Vehi.Brand,
+                             VehicleModel = o.ve.Vehi.VehicleModel,
+                             VehicleType = o.type.Type
+                              
+                         }).ToListAsync();
+
+                if (vehicle == null)
+                {
+                    return NotFound();
+                }
+                return View(vehicle);
             }
-            return View(vehicle);
+            catch (Exception)
+            {
+                throw;
+            }
         }
 
         private bool OwnerExists(string id)

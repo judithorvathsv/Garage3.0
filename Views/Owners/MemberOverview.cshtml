@@ -10,9 +10,9 @@
 
     <thead>
     <tr>
-            <th> @Html.DisplayNameFor(model => model.FullName)        </th>
+            <th> @Html.DisplayNameFor(model => model.FullName) </th>
 
-            <th> @Html.DisplayNameFor(model => model.NumberOfVehicles)        </th>
+            <th> @Html.DisplayNameFor(model => model.NumberOfVehicles) </th>
     </tr>
     <thead>
     <tbody>
@@ -24,7 +24,7 @@
                 <td> @Html.DisplayFor(modelItem => item.NumberOfVehicles)  </td>
 
             <td>
-                <a class="btn btn-primary" asp-action="Members" asp-route-ssn="@item.SocialSecurityNumber">Member</a>
+                <a class="btn btn-primary" asp-action="MemberDetails" asp-route-ssn="@item.SocialSecurityNumber">Member</a>
             </td>
         </tr>
     }

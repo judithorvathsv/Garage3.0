@@ -10,11 +10,10 @@ namespace Garage3.Models
     {
         [Key]
         public int Id { get; set; }
-
         public bool IsOccupied { get; set; }
 
-        public ICollection<Vehicle> Vehicles { get; set; }
 
+        public ICollection<Vehicle> Vehicles { get; set; }
         public ICollection<ParkingEvent> ParkingEvents { get; set; }
 
     }

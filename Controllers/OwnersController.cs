@@ -60,7 +60,7 @@ namespace Garage3.Controllers
             {
                 _context.Add(owner);
                 await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                return RedirectToAction("MemberOverview");
             }
             return View(owner);
         }

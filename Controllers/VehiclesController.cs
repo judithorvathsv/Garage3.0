@@ -42,7 +42,7 @@ namespace Garage3.Controllers
             {
                 TempData["Regnumber"] = searchText.ToUpper();
 
-                return View(nameof(Park));
+                return View(nameof(Register));
             }
         }
 
@@ -67,10 +67,10 @@ namespace Garage3.Controllers
             return View(vehicle);
         }
 
-        
+
         public async Task<IActionResult> MemberOverview()
         {
-            var listWithEmpty =  (from p in db.Owner
+            var listWithEmpty = (from p in db.Owner
                                  join f in db.Vehicle
                                  on p.SocialSecurityNumber equals f.Owner.SocialSecurityNumber into ThisList
                                  from f in ThisList.DefaultIfEmpty()
@@ -87,23 +87,23 @@ namespace Garage3.Controllers
                                      LastName = gcs.Key.LastName,
                                      NumberOfVehicles = gcs.Select(x => x).Distinct().Count(),
                                  })
-                               .ToList()                                
+                               .ToList()
                                 .Select(x => new MemberDetailsViewModel()
-                                   {
-                                       FirstName = x.FirstName,
-                                       LastName = x.LastName,
-                                       FullName = x.FirstName + " " + x.LastName,
-                                       NumberOfVehicles = x.NumberOfVehicles
-                                    });
+                                {
+                                    FirstName = x.FirstName,
+                                    LastName = x.LastName,
+                                    FullName = x.FirstName + " " + x.LastName,
+                                    NumberOfVehicles = x.NumberOfVehicles
+                                });
 
             var sortedMemberList = listWithEmpty.OrderBy(x => x.FirstName.Substring(0, 1), StringComparer.Ordinal);
-     
-            return View( sortedMemberList);
+
+            return View(sortedMemberList);
         }
-        
 
 
-    
+
+
 
         public async Task<IActionResult> Overview(int parkedStatus)
         {
@@ -142,6 +142,7 @@ namespace Garage3.Controllers
 
         private async Task<IEnumerable<SelectListItem>> GetVehicleTypesAsync()
         {
+
             return await db.Vehicle
                         //.Where(w => w.IsParked == true)
                         .Select(t => t.VehicleType)
@@ -152,6 +153,14 @@ namespace Garage3.Controllers
                             Value = g.ToString()
                         })
                         .ToListAsync();
+        }
+        private async Task<IEnumerable<SelectListItem>> GetAllVehicleTypesAsync()
+        {
+            return await db.VehicleType.Select(vt => vt.Type).Select(vt => new SelectListItem
+            {
+                Text = vt.ToString(),
+                Value = vt.ToString()
+            }).ToListAsync();
         }
 
         public async Task<IActionResult> Filter(OverviewListViewModel viewModel)
@@ -296,48 +305,45 @@ namespace Garage3.Controllers
 
             }).AsEnumerable();
         }
+        // GET
+        public async Task<IActionResult> Register(Owner owner)
+        {
+            var model = new RegisterVehicleViewModel
+            {
+                VehicleTypes = await GetAllVehicleTypesAsync(),
+                Name = $"{owner.LastName}, {owner.FirstName}",
+                SocialSecurityNumber = owner.SocialSecurityNumber
+            };
+            return View(model);
+        }
 
-        // POST: Vehicles/Create
+        // POST: Vehicles/Register
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Park([Bind("Id,VehicleType,RegistrationNumber,Color,Brand,VehicleModel,NumberOfWheels,IsParked,TimeOfArrival")] Vehicle vehicle)
+        public async Task<IActionResult> Register(RegisterVehicleViewModel model)
         {
-            bool registeredvehicle = db.Vehicle.Any(v => v.RegistrationNumber == vehicle.RegistrationNumber);
-            //var regnumber = vehicle.RegistrationNumber.ToUpper();
+            bool vehicleIsRegistered = await db.Vehicle.AnyAsync(v => v.RegistrationNumber == model.RegistrationNumber);
 
-            if (!registeredvehicle)
+            if (!vehicleIsRegistered)
             {
-                var model = new Vehicle
+                var vehicle = new Vehicle
                 {
-                    RegistrationNumber = vehicle.RegistrationNumber.ToUpper(),
-                    VehicleType = vehicle.VehicleType,
-                    Brand = vehicle.Brand,
-                    VehicleModel = vehicle.VehicleModel,
-
-                    //TimeOfArrival = DateTime.Now
+                    RegistrationNumber = model.RegistrationNumber.ToUpper(),
+                    VehicleType = model.VehicleType,
+                    Brand = model.Brand,
+                    VehicleModel = model.VehicleModel,
                 };
 
-                if (ModelState.IsValid)
-                {
-                    try
-                    {
-                        db.Add(model);
-                        await db.SaveChangesAsync();
-                        TempData["Message"] = "";
-                        return RedirectToAction("Details", new { id = model.Id });
-                    }
-                    catch (Exception ex)
-                    {
-
-                    }
-                }
-                return View(model);
+                db.Add(model);
+                await db.SaveChangesAsync();
+                TempData["Message"] = "";
+                return RedirectToAction("Details", new { id = vehicle.Id });
             }
             else
             {
-                var existingvehicle = await db.Vehicle.FirstOrDefaultAsync(v => v.RegistrationNumber.Contains(vehicle.RegistrationNumber));
+                var existingvehicle = await db.Vehicle.FirstOrDefaultAsync(v => v.RegistrationNumber.Contains(model.RegistrationNumber));
                 TempData["Message"] = "A vehicle with this registration number is already registered!";
                 return RedirectToAction("Details", new { id = existingvehicle.Id });
             }

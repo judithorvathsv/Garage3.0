@@ -10,87 +10,86 @@ using Garage3.Models;
 
 namespace Garage3.Controllers
 {
-    public class OwnersController : Controller
+    public class VehicleTypesController : Controller
     {
-
         private readonly Garage3Context db;
 
-        public OwnersController(Garage3Context context)
+        public VehicleTypesController(Garage3Context context)
         {
             db = context;
         }
 
-        // GET: Owners
+        // GET: VehicleTypes
         public async Task<IActionResult> Index()
         {
-            return View(await db.Owner.ToListAsync());
+            return View(await db.VehicleType.ToListAsync());
         }
 
-        // GET: Owners/Details/5
-        public async Task<IActionResult> Details(string id)
+        // GET: VehicleTypes/Details/5
+        public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
             {
                 return NotFound();
             }
 
-            var owner = await db.Owner
-                .FirstOrDefaultAsync(m => m.SocialSecurityNumber == id);
-            if (owner == null)
+            var vehicleType = await db.VehicleType
+                .FirstOrDefaultAsync(m => m.VehicleTypeId == id);
+            if (vehicleType == null)
             {
                 return NotFound();
             }
 
-            return View(owner);
+            return View(vehicleType);
         }
 
-        // GET: Owners/Create
+        // GET: VehicleTypes/Create
         public IActionResult Create()
         {
             return View();
         }
 
-        // POST: Owners/Create
+        // POST: VehicleTypes/Create
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("SocialSecurityNumber,FirstName,LastName")] Owner owner)
+        public async Task<IActionResult> Create([Bind("VehicleTypeId,Type,Size")] VehicleType vehicleType)
         {
             if (ModelState.IsValid)
             {
-                db.Add(owner);
+                db.Add(vehicleType);
                 await db.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
-            return View(owner);
+            return View(vehicleType);
         }
 
-        // GET: Owners/Edit/5
-        public async Task<IActionResult> Edit(string id)
+        // GET: VehicleTypes/Edit/5
+        public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
             {
                 return NotFound();
             }
 
-            var owner = await db.Owner.FindAsync(id);
-            if (owner == null)
+            var vehicleType = await db.VehicleType.FindAsync(id);
+            if (vehicleType == null)
             {
                 return NotFound();
             }
-            return View(owner);
+            return View(vehicleType);
         }
 
-        // POST: Owners/Edit/5
+        // POST: VehicleTypes/Edit/5
         // To protect from overposting attacks, enable the specific properties you want to bind to.
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(string SocialSecurityNumber, [Bind("SocialSecurityNumber,FirstName,LastName")] Owner owner)
+        public async Task<IActionResult> Edit(int id, [Bind("VehicleTypeId,Type,Size")] VehicleType vehicleType)
         {
-           // id = owner.SocialSecurityNumber;
-            if (SocialSecurityNumber != owner.SocialSecurityNumber)
+            id = vehicleType.VehicleTypeId;
+            if (id != vehicleType.VehicleTypeId)
             {
                 return NotFound();
             }
@@ -99,12 +98,12 @@ namespace Garage3.Controllers
             {
                 try
                 {
-                    db.Update(owner);
+                    db.Update(vehicleType);
                     await db.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!OwnerExists(owner.SocialSecurityNumber))
+                    if (!VehicleTypeExists(vehicleType.VehicleTypeId))
                     {
                         return NotFound();
                     }
@@ -115,41 +114,41 @@ namespace Garage3.Controllers
                 }
                 return RedirectToAction(nameof(Index));
             }
-            return View(owner);
+            return View(vehicleType);
         }
 
-        // GET: Owners/Delete/5
-        public async Task<IActionResult> Delete(string id)
+        // GET: VehicleTypes/Delete/5
+        public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
             {
                 return NotFound();
             }
 
-            var owner = await db.Owner
-                .FirstOrDefaultAsync(m => m.SocialSecurityNumber == id);
-            if (owner == null)
+            var vehicleType = await db.VehicleType
+                .FirstOrDefaultAsync(m => m.VehicleTypeId == id);
+            if (vehicleType == null)
             {
                 return NotFound();
             }
 
-            return View(owner);
+            return View(vehicleType);
         }
 
-        // POST: Owners/Delete/5
+        // POST: VehicleTypes/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(string SocialSecurityNumber)
+        public async Task<IActionResult> DeleteConfirmed(int VehicleTypeId)
         {
-            var owner = await db.Owner.FindAsync(SocialSecurityNumber);
-            db.Owner.Remove(owner);
+            var vehicleType = await db.VehicleType.FindAsync(VehicleTypeId);
+            db.VehicleType.Remove(vehicleType);
             await db.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
-        private bool OwnerExists(string id)
+        private bool VehicleTypeExists(int id)
         {
-            return db.Owner.Any(e => e.SocialSecurityNumber == id);
+            return db.VehicleType.Any(e => e.VehicleTypeId == id);
         }
     }
 }

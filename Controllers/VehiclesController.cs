@@ -87,7 +87,7 @@ namespace Garage3.Controllers
                                      LastName = gcs.Key.LastName,
                                      NumberOfVehicles = gcs.Select(x => x).Distinct().Count(),
                                  })
-                                //.ToListAsync()                                
+                               .ToList()                                
                                 .Select(x => new MemberDetailsViewModel()
                                    {
                                        FirstName = x.FirstName,
@@ -98,7 +98,7 @@ namespace Garage3.Controllers
 
             var sortedMemberList = listWithEmpty.OrderBy(x => x.FirstName.Substring(0, 1), StringComparer.Ordinal);
      
-            return View(await sortedMemberList.ToListAsync());
+            return View( sortedMemberList);
         }
         
 

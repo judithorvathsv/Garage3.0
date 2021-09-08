@@ -160,8 +160,6 @@ namespace Garage3.Controllers
                 .Where(m => m.Memb.SocialSecurityNumber == ssn)
                 .Select(o =>  new OwnerDetailsViewModel {
                    SocialSecurityNumber = o.Memb.SocialSecurityNumber,
-                   FirstName = o.Memb.FirstName,
-                   LastName = o.Memb.LastName,
                    FullName = o.Memb.FirstName + " " + o.Memb.LastName,
                    RegistrationNumber = o.Vehi.RegistrationNumber
                 }).ToListAsync();

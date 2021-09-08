@@ -10,21 +10,46 @@
     <h4>Owner</h4>
     <hr />
     <dl class="row">
-        <dt class = "col-sm-2">
+        <dt class="col-sm-2">
             @Html.DisplayNameFor(model => model.First().FullName)
         </dt>
-        <dd class = "col-sm-10">
+        <dd class="col-sm-10">
             @Html.DisplayFor(model => model.First().FullName)
         </dd>
-        <dt class = "col-sm-2">
-            @Html.DisplayNameFor(model => model.First().RegistrationNumber)
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model => model.First().SocialSecurityNumber)
         </dt>
-        <dd class = "col-sm-10">
-            @Html.DisplayFor(model => model.First().RegistrationNumber)
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model => model.First().SocialSecurityNumber)
         </dd>
     </dl>
+
+    <h1>Vehicles</h1>
+
+    <table class="table">
+
+        <thead>
+            <tr>
+                <th> @Html.DisplayNameFor(model => model.RegistrationNumber)</th>
+
+                @*<th> @Html.DisplayNameFor(model => model.NumberOfVehicles)</th>*@
+            </tr>
+        <thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td> @Html.DisplayFor(modelItem => item.RegistrationNumber)  </td>
+
+                    <td>
+                        <a class="btn btn-primary" asp-action="Park" asp-route-ssn="@item.RegistrationNumber">Park</a>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
 </div>
 <div>
-    <a asp-action="Edit" asp-route-id="@Model.First().SocialSecurityNumber ">Edit</a> |
+    @*<a asp-action="Edit" asp-route-id="@Model.First().SocialSecurityNumber ">Edit</a> |*@
     <a asp-action="MemberOverview">Back to List</a>
 </div>

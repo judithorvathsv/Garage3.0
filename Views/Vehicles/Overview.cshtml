@@ -63,10 +63,10 @@
     <table class="table">
         <thead>
             <tr>
-                @*<th> <a asp-action="OverviewSort" asp-route-sortingVehicle="@ViewData["VehicleTypeSorting"],@ViewData["PakedStatus"]">@Html.DisplayNameFor(model => model.Overview.First().VehicleType)</a> </!--th>  *@
-                <th> <a asp-action="OverviewSort" asp-route-sortingVehicle="@ViewData["RegistrationNumberSorting"],@ViewData["PakedStatus"]">@Html.DisplayNameFor(model => model.Overview.First().VehicleRegistrationNumber)</a> </th>
-                <th> <a asp-action="OverviewSort" asp-route-sortingVehicle="@ViewData["ArrivalTimeSorting"], @ViewData["PakedStatus"]">@Html.DisplayNameFor(model => model.Overview.First().VehicleArrivalTime)</a> </th>
-                <th> <a asp-action="OverviewSort" asp-route-sortingVehicle="@ViewData["DurationParkedSorting"],@ViewData["PakedStatus"]">@Html.DisplayNameFor(model => model.Overview.First().VehicleParkDuration)</a> </th>
+                @*<th> <a asp-action="OverviewSort" asp-route-sortingVehicle="@ViewData["VehicleTypeSorting"],@ViewData["ParkedStatus"]">@Html.DisplayNameFor(model => model.Overview.First().VehicleType)</a> </!--th>  *@
+                <th> <a asp-action="OverviewSort" asp-route-sortingVehicle="@ViewData["RegistrationNumberSorting"],@ViewData["ParkedStatus"]">@Html.DisplayNameFor(model => model.Overview.First().VehicleRegistrationNumber)</a> </th>
+                <th> <a asp-action="OverviewSort" asp-route-sortingVehicle="@ViewData["ArrivalTimeSorting"], @ViewData["ParkedStatus"]">@Html.DisplayNameFor(model => model.Overview.First().VehicleArrivalTime)</a> </th>
+                <th> <a asp-action="OverviewSort" asp-route-sortingVehicle="@ViewData["DurationParkedSorting"],@ViewData["ParkedStatus"]">@Html.DisplayNameFor(model => model.Overview.First().VehicleParkDuration)</a> </th>
                 <th></th>
             </tr>
         </thead>
@@ -95,7 +95,7 @@
 
 @section scripts
 {
-    <script src="~/lib/jquery/dist/overview.js"></script>
+    <script src="~/js/overview.js"></script>
 }
 
 

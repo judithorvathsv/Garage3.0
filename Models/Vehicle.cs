@@ -31,17 +31,12 @@ namespace Garage3.Models
         [MinLength(1, ErrorMessage = "The model name must be longer!")]
         public string VehicleModel { get; set; }  
 
-        [Display(Name = "Time of arrival")]
-        public DateTime TimeOfArrival { get; set; }
-
 
 
         //navigation
-        public string SocialSecurityNumber { get; set; }
         public Owner Owner { get; set; }
 
         //navigation
-        public string VehicleTypeId { get; set; }
         public VehicleType VehicleType { get; set; }
 
         //navigation

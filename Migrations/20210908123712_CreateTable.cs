@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace Garage3.Migrations
 {
-    public partial class init2 : Migration
+    public partial class CreateTable : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -11,9 +11,9 @@ namespace Garage3.Migrations
                 name: "Owner",
                 columns: table => new
                 {
-                    SocialSecurityNumber = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    FirstName = table.Column<string>(type: "nvarchar(max)", nullable: false),
-                    LastName = table.Column<string>(type: "nvarchar(max)", nullable: false)
+                    SocialSecurityNumber = table.Column<string>(type: "nvarchar(13)", maxLength: 13, nullable: false),
+                    FirstName = table.Column<string>(type: "nvarchar(35)", maxLength: 35, nullable: false),
+                    LastName = table.Column<string>(type: "nvarchar(35)", maxLength: 35, nullable: false)
                 },
                 constraints: table =>
                 {
@@ -21,11 +21,24 @@ namespace Garage3.Migrations
                 });
 
             migrationBuilder.CreateTable(
+                name: "ParkingPlace",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
+                    IsOccupied = table.Column<bool>(type: "bit", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ParkingPlace", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
                 name: "VehicleType",
                 columns: table => new
                 {
                     VehicleTypeId = table.Column<string>(type: "nvarchar(450)", nullable: false),
-                    Type = table.Column<string>(type: "nvarchar(max)", nullable: false),
+                    Type = table.Column<string>(type: "nvarchar(35)", maxLength: 35, nullable: false),
                     Size = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
@@ -42,9 +55,7 @@ namespace Garage3.Migrations
                     RegistrationNumber = table.Column<string>(type: "nvarchar(10)", maxLength: 10, nullable: false),
                     Brand = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
                     VehicleModel = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
-                    TimeOfArrival = table.Column<DateTime>(type: "datetime2", nullable: false),
-                    SocialSecurityNumber = table.Column<string>(type: "nvarchar(max)", nullable: true),
-                    OwnerSocialSecurityNumber = table.Column<string>(type: "nvarchar(450)", nullable: true),
+                    OwnerSocialSecurityNumber = table.Column<string>(type: "nvarchar(13)", nullable: true),
                     VehicleTypeId = table.Column<string>(type: "nvarchar(450)", nullable: true)
                 },
                 constraints: table =>
@@ -64,6 +75,36 @@ namespace Garage3.Migrations
                         onDelete: ReferentialAction.Restrict);
                 });
 
+            migrationBuilder.CreateTable(
+                name: "ParkingEvent",
+                columns: table => new
+                {
+                    ParkingPlaceId = table.Column<int>(type: "int", nullable: false),
+                    VehicleId = table.Column<int>(type: "int", nullable: false),
+                    TimeOfArrival = table.Column<DateTime>(type: "datetime2", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_ParkingEvent", x => new { x.ParkingPlaceId, x.VehicleId });
+                    table.ForeignKey(
+                        name: "FK_ParkingEvent_ParkingPlace_ParkingPlaceId",
+                        column: x => x.ParkingPlaceId,
+                        principalTable: "ParkingPlace",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                    table.ForeignKey(
+                        name: "FK_ParkingEvent_Vehicle_VehicleId",
+                        column: x => x.VehicleId,
+                        principalTable: "Vehicle",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.CreateIndex(
+                name: "IX_ParkingEvent_VehicleId",
+                table: "ParkingEvent",
+                column: "VehicleId");
+
             migrationBuilder.CreateIndex(
                 name: "IX_Vehicle_OwnerSocialSecurityNumber",
                 table: "Vehicle",
@@ -77,6 +118,12 @@ namespace Garage3.Migrations
 
         protected override void Down(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.DropTable(
+                name: "ParkingEvent");
+
+            migrationBuilder.DropTable(
+                name: "ParkingPlace");
+
             migrationBuilder.DropTable(
                 name: "Vehicle");
 

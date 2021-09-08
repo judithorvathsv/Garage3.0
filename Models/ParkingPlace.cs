@@ -9,7 +9,7 @@ namespace Garage3.Models
     public class ParkingPlace
     {
         [Key]
-        public int ParkingPlaceId { get; set; }
+        public int Id { get; set; }
 
         public bool IsOccupied { get; set; }
 

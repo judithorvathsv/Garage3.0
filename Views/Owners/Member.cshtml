@@ -1,13 +1,11 @@
 ﻿@model IEnumerable<Garage3.Models.ViewModels.OwnerDetailsViewModel>
 
 @{
-    ViewData["Title"] = "Members";
+    ViewData["Title"] = "Member";
 }
 
-<h1>Members</h1>
-
 <div>
-    <h4>Owner</h4>
+    <h4>Member</h4>
     <hr />
     <dl class="row">
         <dt class="col-sm-2">
@@ -22,34 +20,44 @@
         <dd class="col-sm-10">
             @Html.DisplayFor(model => model.First().SocialSecurityNumber)
         </dd>
+
     </dl>
 
-    <h1>Vehicles</h1>
+    <h4>Vehicles</h4>
 
     <table class="table">
 
         <thead>
             <tr>
                 <th> @Html.DisplayNameFor(model => model.RegistrationNumber)</th>
-
-                @*<th> @Html.DisplayNameFor(model => model.NumberOfVehicles)</th>*@
+                <th> @Html.DisplayNameFor(model => model.Type)</th>
+                <th> @Html.DisplayNameFor(model => model.Model)</th>
             </tr>
         <thead>
         <tbody>
-            @foreach (var item in Model)
-            {
+                    @foreach (var item in Model)
+                    {
                 <tr>
                     <td> @Html.DisplayFor(modelItem => item.RegistrationNumber)  </td>
+                    <td> @Html.DisplayFor(modelItem => item.Type)  </td>
+                    <td> @Html.DisplayFor(modelItem => item.Model)  </td>
 
                     <td>
                         <a class="btn btn-primary" asp-action="Park" asp-route-ssn="@item.RegistrationNumber">Park</a>
                     </td>
                 </tr>
-            }
+                    }
         </tbody>
     </table>
 </div>
 <div>
     @*<a asp-action="Edit" asp-route-id="@Model.First().SocialSecurityNumber ">Edit</a> |*@
-    <a asp-action="MemberOverview">Back to List</a>
+    <div class="row">
+        <div class="col">
+            <a asp-action="Overview">Back to Overview</a>
+        </div>
+        <div class="col">
+            <a asp-controller="Vehicles" asp-action="Register" asp-route-ssn="@Model.First().SocialSecurityNumber">Register new vehicle</a>
+        </div>
+    </div>
 </div>

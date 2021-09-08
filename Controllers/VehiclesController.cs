@@ -65,50 +65,12 @@ namespace Garage3.Controllers
             }
 
             return View(vehicle);
-        }  
-
-
-        public async Task<IActionResult> MemberOverview()
-        {
-            var listWithEmpty = (from p in db.Owner
-                                 join f in db.Vehicle
-                                 on p.SocialSecurityNumber equals f.Owner.SocialSecurityNumber into ThisList
-                                 from f in ThisList.DefaultIfEmpty()
-
-                                 group p by new
-                                 {
-                                     p.FirstName,
-                                     p.LastName,
-                                     p.SocialSecurityNumber
-                                 } into gcs
-                                 select new
-                                 {
-                                     FirstName = gcs.Key.FirstName,
-                                     LastName = gcs.Key.LastName,
-                                     NumberOfVehicles = gcs.Select(x => x).Distinct().Count(),
-                                 })
-                               .ToList()
-                                .Select(x => new MemberDetailsViewModel()
-                                {
-                                    FirstName = x.FirstName,
-                                    LastName = x.LastName,
-                                    FullName = x.FirstName + " " + x.LastName,
-                                    NumberOfVehicles = x.NumberOfVehicles
-                                });
-
-            var sortedMemberList = listWithEmpty.OrderBy(x => x.FirstName.Substring(0, 1), StringComparer.Ordinal);
-
-            return View(sortedMemberList);
         }
-
-
-
-
 
         public async Task<IActionResult> Overview(int parkedStatus)
         {
             var model = new OverviewListViewModel();
-            model.VehicleTypesSelectList = await GetVehicleTypesAsync();
+            model.VehicleTypesSelectList = await GetAllVehicleTypesAsync();
 
             var allVehicles = db.Vehicle;
 
@@ -134,7 +96,7 @@ namespace Garage3.Controllers
             //    ViewData["ParkedStatus"] = "1";
             //    vehicles = vehicles.Where(u => u.VehicleParked.Equals(true));
             //}
-            model.VehicleTypesSelectList = await GetVehicleTypesAsync();
+            model.VehicleTypesSelectList = await GetAllVehicleTypesAsync();
             model.Overview = vehicles;
 
             return View("Overview", model);
@@ -304,21 +266,23 @@ namespace Garage3.Controllers
 
             }).AsEnumerable();
         }
-        // GET
-        public async Task<IActionResult> Register(Owner owner)
-        {
-            var model = new RegisterVehicleViewModel
-            {
-                VehicleTypes = await GetAllVehicleTypesAsync(),
-                Name = $"{owner.LastName}, {owner.FirstName}",
-                SocialSecurityNumber = owner.SocialSecurityNumber
-            };
-            return View(model);
-        }
 
-        // POST: Vehicles/Register
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        public async Task<IActionResult> Register(string ssn)
+        {
+            if (ssn != null)
+            {
+                if (await db.Owner.AnyAsync(o => o.SocialSecurityNumber == ssn))
+                {
+                    var model = new RegisterVehicleViewModel
+                    {
+                        VehicleTypes = await GetAllVehicleTypesAsync(),
+                        SocialSecurityNumber = ssn
+                    };
+                    return View(model);
+                }
+            }
+            return NotFound();
+        }
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Register(RegisterVehicleViewModel model)
@@ -332,10 +296,10 @@ namespace Garage3.Controllers
                     RegistrationNumber = model.RegistrationNumber.ToUpper(),
                     VehicleType = model.VehicleType,
                     Brand = model.Brand,
-                    VehicleModel = model.VehicleModel,
+                    VehicleModel = model.VehicleModel
                 };
 
-                db.Add(model);
+                db.Add(vehicle);
                 await db.SaveChangesAsync();
                 TempData["Message"] = "";
                 return RedirectToAction("Details", new { id = vehicle.Id });
@@ -575,34 +539,34 @@ namespace Garage3.Controllers
 
         }
 
-        /*
-        public async Task<IActionResult> Statistics()
-        {
-            var vehicles = await db.Vehicle.ToListAsync();
 
-            var model = new StatisticsViewModel
-            {
-                VehicleTypesData = Enum.GetValues(typeof(VehicleTypes))
-                                       .Cast<VehicleTypes>()
-                                       .ToDictionary(type => type.ToString(), type => vehicles
-                                                                                        .Where(v => v.VehicleType == type && v.IsParked)
-                                                                                        .Count()),
+        //public async Task<IActionResult> Statistics()
+        //{
+        //    var vehicles = await db.Vehicle.ToListAsync();
 
-                NumberOfWheels = vehicles
-                                    .Where(v => v.IsParked)
-                                    .Select(v => v.NumberOfWheels)
-                                    .Sum(),
+        //    var model = new StatisticsViewModel
+        //    {
+        //        VehicleTypesData = Enum.GetValues(typeof(VehicleTypes))
+        //                               .Cast<VehicleTypes>()
+        //                               .ToDictionary(type => type.ToString(), type => vehicles
+        //                                                                                .Where(v => v.VehicleType == type && v.IsParked)
+        //                                                                                .Count()),
 
-                GeneratedRevenue = vehicles
-                                    .Where(v => v.IsParked)
-                                    .Select(v =>
-                                        (DateTime.Now - v.TimeOfArrival).TotalHours
-                                      + (DateTime.Now - v.TimeOfArrival).TotalDays * 24
-                                        )
-                                    .Sum() * 100
-            };
-            return View(model);
-        }
-        */
+        //        NumberOfWheels = vehicles
+        //                            .Where(v => v.IsParked)
+        //                            .Select(v => v.NumberOfWheels)
+        //                            .Sum(),
+
+        //        GeneratedRevenue = vehicles
+        //                            .Where(v => v.IsParked)
+        //                            .Select(v =>
+        //                                (DateTime.Now - v.TimeOfArrival).TotalHours
+        //                              + (DateTime.Now - v.TimeOfArrival).TotalDays * 24
+        //                                )
+        //                            .Sum() * 100
+        //    };
+        //    return View(model);
+        //}
+
     }
 }

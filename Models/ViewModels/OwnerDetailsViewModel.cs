@@ -23,5 +23,8 @@ namespace Garage3.Models.ViewModels
 
         [Display(Name = "RegistrationNumber")]
         public string RegistrationNumber { get; set; }
+
+        public string Type {  get; set; }
+        public string Model { get; internal set; }
     }
 }

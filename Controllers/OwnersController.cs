@@ -44,26 +44,23 @@ namespace Garage3.Controllers
             return View(owner);
         }
 
-        // GET: Owners/Create
-        public IActionResult Create()
+        public IActionResult Register()
         {
             return View();
         }
 
-        // POST: Owners/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("SocialSecurityNumber,FirstName,LastName")] Owner owner)
+        [HttpPost][ValidateAntiForgeryToken]
+        public async Task<IActionResult> Register(RegisterMemberViewModel model)
         {
-            if (ModelState.IsValid)
+            var member = new Owner
             {
-                db.Add(owner);
+                SocialSecurityNumber = model.SocialSecurityNumber,
+                FirstName = model.FirstName,
+                LastName = model.LastName
+            };
+            db.Add(member);
                 await db.SaveChangesAsync();
-                return RedirectToAction("MemberOverview");
-            }
-            return View(owner);
+                return RedirectToAction("Register", "Vehicles", new { ssn = member.SocialSecurityNumber} );
         }
 
         // GET: Owners/Edit/5
@@ -146,28 +143,32 @@ namespace Garage3.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        public async Task<IActionResult> Members(string ssn)
+        public async Task<IActionResult> Member(string ssn)
         {
             if (ssn == null)
             {
                 return NotFound();
             }
+            var vehicles = await db.Vehicle
+                .Where(v => v.Owner.SocialSecurityNumber == ssn)
+                .Join(db.Owner, v => v.Owner.SocialSecurityNumber, o => o.SocialSecurityNumber, (v, o) => new { v, o })
+                .Join(db.VehicleType, vo => vo.v.VehicleType.VehicleTypeId, vt => vt.VehicleTypeId, (vo, vt) => new { vo, vt })
+                .Select(m => new OwnerDetailsViewModel
+                {
+                    SocialSecurityNumber = m.vo.o.SocialSecurityNumber,
+                    FullName = m.vo.o.FirstName + " " + m.vo.o.LastName,
+                    Type = m.vo.v.VehicleType.Type,
+                    RegistrationNumber = m.vo.v.RegistrationNumber,
+                    Model = m.vo.v.VehicleModel
 
-            var vehicle = await db.Vehicle.Join(
-                db.Owner,
-                v => v.Owner.SocialSecurityNumber, m => m.SocialSecurityNumber,
-                (v, m) => new { Vehi = v, Memb = m })
-                .Where(m => m.Memb.SocialSecurityNumber == ssn)
-                .Select(o =>  new OwnerDetailsViewModel {
-                   SocialSecurityNumber = o.Memb.SocialSecurityNumber,
-                   FullName = o.Memb.FirstName + " " + o.Memb.LastName,
-                   RegistrationNumber = o.Vehi.RegistrationNumber
                 }).ToListAsync();
-            if (vehicle == null)
+
+
+            if (vehicles == null)
             {
                 return NotFound();
             }
-            return View(vehicle);
+            return View(vehicles);
         }
 
         private bool OwnerExists(string id)
@@ -176,8 +177,8 @@ namespace Garage3.Controllers
         }
 
 
-        [ActionName("MemberOverview")]
-        public async Task<IActionResult> MemberOverview()
+        [ActionName("Overview")]
+        public async Task<IActionResult> Overview()
         {
             var listWithEmpty = (from p in db.Owner
                                  join f in db.Vehicle

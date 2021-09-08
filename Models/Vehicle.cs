@@ -36,13 +36,17 @@ namespace Garage3.Models
 
 
 
-        //navigation
+        //navigation   
         public string SocialSecurityNumber { get; set; }
         public Owner Owner { get; set; }
 
+
+
         //navigation
-        public string VehicleTypeId { get; set; }
+        public int VehicleTypeId { get; set; }
         public VehicleType VehicleType { get; set; }
+
+
 
         //navigation
         public ICollection<ParkingPlace> ParkingPlaces { get; set; }

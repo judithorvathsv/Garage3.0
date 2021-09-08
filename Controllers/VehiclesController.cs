@@ -65,6 +65,45 @@ namespace Garage3.Controllers
             return View(vehicle);
         }
 
+ 
+        public async Task<IActionResult> MemberOverview()
+        {
+            var listWithEmpty = (from p in db.Owner
+                                 join f in db.Vehicle
+                                 on p.SocialSecurityNumber equals f.SocialSecurityNumber into ThisList
+                                 from f in ThisList.DefaultIfEmpty()
+
+                                 group p by new
+                                 {
+                                     p.FirstName,
+                                     p.LastName,
+                                     p.SocialSecurityNumber
+                                 } into gcs
+                                 select new
+                                 {
+                                     FirstName = gcs.Key.FirstName,
+                                     LastName = gcs.Key.LastName,
+                                     NumberOfVehicles = gcs.Select(x => x).Distinct().Count(),
+                                 })
+                                .ToList()                                
+                                .Select(x => new MemberDetailsViewModel()
+                                   {
+                                       FirstName = x.FirstName,
+                                       LastName = x.LastName,
+                                       FullName = x.FirstName + " " + x.LastName,
+                                       NumberOfVehicles = x.NumberOfVehicles
+                                    });
+
+            var sortedMemberList = listWithEmpty.OrderBy(x => x.FirstName.Substring(0, 1), StringComparer.Ordinal);
+     
+            return View(sortedMemberList);
+        }
+
+
+
+
+    
+
         public async Task<IActionResult> Overview(int parkedStatus)
         {
             var model = new OverviewListViewModel();
@@ -124,14 +163,14 @@ namespace Garage3.Controllers
                            vehicles :
                            vehicles.Where(m => m.RegistrationNumber.StartsWith(viewModel.Regnumber.ToUpper()));
 
-          //  result = viewModel.Types == null ?
-                                  //  result :
-                                 //   result.Where(v => v.VehicleType == viewModel.Types);
+            //  result = viewModel.Types == null ?
+            //  result :
+            //   result.Where(v => v.VehicleType == viewModel.Types);
 
             IQueryable<OverviewViewModel> vehi = result.Select(v => new OverviewViewModel
             {
                 VehicleId = v.Id,
-              //  VehicleType = v.VehicleType,
+                //  VehicleType = v.VehicleType,
                 VehicleRegistrationNumber = v.RegistrationNumber,
                 VehicleArrivalTime = v.TimeOfArrival,
                 VehicleParkDuration = DateTime.Now - v.TimeOfArrival,
@@ -168,10 +207,10 @@ namespace Garage3.Controllers
             switch (sortingVehicle)
             {
                 case "VehicleTypeSortingAscending":
-                   // vehicles = vehicles.OrderBy(x => x.VehicleType);
+                    // vehicles = vehicles.OrderBy(x => x.VehicleType);
                     break;
                 case "VehicleTypeSortingDescending":
-                   // vehicles = vehicles.OrderByDescending(x => x.VehicleType);
+                    // vehicles = vehicles.OrderByDescending(x => x.VehicleType);
                     break;
                 case "RegistrationNumberSortingAscending":
                     vehicles = vehicles.OrderBy(x => x.VehicleRegistrationNumber);
@@ -193,7 +232,7 @@ namespace Garage3.Controllers
                     break;
 
                 default:
-                   // vehicles = vehicles.OrderBy(x => x.VehicleType);
+                    // vehicles = vehicles.OrderBy(x => x.VehicleType);
                     break;
             }
 
@@ -233,9 +272,9 @@ namespace Garage3.Controllers
         {
             return allVehicles.Select(v => new OverviewViewModel
             {
-               // VehicleParked = v.IsParked,
+                // VehicleParked = v.IsParked,
                 VehicleId = v.Id,
-               // VehicleType = v.VehicleType,
+                // VehicleType = v.VehicleType,
                 VehicleRegistrationNumber = v.RegistrationNumber,
                 VehicleArrivalTime = v.TimeOfArrival,
                 VehicleParkDuration = DateTime.Now - v.TimeOfArrival
@@ -249,7 +288,7 @@ namespace Garage3.Controllers
             {
                 //VehicleParked = v.IsParked,
                 VehicleId = v.Id,
-               // VehicleType = v.VehicleType,
+                // VehicleType = v.VehicleType,
                 VehicleRegistrationNumber = v.RegistrationNumber,
                 VehicleArrivalTime = v.TimeOfArrival,
                 VehicleParkDuration = DateTime.Now - v.TimeOfArrival
@@ -273,8 +312,8 @@ namespace Garage3.Controllers
                 {
                     RegistrationNumber = vehicle.RegistrationNumber.ToUpper(),
                     VehicleType = vehicle.VehicleType,
-                    Brand = vehicle.Brand,                   
-                    VehicleModel = vehicle.VehicleModel,         
+                    Brand = vehicle.Brand,
+                    VehicleModel = vehicle.VehicleModel,
 
                     TimeOfArrival = DateTime.Now
                 };
@@ -290,7 +329,7 @@ namespace Garage3.Controllers
                     }
                     catch (Exception ex)
                     {
-                       
+
                     }
                 }
                 return View(model);
@@ -374,10 +413,10 @@ namespace Garage3.Controllers
 
         public bool Equals(Vehicle b1, Vehicle b2)
         {
-            if (b1.RegistrationNumber == b2.RegistrationNumber 
-              //  &&                 b1.Color == b2.Color 
+            if (b1.RegistrationNumber == b2.RegistrationNumber
+                //  &&                 b1.Color == b2.Color 
                 && b1.Brand == b2.Brand
-                && b1.VehicleModel == b2.VehicleModel 
+                && b1.VehicleModel == b2.VehicleModel
                 //&& b1.NumberOfWheels == b2.NumberOfWheels 
                 && b1.VehicleType == b2.VehicleType)
                 return true;

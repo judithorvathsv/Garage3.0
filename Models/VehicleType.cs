@@ -9,7 +9,7 @@ namespace Garage3.Models
     public class VehicleType
     {
         [Key]    
-        public string VehicleTypeId { get; set; }
+        public int VehicleTypeId { get; set; }
     
         [Display(Name = "Vehicle type")]
         [Required(ErrorMessage = "Please choose type!")]

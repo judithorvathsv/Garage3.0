@@ -11,7 +11,8 @@ namespace Garage3.Models
         [Key]
         [Required(ErrorMessage = "Please enter your social security number!")]
         [Display(Name = "Social Security Number")]
-        [RegularExpression("[0-9]{6}-[0-9]{4}", ErrorMessage = "Invalid social security number!")]        
+        [RegularExpression("[0-9]{6}-[0-9]{4}", ErrorMessage = "Invalid social security number!")]    
+        [StringLength(11)]
         public string SocialSecurityNumber { get; set; }
 
         [Required(ErrorMessage = "Please enter firstname!")]
@@ -25,7 +26,7 @@ namespace Garage3.Models
         public string LastName { get; set; }
 
         //navigation
-        List<Vehicle> Vehicles { get; set; } = new List<Vehicle>();
+        public List<Vehicle> Vehicles { get; set; } = new List<Vehicle>();
 
     }
 }

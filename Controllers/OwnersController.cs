@@ -146,37 +146,37 @@ namespace Garage3.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        public async Task<IActionResult> MemberOverview()
-        {
-            var listWithEmpty = (from p in db.Owner
-                                 join f in db.Vehicle
-                                 on p.SocialSecurityNumber equals f.Owner.SocialSecurityNumber into ThisList
-                                 from f in ThisList.DefaultIfEmpty()
+        //public async Task<IActionResult> MemberOverview()
+        //{
+        //    var listWithEmpty = (from p in db.Owner
+        //                         join f in db.Vehicle
+        //                         on p.SocialSecurityNumber equals f.Owner.SocialSecurityNumber into ThisList
+        //                         from f in ThisList.DefaultIfEmpty()
 
-                                 group p by new
-                                 {
-                                     p.FirstName,
-                                     p.LastName,
-                                     p.SocialSecurityNumber
-                                 } into gcs
-                                 select new
-                                 {
-                                     FirstName = gcs.Key.FirstName,
-                                     LastName = gcs.Key.LastName,
-                                     NumberOfVehicles = gcs.Select(x => x).Distinct().Count(),
-                                 })
-                                .Select(x => new MemberDetailsViewModel()
-                                {
-                                    FirstName = x.FirstName,
-                                    LastName = x.LastName,
-                                    FullName = x.FirstName + " " + x.LastName,
-                                    NumberOfVehicles = x.NumberOfVehicles
-                                });
+        //                         group p by new
+        //                         {
+        //                             p.FirstName,
+        //                             p.LastName,
+        //                             p.SocialSecurityNumber
+        //                         } into gcs
+        //                         select new
+        //                         {
+        //                             FirstName = gcs.Key.FirstName,
+        //                             LastName = gcs.Key.LastName,
+        //                             NumberOfVehicles = gcs.Select(x => x).Distinct().Count(),
+        //                         })
+        //                        .Select(x => new MemberDetailsViewModel()
+        //                        {
+        //                            FirstName = x.FirstName,
+        //                            LastName = x.LastName,
+        //                            FullName = x.FirstName + " " + x.LastName,
+        //                            NumberOfVehicles = x.NumberOfVehicles
+        //                        });
 
-            var sortedMemberList = listWithEmpty.OrderBy(x => x.FirstName.Substring(0, 1), StringComparer.Ordinal);
+        //    var sortedMemberList = listWithEmpty.OrderBy(x => x.FirstName.Substring(0, 1), StringComparer.Ordinal);
 
-            return View(await sortedMemberList.ToListAsync());
-        }
+        //    return View(await sortedMemberList.ToListAsync());
+        //}
 
         public async Task<IActionResult> Members(string socialsecuritynumber)
         {
@@ -206,8 +206,8 @@ namespace Garage3.Controllers
         [ActionName("MemberOverview")]
         public async Task<IActionResult> MemberOverview()
         {
-            var listWithEmpty = (from p in _context.Owner
-                                 join f in _context.Vehicle
+            var listWithEmpty = (from p in db.Owner
+                                 join f in db.Vehicle
                                  on p.SocialSecurityNumber equals f.Owner.SocialSecurityNumber into ThisList
                                  from f in ThisList.DefaultIfEmpty()
 

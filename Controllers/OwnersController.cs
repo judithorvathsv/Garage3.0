@@ -146,41 +146,9 @@ namespace Garage3.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        //public async Task<IActionResult> MemberOverview()
-        //{
-        //    var listWithEmpty = (from p in db.Owner
-        //                         join f in db.Vehicle
-        //                         on p.SocialSecurityNumber equals f.Owner.SocialSecurityNumber into ThisList
-        //                         from f in ThisList.DefaultIfEmpty()
-
-        //                         group p by new
-        //                         {
-        //                             p.FirstName,
-        //                             p.LastName,
-        //                             p.SocialSecurityNumber
-        //                         } into gcs
-        //                         select new
-        //                         {
-        //                             FirstName = gcs.Key.FirstName,
-        //                             LastName = gcs.Key.LastName,
-        //                             NumberOfVehicles = gcs.Select(x => x).Distinct().Count(),
-        //                         })
-        //                        .Select(x => new MemberDetailsViewModel()
-        //                        {
-        //                            FirstName = x.FirstName,
-        //                            LastName = x.LastName,
-        //                            FullName = x.FirstName + " " + x.LastName,
-        //                            NumberOfVehicles = x.NumberOfVehicles
-        //                        });
-
-        //    var sortedMemberList = listWithEmpty.OrderBy(x => x.FirstName.Substring(0, 1), StringComparer.Ordinal);
-
-        //    return View(await sortedMemberList.ToListAsync());
-        //}
-
-        public async Task<IActionResult> Members(string socialsecuritynumber)
+        public async Task<IActionResult> Members(string ssn)
         {
-            if (socialsecuritynumber == null)
+            if (ssn == null)
             {
                 return NotFound();
             }
@@ -189,12 +157,19 @@ namespace Garage3.Controllers
                 db.Owner,
                 v => v.Owner.SocialSecurityNumber, m => m.SocialSecurityNumber,
                 (v, m) => new { Vehi = v, Memb = m })
-                .FirstOrDefaultAsync(m => m.Memb.SocialSecurityNumber == socialsecuritynumber);
+                .Where(m => m.Memb.SocialSecurityNumber == ssn)
+                .Select(o =>  new OwnerDetailsViewModel {
+                   SocialSecurityNumber = o.Memb.SocialSecurityNumber,
+                   FirstName = o.Memb.FirstName,
+                   LastName = o.Memb.LastName,
+                   FullName = o.Memb.FirstName + " " + o.Memb.LastName,
+                   RegistrationNumber = o.Vehi.RegistrationNumber
+                }).ToListAsync();
             if (vehicle == null)
             {
                 return NotFound();
             }
-            return View();
+            return View(vehicle);
         }
 
         private bool OwnerExists(string id)
@@ -221,6 +196,7 @@ namespace Garage3.Controllers
                                  {
                                      FirstName = gcs.Key.FirstName,
                                      LastName = gcs.Key.LastName,
+                                     SocialSecurityNumber = gcs.Key.SocialSecurityNumber,
                                      NumberOfVehicles = gcs.Select(x => x).Distinct().Count(),
                                  })
                                .ToList()
@@ -229,6 +205,7 @@ namespace Garage3.Controllers
                                     FirstName = x.FirstName,
                                     LastName = x.LastName,
                                     FullName = x.FirstName + " " + x.LastName,
+                                    SocialSecurityNumber = x.SocialSecurityNumber,
                                     NumberOfVehicles = x.NumberOfVehicles
                                 });
 

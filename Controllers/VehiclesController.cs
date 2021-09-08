@@ -65,7 +65,7 @@ namespace Garage3.Controllers
             }
 
             return View(vehicle);
-        }
+        }  
 
 
         public async Task<IActionResult> MemberOverview()
@@ -142,7 +142,6 @@ namespace Garage3.Controllers
 
         private async Task<IEnumerable<SelectListItem>> GetVehicleTypesAsync()
         {
-
             return await db.Vehicle
                         //.Where(w => w.IsParked == true)
                         .Select(t => t.VehicleType)
@@ -402,24 +401,6 @@ namespace Garage3.Controllers
             return RedirectToAction("UnparkResponse", new { id = vehicle.Id, departureTime });
         }
 
-        //public async Task<IActionResult> Members(string? socialsecuritynumber)
-        //{
-        //    if (socialsecuritynumber == null)
-        //    {
-        //        return NotFound();
-        //    }
-
-        //    var vehicle = await db.Vehicle.Join(
-        //        db.Owner, 
-        //        v => v.SocialSecurityNumber, m => m.SocialSecurityNumber,
-        //        (v,m) => new { Vehi = v, Memb = m})
-        //        .FirstOrDefaultAsync(m => m.Memb.SocialSecurityNumber == socialsecuritynumber);
-        //    if (vehicle == null)
-        //    {
-        //        return NotFound();
-        //    }
-        //    return View();
-        //}
 
         public async Task<IActionResult> Change(int? Id)
         {
@@ -507,45 +488,6 @@ namespace Garage3.Controllers
 
             return str.ToUpper();
         }
-
-
-
-        /*
-        // POST: Vehicles/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        [HttpPost]
-        [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int id, [Bind("Id,VehicleType,RegistrationNumber,Color,Brand,VehicleModel,NumberOfWheels,IsParked,TimeOfArrival")] Vehicle vehicle)
-        {
-            if (id != vehicle.Id)
-            {
-                return NotFound();
-            }
-
-            if (ModelState.IsValid)
-            {
-                try
-                {
-                    db.Update(vehicle);
-                    await db.SaveChangesAsync();
-                }
-                catch (DbUpdateConcurrencyException)
-                {
-                    if (!VehicleExists(vehicle.Id))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
-                }
-                return RedirectToAction(nameof(Index));
-            }
-            return View(vehicle);
-        }
-        */
 
         // GET: Vehicles/Delete/5
         public async Task<IActionResult> Delete(int? id)

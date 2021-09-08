@@ -65,7 +65,7 @@ namespace Garage3.Controllers
             }
 
             return View(vehicle);
-        }
+        }  
 
         public async Task<IActionResult> Overview(int parkedStatus)
         {

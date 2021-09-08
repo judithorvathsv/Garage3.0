@@ -19,7 +19,7 @@
             <td>                @Html.DisplayFor(modelItem => item.NumberOfVehicles)            </td>
 
             <td>
-                <a class="btn btn-primary" asp-action=" ">Member view</a>
+                <a class="btn btn-primary" asp-action="Members" asp-route-ssn="@item.SocialSecurityNumber">Member</a>
             </td>
         </tr>
     }

@@ -7,6 +7,8 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Garage3.Data;
 using Garage3.Models;
+using AutoMapper;
+using Bogus;
 
 namespace Garage3.Controllers
 {
@@ -14,14 +16,21 @@ namespace Garage3.Controllers
     {
         private readonly Garage3Context _context;
 
+        private readonly IMapper mapper;
+        private readonly Faker faker;
+
         public OwnersController(Garage3Context context)
         {
             _context = context;
+
+            this.mapper = mapper;
+            faker = new Faker();
         }
 
         // GET: Owners
         public async Task<IActionResult> Index()
-        {
+        {       
+
             return View(await _context.Owner.ToListAsync());
         }
 
@@ -169,6 +178,7 @@ namespace Garage3.Controllers
                                  {
                                      FirstName = gcs.Key.FirstName,
                                      LastName = gcs.Key.LastName,
+                                     SocialSecurityNumber = gcs.Key.SocialSecurityNumber,
                                      NumberOfVehicles = gcs.Select(x => x).Distinct().Count(),
                                  })
                                .ToList()
@@ -177,6 +187,7 @@ namespace Garage3.Controllers
                                     FirstName = x.FirstName,
                                     LastName = x.LastName,
                                     FullName = x.FirstName + " " + x.LastName,
+                                    SocialSecurityNumber = x.SocialSecurityNumber,
                                     NumberOfVehicles = x.NumberOfVehicles
                                 });
 

@@ -8,6 +8,8 @@ using Microsoft.EntityFrameworkCore;
 using Garage3.Data;
 using Garage3.Models;
 using Garage3.Models.ViewModels;
+using AutoMapper;
+using Bogus;
 
 namespace Garage3.Controllers
 {
@@ -15,14 +17,21 @@ namespace Garage3.Controllers
     {
         private readonly Garage3Context db;
 
+        private readonly IMapper mapper;
+        private readonly Faker faker;
+
         public OwnersController(Garage3Context context)
         {
             db = context;
+
+            this.mapper = mapper;
+            faker = new Faker();
         }
 
         // GET: Owners
         public async Task<IActionResult> Index()
-        {
+        {       
+
             return View(await db.Owner.ToListAsync());
         }
 
@@ -203,7 +212,7 @@ namespace Garage3.Controllers
         {
             var listWithEmpty = (from p in db.Owner
                                  join f in db.Vehicle
-                                 on p.SocialSecurityNumber equals f.Owner.SocialSecurityNumber into ThisList
+                                 on p.OwnerId equals f.VehicleId into ThisList
                                  from f in ThisList.DefaultIfEmpty()
 
                                  group p by new

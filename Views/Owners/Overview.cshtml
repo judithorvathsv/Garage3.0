@@ -9,18 +9,17 @@
 <table class="table">
 
     <thead>
-    <tr>
-            <th> @Html.DisplayNameFor(model => model.FullName)</th>
-            <th> @Html.DisplayNameFor(model => model.NumberOfVehicles)</th>
-    </tr>
+        <tr>
+            <th> @Html.DisplayNameFor(model => model.FullName)        </th>
+            <th> @Html.DisplayNameFor(model => model.NumberOfVehicles)        </th>
+        </tr>
     <thead>
     <tbody>
     @foreach (var item in Model)
     {
         <tr>
-
-                <td> @Html.DisplayFor(modelItem => item.FullName)  </td>
-                <td> @Html.DisplayFor(modelItem => item.NumberOfVehicles)  </td>
+            <td> @Html.DisplayFor(modelItem => item.FullName)  </td>
+            <td> @Html.DisplayFor(modelItem => item.NumberOfVehicles)  </td>    
 
             <td>
                 <a class="btn btn-primary" asp-action="Member" asp-route-ssn="@item.SocialSecurityNumber">Details</a>

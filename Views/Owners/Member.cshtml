@@ -45,7 +45,7 @@
                     <td> @Html.DisplayFor(modelItem => item.VehicleModel)</td>
                     <td> @Html.DisplayFor(modelItem => item.VehicleType)  </td>
                     <td>
-                        <a class="btn btn-primary" asp-action="Park" asp-route-ssn="@item.RegistrationNumber">Park</a>
+                        <a class="btn btn-primary" asp-controller="ParkingEvents"  asp-action="Park" asp-route-regnumber="@item.RegistrationNumber">Park</a>
                     </td>
                 </tr>
             }

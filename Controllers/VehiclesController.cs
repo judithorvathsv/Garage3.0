@@ -269,20 +269,18 @@ namespace Garage3.Controllers
         [HttpGet]
         public async Task<IActionResult> Register(int id)
         {
-            if (id != null)
+            if (await db.Owner.AnyAsync(o => o.OwnerId == id))
             {
-                if (await db.Owner.AnyAsync(o => o.OwnerId == id))
+                var model = new RegisterVehicleViewModel
                 {
-                    var model = new RegisterVehicleViewModel
-                    {
-                        VehicleTypes = await GetAllVehicleTypesAsync(),
-                        OwnerId = id
-                    };
-                    return View(model);
-                }
+                    VehicleTypes = await GetAllVehicleTypesAsync(),
+                    Id = id
+                };
+                return View(model);
             }
             return NotFound();
         }
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Register(RegisterVehicleViewModel model)
@@ -299,7 +297,7 @@ namespace Garage3.Controllers
                         VehicleTypeId = model.VehicleTypeId,
                         Brand = model.Brand,
                         VehicleModel = model.VehicleModel,
-                        OwnerId = model.OwnerId
+                        OwnerId = model.Id
                     };
 
                     db.Add(vehicle);

@@ -14,7 +14,7 @@ namespace Garage3.Controllers
 {
     public class OwnersController : Controller
     {
-        private readonly Garage3Context _context;
+        private readonly Garage3Context db;
 
         private readonly IMapper mapper;
         private readonly Faker faker;
@@ -42,7 +42,7 @@ namespace Garage3.Controllers
                 return NotFound();
             }
 
-            var owner = await _context.Owner
+            var owner = await db.Owner
                 .FirstOrDefaultAsync(m => m.SocialSecurityNumber == id);
             if (owner == null)
             {
@@ -67,8 +67,8 @@ namespace Garage3.Controllers
         {
             if (ModelState.IsValid)
             {
-                _context.Add(owner);
-                await _context.SaveChangesAsync();
+                db.Add(owner);
+                await db.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
             return View(owner);
@@ -82,7 +82,7 @@ namespace Garage3.Controllers
                 return NotFound();
             }
 
-            var owner = await _context.Owner.FindAsync(id);
+            var owner = await db.Owner.FindAsync(id);
             if (owner == null)
             {
                 return NotFound();
@@ -106,8 +106,8 @@ namespace Garage3.Controllers
             {
                 try
                 {
-                    _context.Update(owner);
-                    await _context.SaveChangesAsync();
+                    db.Update(owner);
+                    await db.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -133,7 +133,7 @@ namespace Garage3.Controllers
                 return NotFound();
             }
 
-            var owner = await _context.Owner
+            var owner = await db.Owner
                 .FirstOrDefaultAsync(m => m.SocialSecurityNumber == id);
             if (owner == null)
             {
@@ -148,23 +148,49 @@ namespace Garage3.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(string id)
         {
-            var owner = await _context.Owner.FindAsync(id);
-            _context.Owner.Remove(owner);
-            await _context.SaveChangesAsync();
+            var owner = await db.Owner.FindAsync(id);
+            db.Owner.Remove(owner);
+            await db.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
+        }
+
+        public async Task<IActionResult> Members(string ssn)
+        {
+            if (ssn == null)
+            {
+                return NotFound();
+            }
+
+            var vehicle = await db.Vehicle.Join(
+                db.Owner,
+                v => v.Owner.SocialSecurityNumber, m => m.SocialSecurityNumber,
+                (v, m) => new { Vehi = v, Memb = m })
+                .Where(m => m.Memb.SocialSecurityNumber == ssn)
+                .Select(o =>  new OwnerDetailsViewModel {
+                   SocialSecurityNumber = o.Memb.SocialSecurityNumber,
+                   FirstName = o.Memb.FirstName,
+                   LastName = o.Memb.LastName,
+                   FullName = o.Memb.FirstName + " " + o.Memb.LastName,
+                   RegistrationNumber = o.Vehi.RegistrationNumber
+                }).ToListAsync();
+            if (vehicle == null)
+            {
+                return NotFound();
+            }
+            return View(vehicle);
         }
 
         private bool OwnerExists(string id)
         {
-            return _context.Owner.Any(e => e.SocialSecurityNumber == id);
+            return db.Owner.Any(e => e.SocialSecurityNumber == id);
         }
 
 
         [ActionName("MemberOverview")]
         public async Task<IActionResult> MemberOverview()
         {
-            var listWithEmpty = (from p in _context.Owner
-                                 join f in _context.Vehicle
+            var listWithEmpty = (from p in db.Owner
+                                 join f in db.Vehicle
                                  on p.SocialSecurityNumber equals f.Owner.SocialSecurityNumber into ThisList
                                  from f in ThisList.DefaultIfEmpty()
 

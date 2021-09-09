@@ -67,7 +67,7 @@ namespace Garage3.Controllers
             return View(vehicle);
         }
 
-        public async Task<IActionResult> Overview(int parkedStatus)
+        public async Task<IActionResult> Overview()
         {
             var model = new OverviewListViewModel();
             model.VehicleTypesSelectList = await GetAllVehicleTypesAsync();
@@ -75,9 +75,9 @@ namespace Garage3.Controllers
             var allVehicles = db.Vehicle;
 
             //IQueryable<OverviewViewModel> vehicles = GetOverviewViewModel(allVehicles);
-            string parkedStatusStr = parkedStatus.ToString();
+           // string parkedStatusStr = parkedStatus.ToString();
             var vehicles = GetOverviewViewModelAsEnumerable(allVehicles);
-            parkedStatus = ParkingStatus(parkedStatusStr, model, ref vehicles);
+           // parkedStatus = ParkingStatus(parkedStatusStr, model, ref vehicles);
 
             //if (parkedStatus == 3)
             //{

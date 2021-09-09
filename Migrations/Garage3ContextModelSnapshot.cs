@@ -21,9 +21,10 @@ namespace Garage3.Migrations
 
             modelBuilder.Entity("Garage3.Models.Owner", b =>
                 {
-                    b.Property<string>("SocialSecurityNumber")
-                        .HasMaxLength(13)
-                        .HasColumnType("nvarchar(13)");
+                    b.Property<int>("OwnerId")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("int")
+                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
                     b.Property<string>("FirstName")
                         .IsRequired()
@@ -35,106 +36,127 @@ namespace Garage3.Migrations
                         .HasMaxLength(35)
                         .HasColumnType("nvarchar(35)");
 
-                    b.HasKey("SocialSecurityNumber");
+                    b.Property<string>("SocialSecurityNumber")
+                        .IsRequired()
+                        .HasMaxLength(13)
+                        .HasColumnType("nvarchar(13)");
+
+                    b.HasKey("OwnerId");
 
                     b.ToTable("Owner");
 
                     b.HasData(
                         new
                         {
-                            SocialSecurityNumber = "600102-1478",
+                            OwnerId = 1,
                             FirstName = "Isaac",
-                            LastName = "Newton"
+                            LastName = "Newton",
+                            SocialSecurityNumber = "600102-1478"
                         },
                         new
                         {
-                            SocialSecurityNumber = "610102-1234",
+                            OwnerId = 2,
                             FirstName = "Albert",
-                            LastName = "Einstein"
+                            LastName = "Einstein",
+                            SocialSecurityNumber = "610102-1234"
                         },
                         new
                         {
-                            SocialSecurityNumber = "620102-4567",
+                            OwnerId = 3,
                             FirstName = "Stephen",
-                            LastName = "Hawking"
+                            LastName = "Hawking",
+                            SocialSecurityNumber = "620102-4567"
                         },
                         new
                         {
-                            SocialSecurityNumber = "630102-7894",
+                            OwnerId = 4,
                             FirstName = "Marie",
-                            LastName = "Curie"
+                            LastName = "Curie",
+                            SocialSecurityNumber = "630102-7894"
                         },
                         new
                         {
-                            SocialSecurityNumber = "640102-4561",
+                            OwnerId = 5,
                             FirstName = "Galileo",
-                            LastName = "Galilei"
+                            LastName = "Galilei",
+                            SocialSecurityNumber = "640102-4561"
                         },
                         new
                         {
-                            SocialSecurityNumber = "650102-1235",
+                            OwnerId = 6,
                             FirstName = "Charles",
-                            LastName = "Darwin"
+                            LastName = "Darwin",
+                            SocialSecurityNumber = "650102-1235"
                         },
                         new
                         {
-                            SocialSecurityNumber = "660102-4568",
+                            OwnerId = 7,
                             FirstName = "Nicolaus",
-                            LastName = "Copernicus"
+                            LastName = "Copernicus",
+                            SocialSecurityNumber = "660102-4568"
                         },
                         new
                         {
-                            SocialSecurityNumber = "670102-7895",
+                            OwnerId = 8,
                             FirstName = "Louis",
-                            LastName = "Pasteur"
+                            LastName = "Pasteur",
+                            SocialSecurityNumber = "670102-7895"
                         },
                         new
                         {
-                            SocialSecurityNumber = "680102-1595",
+                            OwnerId = 9,
                             FirstName = "Alexander",
-                            LastName = "Fleming"
+                            LastName = "Fleming",
+                            SocialSecurityNumber = "680102-1595"
                         },
                         new
                         {
-                            SocialSecurityNumber = "690102-7535",
+                            OwnerId = 10,
                             FirstName = "Thomas",
-                            LastName = "Edison"
+                            LastName = "Edison",
+                            SocialSecurityNumber = "690102-7535"
                         },
                         new
                         {
-                            SocialSecurityNumber = "123456-1234",
+                            OwnerId = 11,
                             FirstName = "Adam",
-                            LastName = "Abelin"
+                            LastName = "Abelin",
+                            SocialSecurityNumber = "123456-1234"
                         },
                         new
                         {
-                            SocialSecurityNumber = "123456-7891",
+                            OwnerId = 12,
                             FirstName = "James",
-                            LastName = "Jones"
+                            LastName = "Jones",
+                            SocialSecurityNumber = "123456-7891"
                         },
                         new
                         {
-                            SocialSecurityNumber = "134679-2587",
+                            OwnerId = 13,
                             FirstName = "joel",
-                            LastName = "Viklund"
+                            LastName = "Viklund",
+                            SocialSecurityNumber = "134679-2587"
                         },
                         new
                         {
-                            SocialSecurityNumber = "234567-1234",
+                            OwnerId = 14,
                             FirstName = "Joel",
-                            LastName = "Josefsson"
+                            LastName = "Josefsson",
+                            SocialSecurityNumber = "234567-1234"
                         },
                         new
                         {
-                            SocialSecurityNumber = "345678-9874",
+                            OwnerId = 15,
                             FirstName = "Joel",
-                            LastName = "Abelin"
+                            LastName = "Abelin",
+                            SocialSecurityNumber = "345678-9874"
                         },
                         new
                         {
-                            SocialSecurityNumber = "987654-3210",
+                            OwnerId = 16,
                             FirstName = "Josef",
-                            LastName = "Jacobsson"
+                            LastName = "Jacobsson",
+                            SocialSecurityNumber = "987654-3210"
                         });
                 });
 
@@ -158,7 +180,7 @@ namespace Garage3.Migrations
 
             modelBuilder.Entity("Garage3.Models.ParkingPlace", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<int>("ParkingPlaceId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
@@ -166,14 +188,14 @@ namespace Garage3.Migrations
                     b.Property<bool>("IsOccupied")
                         .HasColumnType("bit");
 
-                    b.HasKey("Id");
+                    b.HasKey("ParkingPlaceId");
 
                     b.ToTable("ParkingPlace");
                 });
 
             modelBuilder.Entity("Garage3.Models.Vehicle", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<int>("VehicleId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
@@ -183,16 +205,13 @@ namespace Garage3.Migrations
                         .HasMaxLength(20)
                         .HasColumnType("nvarchar(20)");
 
-                    b.Property<string>("OwnerSocialSecurityNumber")
-                        .HasColumnType("nvarchar(13)");
+                    b.Property<int>("OwnerId")
+                        .HasColumnType("int");
 
                     b.Property<string>("RegistrationNumber")
                         .IsRequired()
                         .HasMaxLength(10)
                         .HasColumnType("nvarchar(10)");
-
-                    b.Property<string>("SocialSecurityNumber")
-                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("VehicleModel")
                         .IsRequired()
@@ -202,9 +221,9 @@ namespace Garage3.Migrations
                     b.Property<int>("VehicleTypeId")
                         .HasColumnType("int");
 
-                    b.HasKey("Id");
+                    b.HasKey("VehicleId");
 
-                    b.HasIndex("OwnerSocialSecurityNumber");
+                    b.HasIndex("OwnerId");
 
                     b.HasIndex("VehicleTypeId");
 
@@ -213,136 +232,136 @@ namespace Garage3.Migrations
                     b.HasData(
                         new
                         {
-                            Id = 1,
+                            VehicleId = 1,
                             Brand = "Chevrolet",
+                            OwnerId = 1,
                             RegistrationNumber = "ABC-123",
-                            SocialSecurityNumber = "123456-1234",
                             VehicleModel = "Silverado",
                             VehicleTypeId = 1
                         },
                         new
                         {
-                            Id = 2,
+                            VehicleId = 2,
                             Brand = "Toyota",
+                            OwnerId = 2,
                             RegistrationNumber = "BCD-123",
-                            SocialSecurityNumber = "600102-1478",
                             VehicleModel = "RAV4",
                             VehicleTypeId = 1
                         },
                         new
                         {
-                            Id = 3,
+                            VehicleId = 3,
                             Brand = "Honda",
+                            OwnerId = 3,
                             RegistrationNumber = "CDE-456",
-                            SocialSecurityNumber = "600102-1478",
                             VehicleModel = "Accord",
                             VehicleTypeId = 1
                         },
                         new
                         {
-                            Id = 4,
+                            VehicleId = 4,
                             Brand = "Ford",
+                            OwnerId = 4,
                             RegistrationNumber = "DEF-456",
-                            SocialSecurityNumber = "610102-1234",
                             VehicleModel = "Explorer",
                             VehicleTypeId = 1
                         },
                         new
                         {
-                            Id = 5,
+                            VehicleId = 5,
                             Brand = "Subaru",
+                            OwnerId = 5,
                             RegistrationNumber = "EFG-456",
-                            SocialSecurityNumber = "620102-4567",
                             VehicleModel = "Impreza",
                             VehicleTypeId = 1
                         },
                         new
                         {
-                            Id = 7,
+                            VehicleId = 7,
                             Brand = "Kia",
+                            OwnerId = 6,
                             RegistrationNumber = "FGH-789",
-                            SocialSecurityNumber = "630102-7894",
                             VehicleModel = "Stinger",
                             VehicleTypeId = 1
                         },
                         new
                         {
-                            Id = 8,
+                            VehicleId = 8,
                             Brand = "Hyundai",
+                            OwnerId = 7,
                             RegistrationNumber = "GHI-9512",
-                            SocialSecurityNumber = "640102-4561",
                             VehicleModel = "Veloster",
                             VehicleTypeId = 1
                         },
                         new
                         {
-                            Id = 9,
+                            VehicleId = 9,
                             Brand = "Nissan",
+                            OwnerId = 8,
                             RegistrationNumber = "HIJ-7532",
-                            SocialSecurityNumber = "650102-1235",
                             VehicleModel = "Versa",
                             VehicleTypeId = 1
                         },
                         new
                         {
-                            Id = 10,
+                            VehicleId = 10,
                             Brand = "Volvo",
+                            OwnerId = 9,
                             RegistrationNumber = "IJK-456",
-                            SocialSecurityNumber = "123456-1234",
                             VehicleModel = "XC40",
                             VehicleTypeId = 1
                         },
                         new
                         {
-                            Id = 11,
+                            VehicleId = 11,
                             Brand = "BMW",
+                            OwnerId = 10,
                             RegistrationNumber = "JKL-654",
-                            SocialSecurityNumber = "123456-7891",
                             VehicleModel = "X5",
                             VehicleTypeId = 1
                         },
                         new
                         {
-                            Id = 12,
+                            VehicleId = 12,
                             Brand = "BMW",
+                            OwnerId = 11,
                             RegistrationNumber = "KLM-864",
-                            SocialSecurityNumber = "234567-1234",
                             VehicleModel = "i3",
                             VehicleTypeId = 1
                         },
                         new
                         {
-                            Id = 13,
+                            VehicleId = 13,
                             Brand = "Honda",
+                            OwnerId = 1,
                             RegistrationNumber = "LMN-246",
-                            SocialSecurityNumber = "345678-9874",
                             VehicleModel = "Civic",
                             VehicleTypeId = 1
                         },
                         new
                         {
-                            Id = 14,
+                            VehicleId = 14,
                             Brand = "Saab",
+                            OwnerId = 2,
                             RegistrationNumber = "MNO-931",
-                            SocialSecurityNumber = "134679-2587",
                             VehicleModel = "AreoX",
                             VehicleTypeId = 1
                         },
                         new
                         {
-                            Id = 15,
+                            VehicleId = 15,
                             Brand = "Boeing",
+                            OwnerId = 3,
                             RegistrationNumber = "N12345",
-                            SocialSecurityNumber = "987654-3210",
                             VehicleModel = "777",
                             VehicleTypeId = 9
                         },
                         new
                         {
-                            Id = 16,
+                            VehicleId = 16,
                             Brand = "Yamaha",
+                            OwnerId = 4,
                             RegistrationNumber = "AAB-123",
-                            SocialSecurityNumber = "987654-3210",
                             VehicleModel = "VMAX",
                             VehicleTypeId = 4
                         });
@@ -453,10 +472,12 @@ namespace Garage3.Migrations
                 {
                     b.HasOne("Garage3.Models.Owner", "Owner")
                         .WithMany("Vehicles")
-                        .HasForeignKey("OwnerSocialSecurityNumber");
+                        .HasForeignKey("OwnerId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
 
                     b.HasOne("Garage3.Models.VehicleType", "VehicleType")
-                        .WithMany()
+                        .WithMany("Vehicles")
                         .HasForeignKey("VehicleTypeId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -479,6 +500,11 @@ namespace Garage3.Migrations
             modelBuilder.Entity("Garage3.Models.Vehicle", b =>
                 {
                     b.Navigation("ParkingEvents");
+                });
+
+            modelBuilder.Entity("Garage3.Models.VehicleType", b =>
+                {
+                    b.Navigation("Vehicles");
                 });
 #pragma warning restore 612, 618
         }

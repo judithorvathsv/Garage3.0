@@ -212,7 +212,7 @@ namespace Garage3.Controllers
         {
             var listWithEmpty = (from p in db.Owner
                                  join f in db.Vehicle
-                                 on p.SocialSecurityNumber equals f.SocialSecurityNumber into ThisList
+                                 on p.OwnerId equals f.VehicleId into ThisList
                                  from f in ThisList.DefaultIfEmpty()
 
                                  group p by new

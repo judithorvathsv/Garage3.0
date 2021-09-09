@@ -63,10 +63,10 @@
     <table class="table">
         <thead>
             <tr>
-                @*<th> <a asp-action="OverviewSort" asp-route-sortingVehicle="@ViewData["VehicleTypeSorting"],@ViewData["ParkedStatus"]">@Html.DisplayNameFor(model => model.Overview.First().VehicleType)</a> </!--th>  *@
+                @*<th> <a asp-action="OverviewSort" asp-route-sortingVehicle="@ViewData["VehicleTypeSorting"],@ViewData["ParkedStatus"]">@Html.DisplayNameFor(model => model.Overview.First().VehicleType)</a> </!--th>  
                 <th> <a asp-action="OverviewSort" asp-route-sortingVehicle="@ViewData["RegistrationNumberSorting"],@ViewData["ParkedStatus"]">@Html.DisplayNameFor(model => model.Overview.First().VehicleRegistrationNumber)</a> </th>
                 <th> <a asp-action="OverviewSort" asp-route-sortingVehicle="@ViewData["ArrivalTimeSorting"], @ViewData["ParkedStatus"]">@Html.DisplayNameFor(model => model.Overview.First().VehicleArrivalTime)</a> </th>
-                <th> <a asp-action="OverviewSort" asp-route-sortingVehicle="@ViewData["DurationParkedSorting"],@ViewData["ParkedStatus"]">@Html.DisplayNameFor(model => model.Overview.First().VehicleParkDuration)</a> </th>
+                <th> <a asp-action="OverviewSort" asp-route-sortingVehicle="@ViewData["DurationParkedSorting"],@ViewData["ParkedStatus"]">@Html.DisplayNameFor(model => model.Overview.First().VehicleParkDuration)</a> </th>*@
                 <th></th>
             </tr>
         </thead>
@@ -75,9 +75,13 @@
             {
                 <tr>
                     @*<td>  @Html.DisplayFor(modelItem => item.VehicleType) </td>*@
+
                     <td>  @Html.DisplayFor(modelItem => item.VehicleRegistrationNumber) </td>
-                    <td>  @Html.DisplayFor(modelItem => item.VehicleArrivalTime)  </td>
-                    <td>  @Html.DisplayFor(modelItem => item.VehicleParkDuration) </td>
+
+                    @*<td>  @Html.DisplayFor(modelItem => item.VehicleArrivalTime)  </td>
+
+                    <td>  @Html.DisplayFor(modelItem => item.VehicleParkDuration) </td>*@
+
                     <td>
                         <a asp-action="Details" asp-route-id="@item.VehicleId">Details</a> |
                         <a asp-action="Change" asp-route-id="@item.VehicleId">Change</a> |

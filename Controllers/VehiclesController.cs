@@ -67,24 +67,48 @@ namespace Garage3.Controllers
             return View(vehicle);
         }
 
+
+
+
+       
         public async Task<IActionResult> Overview()
         {
             var model = new OverviewListViewModel();
             model.VehicleTypesSelectList = await GetAllVehicleTypesAsync();
 
-
             var allVehicles = db.Vehicle;
-            var allOwner = db.Owner;
-            
 
-           
+            //IQueryable<OverviewViewModel> vehicles = GetOverviewViewModel(allVehicles);
+           // string parkedStatusStr = parkedStatus.ToString();
             var vehicles = GetOverviewViewModelAsEnumerable(allVehicles);
-            
+           // parkedStatus = ParkingStatus(parkedStatusStr, model, ref vehicles);
+
+            //if (parkedStatus == 3)
+            //{
+            //    model.AllStatus = true;
+            //    ViewData["ParkedStatus"] = "3";
+            //}
+            //else if (parkedStatus == 2)
+            //{
+            //    model.UnparkedStatus = true;
+            //    ViewData["ParkedStatus"] = "2";
+            //    vehicles = vehicles.Where(u => u.VehicleParked.Equals(false));
+            //}
+            //else
+            //{
+            //    model.ParkedStatus = true;
+            //    ViewData["ParkedStatus"] = "1";
+            //    vehicles = vehicles.Where(u => u.VehicleParked.Equals(true));
+            //}
             model.VehicleTypesSelectList = await GetAllVehicleTypesAsync();
             model.Overview = vehicles;
 
             return View("Overview", model);
         }
+        
+       
+
+
 
 
 
@@ -124,6 +148,8 @@ namespace Garage3.Controllers
             //  result :
             //   result.Where(v => v.VehicleType == viewModel.Types);
 
+
+
             IQueryable<OverviewViewModel> vehi = result.Select(v => new OverviewViewModel
             {
                 VehicleId = v.VehicleId,
@@ -131,7 +157,7 @@ namespace Garage3.Controllers
                 VehicleRegistrationNumber = v.RegistrationNumber,
                 //VehicleArrivalTime = v.TimeOfArrival,
                 //VehicleParkDuration = DateTime.Now - v.TimeOfArrival,
-                VehicleParked = false
+                //VehicleParked = false
 
             }).AsQueryable();
 
@@ -143,6 +169,8 @@ namespace Garage3.Controllers
         }
 
 
+
+        /*
         [HttpGet, ActionName("OverviewSort")]
         public async Task<IActionResult> OverviewSort(string sortingVehicle)
         {
@@ -198,7 +226,10 @@ namespace Garage3.Controllers
 
             return PartialView(nameof(Overview), model);
         }
+        */
 
+
+        /*
         private int ParkingStatus(string parkedStatusStr, OverviewListViewModel model, ref IEnumerable<OverviewViewModel> vehicles)
         {
             int parkedStatus;
@@ -224,7 +255,7 @@ namespace Garage3.Controllers
             };
             return parkedStatus;
         }
-
+        */
         private IQueryable<OverviewViewModel> GetOverviewViewModel(IQueryable<Vehicle> allVehicles)
         {
             return allVehicles.Select(v => new OverviewViewModel

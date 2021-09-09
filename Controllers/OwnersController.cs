@@ -205,32 +205,33 @@ namespace Garage3.Controllers
         [ActionName("Overview")]
         public async Task<IActionResult> Overview()
         {
+   
             var listWithEmpty = (from p in db.Owner
                                  join f in db.Vehicle
-                                 on p.OwnerId equals f.VehicleId into ThisList
-                                 from f in ThisList.DefaultIfEmpty()
+                                 on p.OwnerId equals f.OwnerId                        
 
                                  group p by new
                                  {
                                      p.OwnerId,
                                      p.SocialSecurityNumber,
                                      p.FirstName,
-                                     p.LastName      
+                                     p.LastName
                                  } into gcs
 
-                                 select new MemberDetailsViewModel
+                                select new MemberDetailsViewModel
                                  {
                                      Id = gcs.Key.OwnerId,
                                      SocialSecurityNumber = gcs.Key.SocialSecurityNumber,
                                      FirstName = gcs.Key.FirstName,
                                      LastName = gcs.Key.LastName,
                                      FullName = gcs.Key.FirstName + " " + gcs.Key.LastName,
-                                     NumberOfVehicles = gcs.Select(x => x).Distinct().Count(),
-                                 })
-                             .ToList()                      
-                             .OrderBy(x => x.FirstName.Substring(0, 3), StringComparer.Ordinal).ToList();   
+                                     NumberOfVehicles = gcs.Count(),
+                                 })      
+                             .ToList()
+                             .OrderBy(x => x.FirstName.Substring(0, 3), StringComparer.Ordinal).ToList();
 
             return View(listWithEmpty);
+
         }
     }
 }

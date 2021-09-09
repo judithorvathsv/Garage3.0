@@ -7,15 +7,15 @@
 <h1>Register</h1>
 <hr />
 <p>
-    You are registering a vehicle for @Html.DisplayFor(model => model.Name)
-    (@Html.DisplayFor(model => model.SocialSecurityNumber)).
-</p>
+    You are registering a vehicle for member with number
+</p>@Html.DisplayFor(model => model.Id)
+
 
 <div class="row">
     <div class="col-md-4">
         <form asp-action="Register">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <input type="hidden" asp-for="SocialSecurityNumber" />
+            <input type="hidden" asp-for="Id" />
             <div class="form-group">
                 <label asp-for="RegistrationNumber" class="control-label"></label>
 

@@ -8,6 +8,8 @@ namespace Garage3.Models.ViewModels
 {
     public class OwnerDetailsViewModel
     {
+        public int Id { get; set; }
+
         [Display(Name = "Social Security Number")]
         public string SocialSecurityNumber { get; set; }
 

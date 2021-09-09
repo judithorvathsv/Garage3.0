@@ -10,18 +10,14 @@ namespace Garage3.Models.ViewModels
     public class RegisterVehicleViewModel
     {
         [Required]
-        public string SocialSecurityNumber {  get; set; }
-        public string Name {  get; set; }
+        public int Id {  get; set; }
 
         [Required]
         public string RegistrationNumber {  get; set; }
         public string Brand {  get; set; }
         public string VehicleModel {  get; set; }
 
-        public Owner Owner { get; set; }
         public int VehicleTypeId {  get; set; }
         public IEnumerable<SelectListItem> VehicleTypes { get; set; }
-
-
     }
 }

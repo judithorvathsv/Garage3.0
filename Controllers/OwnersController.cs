@@ -74,7 +74,7 @@ namespace Garage3.Controllers
                     };
                     db.Add(member);
                     await db.SaveChangesAsync();
-                    return RedirectToAction("Register", "Vehicles", new { ssn = member.SocialSecurityNumber });
+                    return RedirectToAction("Register", "Vehicles", new { id = member.OwnerId });
                 }
                 else
                 {
@@ -165,20 +165,17 @@ namespace Garage3.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        public async Task<IActionResult> Member(string ssn)
+        public async Task<IActionResult> Member(int id)
         {
-            if (ssn == null)
-            {
-                return NotFound();
-            }
             try
             {
             var vehicles = await db.Vehicle
-                .Where(v => v.Owner.SocialSecurityNumber == ssn)
+                .Where(v => v.OwnerId == id)
                 .Join(db.Owner, v => v.Owner.SocialSecurityNumber, o => o.SocialSecurityNumber, (v, o) => new { v, o })
                 .Join(db.VehicleType, vo => vo.v.VehicleType.VehicleTypeId, vt => vt.VehicleTypeId, (vo, vt) => new { vo, vt })
                 .Select(m => new OwnerDetailsViewModel
                 {
+                    Id = id,
                     SocialSecurityNumber = m.vo.o.SocialSecurityNumber,
                     FullName = m.vo.o.FirstName + " " + m.vo.o.LastName,
                     RegistrationNumber = m.vo.v.RegistrationNumber,

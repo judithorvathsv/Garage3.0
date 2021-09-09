@@ -267,16 +267,16 @@ namespace Garage3.Controllers
             }).AsEnumerable();
         }
         [HttpGet]
-        public async Task<IActionResult> Register(string ssn)
+        public async Task<IActionResult> Register(int id)
         {
-            if (ssn != null)
+            if (id != null)
             {
-                if (await db.Owner.AnyAsync(o => o.SocialSecurityNumber == ssn))
+                if (await db.Owner.AnyAsync(o => o.OwnerId == id))
                 {
                     var model = new RegisterVehicleViewModel
                     {
                         VehicleTypes = await GetAllVehicleTypesAsync(),
-                        SocialSecurityNumber = ssn
+                        OwnerId = id
                     };
                     return View(model);
                 }
@@ -299,7 +299,7 @@ namespace Garage3.Controllers
                         VehicleTypeId = model.VehicleTypeId,
                         Brand = model.Brand,
                         VehicleModel = model.VehicleModel,
-                        //OwnerId = model.SocialSecurityNumber // TODO Fix
+                        OwnerId = model.OwnerId
                     };
 
                     db.Add(vehicle);

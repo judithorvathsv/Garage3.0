@@ -67,7 +67,7 @@ namespace Garage3.Controllers
                     };
                     db.Add(member);
                     await db.SaveChangesAsync();
-                    return RedirectToAction("Register", "Vehicles", new { ssn = member.SocialSecurityNumber });
+                    return RedirectToAction("Register", "Vehicles", new { id = member.OwnerId });
                 }
                 else
                 {

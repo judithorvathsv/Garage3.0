@@ -214,12 +214,14 @@ namespace Garage3.Controllers
 
                                  group p by new
                                  {
+                                     p.OwnerId,
                                      p.FirstName,
                                      p.LastName,
                                      p.SocialSecurityNumber
                                  } into gcs
                                  select new
                                  {
+                                     Id = gcs.Key.OwnerId,
                                      FirstName = gcs.Key.FirstName,
                                      LastName = gcs.Key.LastName,
                                      SocialSecurityNumber = gcs.Key.SocialSecurityNumber,
@@ -228,6 +230,7 @@ namespace Garage3.Controllers
                                .ToList()
                                 .Select(x => new Models.ViewModels.MemberDetailsViewModel()
                                 {
+                                    Id = x.Id,
                                     FirstName = x.FirstName,
                                     LastName = x.LastName,
                                     FullName = x.FirstName + " " + x.LastName,

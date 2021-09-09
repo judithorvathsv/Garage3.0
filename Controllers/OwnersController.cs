@@ -164,6 +164,8 @@ namespace Garage3.Controllers
             {
                 return NotFound();
             }
+            try
+            {
             var vehicles = await db.Vehicle
                 .Where(v => v.Owner.SocialSecurityNumber == ssn)
                 .Join(db.Owner, v => v.Owner.SocialSecurityNumber, o => o.SocialSecurityNumber, (v, o) => new { v, o })
@@ -172,38 +174,17 @@ namespace Garage3.Controllers
                 {
                     SocialSecurityNumber = m.vo.o.SocialSecurityNumber,
                     FullName = m.vo.o.FirstName + " " + m.vo.o.LastName,
-                    Type = m.vo.v.VehicleType.Type,
                     RegistrationNumber = m.vo.v.RegistrationNumber,
-                    Model = m.vo.v.VehicleModel
+                    Brand = m.vo.v.Brand,
+                    VehicleType = m.vo.v.VehicleType.Type,
+                    VehicleModel = m.vo.v.VehicleModel
+                }).ToListAsync();
 
-            try
-            {
-                var vehicle = await db.Vehicle
-                        .Join( db.Owner,
-                         v => v.Owner.SocialSecurityNumber, m => m.SocialSecurityNumber,
-                         (v,m) => new { Vehi = v, Memb = m })
-                         .Where(m => m.Memb.SocialSecurityNumber == ssn)
-                         .Join(db.VehicleType, 
-                         vh => vh.Vehi.VehicleType.VehicleTypeId,
-                         t => t.VehicleTypeId,
-                         (vh,t) => new {ve = vh, type = t })
-                     
-                         .Select(o => new OwnerDetailsViewModel
-                         {
-                             SocialSecurityNumber = o.ve.Memb.SocialSecurityNumber,
-                             FullName = o.ve.Memb.FirstName + " " + o.ve.Memb.LastName,
-                             RegistrationNumber = o.ve.Vehi.RegistrationNumber,
-                             Brand =  o.ve.Vehi.Brand,
-                             VehicleModel = o.ve.Vehi.VehicleModel,
-                             VehicleType = o.type.Type
-                              
-                         }).ToListAsync();
-
-                if (vehicle == null)
+                if (vehicles == null)
                 {
                     return NotFound();
                 }
-                return View(vehicle);
+                return View(vehicles);
             }
             catch (Exception)
             {

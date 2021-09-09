@@ -4,14 +4,16 @@ using Garage3.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace Garage3.Migrations
 {
     [DbContext(typeof(Garage3Context))]
-    partial class Garage3ContextModelSnapshot : ModelSnapshot
+    [Migration("20210909085529_init")]
+    partial class init
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -91,7 +93,10 @@ namespace Garage3.Migrations
                         .HasMaxLength(20)
                         .HasColumnType("nvarchar(20)");
 
-                    b.Property<int>("OwnerId")
+                    b.Property<string>("OwnerId")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<int?>("OwnerId1")
                         .HasColumnType("int");
 
                     b.Property<string>("RegistrationNumber")
@@ -109,7 +114,7 @@ namespace Garage3.Migrations
 
                     b.HasKey("VehicleId");
 
-                    b.HasIndex("OwnerId");
+                    b.HasIndex("OwnerId1");
 
                     b.HasIndex("VehicleTypeId");
 
@@ -159,9 +164,7 @@ namespace Garage3.Migrations
                 {
                     b.HasOne("Garage3.Models.Owner", "Owner")
                         .WithMany("Vehicles")
-                        .HasForeignKey("OwnerId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
+                        .HasForeignKey("OwnerId1");
 
                     b.HasOne("Garage3.Models.VehicleType", "VehicleType")
                         .WithMany("Vehicles")

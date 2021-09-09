@@ -20,17 +20,7 @@ namespace Garage3
             using (var scope = host.Services.CreateScope())
             {
                 var services = scope.ServiceProvider;
-
-                try
-                {
-                    SeedData.InitAsync(services).Wait();
-                }
-                catch (Exception e)
-                {
-                    var logger = services.GetRequiredService<ILogger<Program>>();
-                    logger.LogError(e.Message, "Seed Fail");
-                }
-
+       
             }
 
             host.Run();

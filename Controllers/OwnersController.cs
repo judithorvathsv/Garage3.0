@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Garage3.Data;
 using Garage3.Models;
+using Garage3.Models.ViewModels;
 using AutoMapper;
 using Bogus;
 
@@ -21,7 +22,7 @@ namespace Garage3.Controllers
 
         public OwnersController(Garage3Context context)
         {
-            _context = context;
+            db = context;
 
             this.mapper = mapper;
             faker = new Faker();
@@ -31,7 +32,7 @@ namespace Garage3.Controllers
         public async Task<IActionResult> Index()
         {       
 
-            return View(await _context.Owner.ToListAsync());
+            return View(await db.Owner.ToListAsync());
         }
 
         // GET: Owners/Details/5
@@ -191,7 +192,7 @@ namespace Garage3.Controllers
         {
             var listWithEmpty = (from p in db.Owner
                                  join f in db.Vehicle
-                                 on p.SocialSecurityNumber equals f.Owner.SocialSecurityNumber into ThisList
+                                 on p.SocialSecurityNumber equals f.SocialSecurityNumber into ThisList
                                  from f in ThisList.DefaultIfEmpty()
 
                                  group p by new

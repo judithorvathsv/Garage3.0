@@ -29,16 +29,20 @@ namespace Garage3.Models
         [Required(ErrorMessage = "Please enter model!")]   
         [MaxLength(20)]
         [MinLength(1, ErrorMessage = "The model name must be longer!")]
-        public string VehicleModel { get; set; }  
+        public string VehicleModel { get; set; }
 
 
 
         //navigation
+        [ForeignKey("SocialSecurityNumber")]
+        public string SocialSecurityNumber { get; set; } 
         public Owner Owner { get; set; }
 
 
 
         //navigation
+        [ForeignKey("VehicleTypeId")]
+        public int VehicleTypeId { get; set; }
         public VehicleType VehicleType { get; set; }
 
 

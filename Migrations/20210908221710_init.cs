@@ -56,8 +56,9 @@ namespace Garage3.Migrations
                     RegistrationNumber = table.Column<string>(type: "nvarchar(10)", maxLength: 10, nullable: false),
                     Brand = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
                     VehicleModel = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
+                    SocialSecurityNumber = table.Column<string>(type: "nvarchar(max)", nullable: true),
                     OwnerSocialSecurityNumber = table.Column<string>(type: "nvarchar(13)", nullable: true),
-                    VehicleTypeId = table.Column<int>(type: "int", nullable: true)
+                    VehicleTypeId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -73,7 +74,7 @@ namespace Garage3.Migrations
                         column: x => x.VehicleTypeId,
                         principalTable: "VehicleType",
                         principalColumn: "VehicleTypeId",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -99,6 +100,68 @@ namespace Garage3.Migrations
                         principalTable: "Vehicle",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
+                });
+
+            migrationBuilder.InsertData(
+                table: "Owner",
+                columns: new[] { "SocialSecurityNumber", "FirstName", "LastName" },
+                values: new object[,]
+                {
+                    { "600102-1478", "Isaac", "Newton" },
+                    { "987654-3210", "Josef", "Jacobsson" },
+                    { "345678-9874", "Joel", "Abelin" },
+                    { "234567-1234", "Joel", "Josefsson" },
+                    { "123456-7891", "James", "Jones" },
+                    { "123456-1234", "Adam", "Abelin" },
+                    { "690102-7535", "Thomas", "Edison" },
+                    { "680102-1595", "Alexander", "Fleming" },
+                    { "134679-2587", "joel", "Viklund" },
+                    { "660102-4568", "Nicolaus", "Copernicus" },
+                    { "650102-1235", "Charles", "Darwin" },
+                    { "640102-4561", "Galileo", "Galilei" },
+                    { "630102-7894", "Marie", "Curie" },
+                    { "620102-4567", "Stephen", "Hawking" },
+                    { "610102-1234", "Albert", "Einstein" },
+                    { "670102-7895", "Louis", "Pasteur" }
+                });
+
+            migrationBuilder.InsertData(
+                table: "VehicleType",
+                columns: new[] { "VehicleTypeId", "Size", "Type" },
+                values: new object[,]
+                {
+                    { 8, 1, "Kayak" },
+                    { 7, 1, "Canoe" },
+                    { 6, 9, "Boat" },
+                    { 5, 6, "Van" },
+                    { 2, 6, "Truck" },
+                    { 3, 6, "Bus" },
+                    { 1, 3, "Car" },
+                    { 9, 9, "Airplane" },
+                    { 4, 1, "Motorcycle" },
+                    { 10, 9, "Helicopter" }
+                });
+
+            migrationBuilder.InsertData(
+                table: "Vehicle",
+                columns: new[] { "Id", "Brand", "OwnerSocialSecurityNumber", "RegistrationNumber", "SocialSecurityNumber", "VehicleModel", "VehicleTypeId" },
+                values: new object[,]
+                {
+                    { 1, "Chevrolet", null, "ABC-123", "123456-1234", "Silverado", 1 },
+                    { 2, "Toyota", null, "BCD-123", "600102-1478", "RAV4", 1 },
+                    { 3, "Honda", null, "CDE-456", "600102-1478", "Accord", 1 },
+                    { 4, "Ford", null, "DEF-456", "610102-1234", "Explorer", 1 },
+                    { 5, "Subaru", null, "EFG-456", "620102-4567", "Impreza", 1 },
+                    { 7, "Kia", null, "FGH-789", "630102-7894", "Stinger", 1 },
+                    { 8, "Hyundai", null, "GHI-9512", "640102-4561", "Veloster", 1 },
+                    { 9, "Nissan", null, "HIJ-7532", "650102-1235", "Versa", 1 },
+                    { 10, "Volvo", null, "IJK-456", "123456-1234", "XC40", 1 },
+                    { 11, "BMW", null, "JKL-654", "123456-7891", "X5", 1 },
+                    { 12, "BMW", null, "KLM-864", "234567-1234", "i3", 1 },
+                    { 13, "Honda", null, "LMN-246", "345678-9874", "Civic", 1 },
+                    { 14, "Saab", null, "MNO-931", "134679-2587", "AreoX", 1 },
+                    { 16, "Yamaha", null, "AAB-123", "987654-3210", "VMAX", 4 },
+                    { 15, "Boeing", null, "N12345", "987654-3210", "777", 9 }
                 });
 
             migrationBuilder.CreateIndex(

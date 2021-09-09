@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Garage3.Data;
 using Garage3.Models;
+using Garage3.Models.ViewModels;
 
 namespace Garage3.Controllers
 {
@@ -54,39 +55,68 @@ namespace Garage3.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         //[HttpPost]
         //[ValidateAntiForgeryToken]
-        public async Task<IActionResult> Park(string regnumber)
+        public async Task<IActionResult> Park(int id)
         {
-            ParkingEvent parkingEvent = new ParkingEvent();
-            parkingEvent.ParkingPlace.ParkingPlaceId = 1;
+            var vehicle = await _context.Vehicle.Where(v => v.VehicleId == id).FirstOrDefaultAsync();
+            var occupiedSpaces = new List<ParkingEvent>();
 
-            parkingEvent.TimeOfArrival = DateTime.Now;
-            parkingEvent.Vehicle.VehicleId = 1;
+            var availableSpaces = await _context.ParkingPlace.Where(pp => pp.IsOccupied == false)
+                                                             .Select(pp => pp.ParkingPlaceId)
+                                                             .ToListAsync();
 
-            //parkingEvent.ParkingPlace.ParkingPlaceId;
-            //parkingEvent.Vehicle.RegistrationNumber = regnumber;
-            if (ModelState.IsValid)
+            for (int i = 0; i < vehicle.VehicleType.Size; i++)
             {
-                _context.Add(parkingEvent);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
-            }
-            return View(parkingEvent);
-        }
-
-        // GET: ParkingEvents/Edit/5
-        public async Task<IActionResult> Edit(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
+                occupiedSpaces.Add(new ParkingEvent { VehicleId = id, ParkingPlaceId = availableSpaces.First() });
             }
 
-            var parkingEvent = await _context.ParkingEvent.FindAsync(id);
-            if (parkingEvent == null)
+
+
+            foreach (var item in occupiedSpaces)
             {
-                return NotFound();
+                _context.ParkingEvent.Add(item);
             }
-            return View(parkingEvent);
+
+            return View(new OwnerDetailsViewModel { Id = id });
+
+        //    var parkingEvent = new ParkingEvent
+        //    {
+        //        VehicleId = id,
+        //        ParkingPlaceId =,
+        //        TimeOfArrival = DateTime.Now
+        //    }
+
+
+        //    ParkingEvent parkingEvent = new ParkingEvent();
+        //    parkingEvent.ParkingPlace.ParkingPlaceId = 1;
+
+        //    parkingEvent.TimeOfArrival = DateTime.Now;
+        //    parkingEvent.Vehicle.VehicleId = 1;
+
+        //    //parkingEvent.ParkingPlace.ParkingPlaceId;
+        //    //parkingEvent.Vehicle.RegistrationNumber = regnumber;
+        //    if (ModelState.IsValid)
+        //    {
+        //        _context.Add(parkingEvent);
+        //        await _context.SaveChangesAsync();
+        //        return RedirectToAction(nameof(Index));
+        //    }
+        //    return View(parkingEvent);
+        //}
+
+        //// GET: ParkingEvents/Edit/5
+        //public async Task<IActionResult> Edit(int? id)
+        //{
+        //    if (id == null)
+        //    {
+        //        return NotFound();
+        //    }
+
+        //    var parkingEvent = await _context.ParkingEvent.FindAsync(id);
+        //    if (parkingEvent == null)
+        //    {
+        //        return NotFound();
+        //    }
+        //    return View(parkingEvent);
         }
 
         // POST: ParkingEvents/Edit/

@@ -297,7 +297,8 @@ namespace Garage3.Controllers
                         VehicleTypeId = model.VehicleTypeId,
                         Brand = model.Brand,
                         VehicleModel = model.VehicleModel,
-                        OwnerId = model.Id
+                        OwnerId = model.Id,
+                        
                     };
 
                     db.Add(vehicle);
@@ -518,14 +519,18 @@ namespace Garage3.Controllers
         public async Task<IActionResult> Receipt(int id, DateTime departureTime)
         {
             var vehicle = await db.Vehicle.FindAsync(id);
+            var arrivalTime = vehicle.ParkingEvents.Select(pe => pe.TimeOfArrival).FirstOrDefault();
 
             var model = new ReceiptViewModel
             {
                 VehicleRegistrationNumber = vehicle.RegistrationNumber,
-                //VehicleArrivalTime = vehicle.TimeOfArrival,
+                VehicleArrivalTime = arrivalTime,
                 VehicleDepartureTime = departureTime,
-                //VehicleParkDuration = vehicle.TimeOfArrival - departureTime,
-                //VehicleParkPrice = (departureTime - vehicle.TimeOfArrival).TotalHours * 100
+                VehicleParkDuration = arrivalTime - departureTime,
+                VehicleParkPrice = (departureTime - arrivalTime).TotalHours * 100
+
+                //MemberFullName = $"{vehicle.Owner.FirstName}" 
+                //MemberSSN
             };
 
             return View(model);

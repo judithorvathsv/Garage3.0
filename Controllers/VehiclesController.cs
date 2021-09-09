@@ -237,7 +237,7 @@ namespace Garage3.Controllers
 
 
 
- 
+
 
             //result = viewModel.Types == null ?
             //result :

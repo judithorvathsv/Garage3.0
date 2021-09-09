@@ -176,6 +176,122 @@ namespace Garage3.Migrations
                     b.HasIndex("VehicleId");
 
                     b.ToTable("ParkingEvent");
+
+                    b.HasData(
+                        new
+                        {
+                            ParkingPlaceId = 1,
+                            VehicleId = 1,
+                            TimeOfArrival = new DateTime(2021, 9, 8, 22, 58, 46, 667, DateTimeKind.Local).AddTicks(9612)
+                        },
+                        new
+                        {
+                            ParkingPlaceId = 2,
+                            VehicleId = 1,
+                            TimeOfArrival = new DateTime(2021, 9, 8, 22, 58, 46, 669, DateTimeKind.Local).AddTicks(7444)
+                        },
+                        new
+                        {
+                            ParkingPlaceId = 3,
+                            VehicleId = 1,
+                            TimeOfArrival = new DateTime(2021, 9, 8, 22, 58, 46, 669, DateTimeKind.Local).AddTicks(7466)
+                        },
+                        new
+                        {
+                            ParkingPlaceId = 4,
+                            VehicleId = 2,
+                            TimeOfArrival = new DateTime(2021, 9, 4, 22, 58, 46, 669, DateTimeKind.Local).AddTicks(7470)
+                        },
+                        new
+                        {
+                            ParkingPlaceId = 5,
+                            VehicleId = 2,
+                            TimeOfArrival = new DateTime(2021, 9, 4, 22, 58, 46, 669, DateTimeKind.Local).AddTicks(7472)
+                        },
+                        new
+                        {
+                            ParkingPlaceId = 6,
+                            VehicleId = 2,
+                            TimeOfArrival = new DateTime(2021, 9, 4, 22, 58, 46, 669, DateTimeKind.Local).AddTicks(7475)
+                        },
+                        new
+                        {
+                            ParkingPlaceId = 7,
+                            VehicleId = 3,
+                            TimeOfArrival = new DateTime(2021, 9, 7, 22, 58, 46, 669, DateTimeKind.Local).AddTicks(7477)
+                        },
+                        new
+                        {
+                            ParkingPlaceId = 8,
+                            VehicleId = 3,
+                            TimeOfArrival = new DateTime(2021, 9, 7, 22, 58, 46, 669, DateTimeKind.Local).AddTicks(7479)
+                        },
+                        new
+                        {
+                            ParkingPlaceId = 9,
+                            VehicleId = 3,
+                            TimeOfArrival = new DateTime(2021, 9, 7, 22, 58, 46, 669, DateTimeKind.Local).AddTicks(7481)
+                        },
+                        new
+                        {
+                            ParkingPlaceId = 10,
+                            VehicleId = 15,
+                            TimeOfArrival = new DateTime(2021, 9, 2, 22, 58, 46, 669, DateTimeKind.Local).AddTicks(7483)
+                        },
+                        new
+                        {
+                            ParkingPlaceId = 11,
+                            VehicleId = 15,
+                            TimeOfArrival = new DateTime(2021, 9, 2, 22, 58, 46, 669, DateTimeKind.Local).AddTicks(7485)
+                        },
+                        new
+                        {
+                            ParkingPlaceId = 12,
+                            VehicleId = 15,
+                            TimeOfArrival = new DateTime(2021, 9, 2, 22, 58, 46, 669, DateTimeKind.Local).AddTicks(7487)
+                        },
+                        new
+                        {
+                            ParkingPlaceId = 13,
+                            VehicleId = 15,
+                            TimeOfArrival = new DateTime(2021, 9, 2, 22, 58, 46, 669, DateTimeKind.Local).AddTicks(7489)
+                        },
+                        new
+                        {
+                            ParkingPlaceId = 14,
+                            VehicleId = 15,
+                            TimeOfArrival = new DateTime(2021, 9, 2, 22, 58, 46, 669, DateTimeKind.Local).AddTicks(7491)
+                        },
+                        new
+                        {
+                            ParkingPlaceId = 15,
+                            VehicleId = 15,
+                            TimeOfArrival = new DateTime(2021, 9, 2, 22, 58, 46, 669, DateTimeKind.Local).AddTicks(7493)
+                        },
+                        new
+                        {
+                            ParkingPlaceId = 16,
+                            VehicleId = 15,
+                            TimeOfArrival = new DateTime(2021, 9, 2, 22, 58, 46, 669, DateTimeKind.Local).AddTicks(7495)
+                        },
+                        new
+                        {
+                            ParkingPlaceId = 17,
+                            VehicleId = 15,
+                            TimeOfArrival = new DateTime(2021, 9, 2, 22, 58, 46, 669, DateTimeKind.Local).AddTicks(7497)
+                        },
+                        new
+                        {
+                            ParkingPlaceId = 18,
+                            VehicleId = 15,
+                            TimeOfArrival = new DateTime(2021, 9, 2, 22, 58, 46, 669, DateTimeKind.Local).AddTicks(7500)
+                        },
+                        new
+                        {
+                            ParkingPlaceId = 19,
+                            VehicleId = 16,
+                            TimeOfArrival = new DateTime(2021, 9, 6, 22, 58, 46, 669, DateTimeKind.Local).AddTicks(7502)
+                        });
                 });
 
             modelBuilder.Entity("Garage3.Models.ParkingPlace", b =>
@@ -191,6 +307,103 @@ namespace Garage3.Migrations
                     b.HasKey("ParkingPlaceId");
 
                     b.ToTable("ParkingPlace");
+
+                    b.HasData(
+                        new
+                        {
+                            ParkingPlaceId = 1,
+                            IsOccupied = true
+                        },
+                        new
+                        {
+                            ParkingPlaceId = 2,
+                            IsOccupied = true
+                        },
+                        new
+                        {
+                            ParkingPlaceId = 3,
+                            IsOccupied = true
+                        },
+                        new
+                        {
+                            ParkingPlaceId = 4,
+                            IsOccupied = true
+                        },
+                        new
+                        {
+                            ParkingPlaceId = 5,
+                            IsOccupied = true
+                        },
+                        new
+                        {
+                            ParkingPlaceId = 6,
+                            IsOccupied = true
+                        },
+                        new
+                        {
+                            ParkingPlaceId = 7,
+                            IsOccupied = true
+                        },
+                        new
+                        {
+                            ParkingPlaceId = 8,
+                            IsOccupied = true
+                        },
+                        new
+                        {
+                            ParkingPlaceId = 9,
+                            IsOccupied = true
+                        },
+                        new
+                        {
+                            ParkingPlaceId = 10,
+                            IsOccupied = true
+                        },
+                        new
+                        {
+                            ParkingPlaceId = 11,
+                            IsOccupied = true
+                        },
+                        new
+                        {
+                            ParkingPlaceId = 12,
+                            IsOccupied = true
+                        },
+                        new
+                        {
+                            ParkingPlaceId = 13,
+                            IsOccupied = true
+                        },
+                        new
+                        {
+                            ParkingPlaceId = 14,
+                            IsOccupied = true
+                        },
+                        new
+                        {
+                            ParkingPlaceId = 15,
+                            IsOccupied = true
+                        },
+                        new
+                        {
+                            ParkingPlaceId = 16,
+                            IsOccupied = true
+                        },
+                        new
+                        {
+                            ParkingPlaceId = 17,
+                            IsOccupied = true
+                        },
+                        new
+                        {
+                            ParkingPlaceId = 18,
+                            IsOccupied = true
+                        },
+                        new
+                        {
+                            ParkingPlaceId = 19,
+                            IsOccupied = true
+                        });
                 });
 
             modelBuilder.Entity("Garage3.Models.Vehicle", b =>

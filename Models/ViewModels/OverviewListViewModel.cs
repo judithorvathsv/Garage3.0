@@ -17,6 +17,8 @@ namespace Garage3.Models.ViewModels
         public string Regnumber { get; set; }
         public VehicleType Types { get; set; }
 
+        public string Type { get; set; }
+
         // Radiobuttons
         public bool ParkedStatus { get; set; }
         public bool UnparkedStatus { get; set; }

@@ -9,6 +9,8 @@ namespace Garage3.Models
     public class Owner
     {
         [Key]
+        public int OwnerId { get; set; }
+
         [Required(ErrorMessage = "Please enter your social security number!")]
         [Display(Name = "Social Security Number")]
         [MaxLength(13)]

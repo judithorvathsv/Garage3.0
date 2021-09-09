@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace Garage3.Migrations
 {
-    public partial class init : Migration
+    public partial class Init : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -11,13 +11,15 @@ namespace Garage3.Migrations
                 name: "Owner",
                 columns: table => new
                 {
+                    OwnerId = table.Column<int>(type: "int", nullable: false)
+                        .Annotation("SqlServer:Identity", "1, 1"),
                     SocialSecurityNumber = table.Column<string>(type: "nvarchar(13)", maxLength: 13, nullable: false),
                     FirstName = table.Column<string>(type: "nvarchar(35)", maxLength: 35, nullable: false),
                     LastName = table.Column<string>(type: "nvarchar(35)", maxLength: 35, nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Owner", x => x.SocialSecurityNumber);
+                    table.PrimaryKey("PK_Owner", x => x.OwnerId);
                 });
 
             migrationBuilder.CreateTable(
@@ -56,24 +58,24 @@ namespace Garage3.Migrations
                     RegistrationNumber = table.Column<string>(type: "nvarchar(10)", maxLength: 10, nullable: false),
                     Brand = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
                     VehicleModel = table.Column<string>(type: "nvarchar(20)", maxLength: 20, nullable: false),
-                    OwnerSocialSecurityNumber = table.Column<string>(type: "nvarchar(13)", nullable: true),
-                    VehicleTypeId = table.Column<int>(type: "int", nullable: true)
+                    OwnerId = table.Column<int>(type: "int", nullable: false),
+                    VehicleTypeId = table.Column<int>(type: "int", nullable: false)
                 },
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_Vehicle", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Vehicle_Owner_OwnerSocialSecurityNumber",
-                        column: x => x.OwnerSocialSecurityNumber,
+                        name: "FK_Vehicle_Owner_OwnerId",
+                        column: x => x.OwnerId,
                         principalTable: "Owner",
-                        principalColumn: "SocialSecurityNumber",
-                        onDelete: ReferentialAction.Restrict);
+                        principalColumn: "OwnerId",
+                        onDelete: ReferentialAction.Cascade);
                     table.ForeignKey(
                         name: "FK_Vehicle_VehicleType_VehicleTypeId",
                         column: x => x.VehicleTypeId,
                         principalTable: "VehicleType",
                         principalColumn: "VehicleTypeId",
-                        onDelete: ReferentialAction.Restrict);
+                        onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
@@ -107,9 +109,9 @@ namespace Garage3.Migrations
                 column: "VehicleId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Vehicle_OwnerSocialSecurityNumber",
+                name: "IX_Vehicle_OwnerId",
                 table: "Vehicle",
-                column: "OwnerSocialSecurityNumber");
+                column: "OwnerId");
 
             migrationBuilder.CreateIndex(
                 name: "IX_Vehicle_VehicleTypeId",

@@ -31,17 +31,15 @@ namespace Garage3.Models
         [MinLength(1, ErrorMessage = "The model name must be longer!")]
         public string VehicleModel { get; set; }  
 
+       
 
+        public int OwnerId { get; set; }
+        public int VehicleTypeId { get; set; }
 
-        //navigation
-        public Owner Owner { get; set; }
-
-
-
+        //[ForeignKey()]
         //navigation
         public VehicleType VehicleType { get; set; }
-
-
+        public Owner Owner { get; set; }
 
         //navigation
         public ICollection<ParkingPlace> ParkingPlaces { get; set; }

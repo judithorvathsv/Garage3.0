@@ -34,7 +34,7 @@ namespace Garage3.Controllers
             }
 
             var parkingEvent = await _context.ParkingEvent
-                .FirstOrDefaultAsync(m => m.Vehicle.Id == id);
+                .FirstOrDefaultAsync(m => m.Vehicle.VehicleId == id);
             if (parkingEvent == null)
             {
                 return NotFound();
@@ -57,12 +57,12 @@ namespace Garage3.Controllers
         public async Task<IActionResult> Park(string regnumber)
         {
             ParkingEvent parkingEvent = new ParkingEvent();
-            parkingEvent.ParkingPlace.Id = 1;
+            parkingEvent.ParkingPlace.ParkingPlaceId = 1;
 
             parkingEvent.TimeOfArrival = DateTime.Now;
-            parkingEvent.Vehicle.Id = 1;
+            parkingEvent.Vehicle.VehicleId = 1;
 
-            //parkingEvent.ParkingPlace.Id;
+            //parkingEvent.ParkingPlace.ParkingPlaceId;
             //parkingEvent.Vehicle.RegistrationNumber = regnumber;
             if (ModelState.IsValid)
             {
@@ -96,7 +96,7 @@ namespace Garage3.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("TimeOfArrival")] ParkingEvent parkingEvent)
         {
-            if (id != parkingEvent.ParkingPlace.Id)
+            if (id != parkingEvent.ParkingPlace.ParkingPlaceId)
             {
                 return NotFound();
             }
@@ -110,7 +110,7 @@ namespace Garage3.Controllers
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!ParkingEventExists(parkingEvent.ParkingPlace.Id))
+                    if (!ParkingEventExists(parkingEvent.ParkingPlace.ParkingPlaceId))
                     {
                         return NotFound();
                     }
@@ -133,7 +133,7 @@ namespace Garage3.Controllers
             }
 
             var parkingEvent = await _context.ParkingEvent
-                .FirstOrDefaultAsync(m => m.ParkingPlace.Id == id);
+                .FirstOrDefaultAsync(m => m.ParkingPlace.ParkingPlaceId == id);
             if (parkingEvent == null)
             {
                 return NotFound();
@@ -155,8 +155,8 @@ namespace Garage3.Controllers
 
         private bool ParkingEventExists(int id)
         {
-            return _context.ParkingEvent.Any(e => e.ParkingPlace.Id == id);
-            return _context.ParkingEvent.Any(e => e.ParkingPlace.Id == id);
+            return _context.ParkingEvent.Any(e => e.ParkingPlace.ParkingPlaceId == id);
+            return _context.ParkingEvent.Any(e => e.ParkingPlace.ParkingPlaceId == id);
         }
     }
 }

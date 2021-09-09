@@ -44,6 +44,120 @@ namespace Garage3.Migrations
                     b.HasKey("OwnerId");
 
                     b.ToTable("Owner");
+
+                    b.HasData(
+                        new
+                        {
+                            OwnerId = 1,
+                            FirstName = "Isaac",
+                            LastName = "Newton",
+                            SocialSecurityNumber = "600102-1478"
+                        },
+                        new
+                        {
+                            OwnerId = 2,
+                            FirstName = "Albert",
+                            LastName = "Einstein",
+                            SocialSecurityNumber = "610102-1234"
+                        },
+                        new
+                        {
+                            OwnerId = 3,
+                            FirstName = "Stephen",
+                            LastName = "Hawking",
+                            SocialSecurityNumber = "620102-4567"
+                        },
+                        new
+                        {
+                            OwnerId = 4,
+                            FirstName = "Marie",
+                            LastName = "Curie",
+                            SocialSecurityNumber = "630102-7894"
+                        },
+                        new
+                        {
+                            OwnerId = 5,
+                            FirstName = "Galileo",
+                            LastName = "Galilei",
+                            SocialSecurityNumber = "640102-4561"
+                        },
+                        new
+                        {
+                            OwnerId = 6,
+                            FirstName = "Charles",
+                            LastName = "Darwin",
+                            SocialSecurityNumber = "650102-1235"
+                        },
+                        new
+                        {
+                            OwnerId = 7,
+                            FirstName = "Nicolaus",
+                            LastName = "Copernicus",
+                            SocialSecurityNumber = "660102-4568"
+                        },
+                        new
+                        {
+                            OwnerId = 8,
+                            FirstName = "Louis",
+                            LastName = "Pasteur",
+                            SocialSecurityNumber = "670102-7895"
+                        },
+                        new
+                        {
+                            OwnerId = 9,
+                            FirstName = "Alexander",
+                            LastName = "Fleming",
+                            SocialSecurityNumber = "680102-1595"
+                        },
+                        new
+                        {
+                            OwnerId = 10,
+                            FirstName = "Thomas",
+                            LastName = "Edison",
+                            SocialSecurityNumber = "690102-7535"
+                        },
+                        new
+                        {
+                            OwnerId = 11,
+                            FirstName = "Adam",
+                            LastName = "Abelin",
+                            SocialSecurityNumber = "123456-1234"
+                        },
+                        new
+                        {
+                            OwnerId = 12,
+                            FirstName = "James",
+                            LastName = "Jones",
+                            SocialSecurityNumber = "123456-7891"
+                        },
+                        new
+                        {
+                            OwnerId = 13,
+                            FirstName = "joel",
+                            LastName = "Viklund",
+                            SocialSecurityNumber = "134679-2587"
+                        },
+                        new
+                        {
+                            OwnerId = 14,
+                            FirstName = "Joel",
+                            LastName = "Josefsson",
+                            SocialSecurityNumber = "234567-1234"
+                        },
+                        new
+                        {
+                            OwnerId = 15,
+                            FirstName = "Joel",
+                            LastName = "Abelin",
+                            SocialSecurityNumber = "345678-9874"
+                        },
+                        new
+                        {
+                            OwnerId = 16,
+                            FirstName = "Josef",
+                            LastName = "Jacobsson",
+                            SocialSecurityNumber = "987654-3210"
+                        });
                 });
 
             modelBuilder.Entity("Garage3.Models.ParkingEvent", b =>
@@ -66,7 +180,7 @@ namespace Garage3.Migrations
 
             modelBuilder.Entity("Garage3.Models.ParkingPlace", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<int>("ParkingPlaceId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
@@ -74,14 +188,14 @@ namespace Garage3.Migrations
                     b.Property<bool>("IsOccupied")
                         .HasColumnType("bit");
 
-                    b.HasKey("Id");
+                    b.HasKey("ParkingPlaceId");
 
                     b.ToTable("ParkingPlace");
                 });
 
             modelBuilder.Entity("Garage3.Models.Vehicle", b =>
                 {
-                    b.Property<int>("Id")
+                    b.Property<int>("VehicleId")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("int")
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
@@ -107,13 +221,150 @@ namespace Garage3.Migrations
                     b.Property<int>("VehicleTypeId")
                         .HasColumnType("int");
 
-                    b.HasKey("Id");
+                    b.HasKey("VehicleId");
 
                     b.HasIndex("OwnerId");
 
                     b.HasIndex("VehicleTypeId");
 
                     b.ToTable("Vehicle");
+
+                    b.HasData(
+                        new
+                        {
+                            VehicleId = 1,
+                            Brand = "Chevrolet",
+                            OwnerId = 1,
+                            RegistrationNumber = "ABC-123",
+                            VehicleModel = "Silverado",
+                            VehicleTypeId = 1
+                        },
+                        new
+                        {
+                            VehicleId = 2,
+                            Brand = "Toyota",
+                            OwnerId = 2,
+                            RegistrationNumber = "BCD-123",
+                            VehicleModel = "RAV4",
+                            VehicleTypeId = 1
+                        },
+                        new
+                        {
+                            VehicleId = 3,
+                            Brand = "Honda",
+                            OwnerId = 3,
+                            RegistrationNumber = "CDE-456",
+                            VehicleModel = "Accord",
+                            VehicleTypeId = 1
+                        },
+                        new
+                        {
+                            VehicleId = 4,
+                            Brand = "Ford",
+                            OwnerId = 4,
+                            RegistrationNumber = "DEF-456",
+                            VehicleModel = "Explorer",
+                            VehicleTypeId = 1
+                        },
+                        new
+                        {
+                            VehicleId = 5,
+                            Brand = "Subaru",
+                            OwnerId = 5,
+                            RegistrationNumber = "EFG-456",
+                            VehicleModel = "Impreza",
+                            VehicleTypeId = 1
+                        },
+                        new
+                        {
+                            VehicleId = 7,
+                            Brand = "Kia",
+                            OwnerId = 6,
+                            RegistrationNumber = "FGH-789",
+                            VehicleModel = "Stinger",
+                            VehicleTypeId = 1
+                        },
+                        new
+                        {
+                            VehicleId = 8,
+                            Brand = "Hyundai",
+                            OwnerId = 7,
+                            RegistrationNumber = "GHI-9512",
+                            VehicleModel = "Veloster",
+                            VehicleTypeId = 1
+                        },
+                        new
+                        {
+                            VehicleId = 9,
+                            Brand = "Nissan",
+                            OwnerId = 8,
+                            RegistrationNumber = "HIJ-7532",
+                            VehicleModel = "Versa",
+                            VehicleTypeId = 1
+                        },
+                        new
+                        {
+                            VehicleId = 10,
+                            Brand = "Volvo",
+                            OwnerId = 9,
+                            RegistrationNumber = "IJK-456",
+                            VehicleModel = "XC40",
+                            VehicleTypeId = 1
+                        },
+                        new
+                        {
+                            VehicleId = 11,
+                            Brand = "BMW",
+                            OwnerId = 10,
+                            RegistrationNumber = "JKL-654",
+                            VehicleModel = "X5",
+                            VehicleTypeId = 1
+                        },
+                        new
+                        {
+                            VehicleId = 12,
+                            Brand = "BMW",
+                            OwnerId = 11,
+                            RegistrationNumber = "KLM-864",
+                            VehicleModel = "i3",
+                            VehicleTypeId = 1
+                        },
+                        new
+                        {
+                            VehicleId = 13,
+                            Brand = "Honda",
+                            OwnerId = 1,
+                            RegistrationNumber = "LMN-246",
+                            VehicleModel = "Civic",
+                            VehicleTypeId = 1
+                        },
+                        new
+                        {
+                            VehicleId = 14,
+                            Brand = "Saab",
+                            OwnerId = 2,
+                            RegistrationNumber = "MNO-931",
+                            VehicleModel = "AreoX",
+                            VehicleTypeId = 1
+                        },
+                        new
+                        {
+                            VehicleId = 15,
+                            Brand = "Boeing",
+                            OwnerId = 3,
+                            RegistrationNumber = "N12345",
+                            VehicleModel = "777",
+                            VehicleTypeId = 9
+                        },
+                        new
+                        {
+                            VehicleId = 16,
+                            Brand = "Yamaha",
+                            OwnerId = 4,
+                            RegistrationNumber = "AAB-123",
+                            VehicleModel = "VMAX",
+                            VehicleTypeId = 4
+                        });
                 });
 
             modelBuilder.Entity("Garage3.Models.VehicleType", b =>
@@ -134,6 +385,68 @@ namespace Garage3.Migrations
                     b.HasKey("VehicleTypeId");
 
                     b.ToTable("VehicleType");
+
+                    b.HasData(
+                        new
+                        {
+                            VehicleTypeId = 1,
+                            Size = 3,
+                            Type = "Car"
+                        },
+                        new
+                        {
+                            VehicleTypeId = 2,
+                            Size = 6,
+                            Type = "Truck"
+                        },
+                        new
+                        {
+                            VehicleTypeId = 3,
+                            Size = 6,
+                            Type = "Bus"
+                        },
+                        new
+                        {
+                            VehicleTypeId = 4,
+                            Size = 1,
+                            Type = "Motorcycle"
+                        },
+                        new
+                        {
+                            VehicleTypeId = 5,
+                            Size = 6,
+                            Type = "Van"
+                        },
+                        new
+                        {
+                            VehicleTypeId = 6,
+                            Size = 9,
+                            Type = "Boat"
+                        },
+                        new
+                        {
+                            VehicleTypeId = 7,
+                            Size = 1,
+                            Type = "Canoe"
+                        },
+                        new
+                        {
+                            VehicleTypeId = 8,
+                            Size = 1,
+                            Type = "Kayak"
+                        },
+                        new
+                        {
+                            VehicleTypeId = 9,
+                            Size = 9,
+                            Type = "Airplane"
+                        },
+                        new
+                        {
+                            VehicleTypeId = 10,
+                            Size = 9,
+                            Type = "Helicopter"
+                        });
                 });
 
             modelBuilder.Entity("Garage3.Models.ParkingEvent", b =>
@@ -164,7 +477,7 @@ namespace Garage3.Migrations
                         .IsRequired();
 
                     b.HasOne("Garage3.Models.VehicleType", "VehicleType")
-                        .WithMany()
+                        .WithMany("Vehicles")
                         .HasForeignKey("VehicleTypeId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -187,6 +500,11 @@ namespace Garage3.Migrations
             modelBuilder.Entity("Garage3.Models.Vehicle", b =>
                 {
                     b.Navigation("ParkingEvents");
+                });
+
+            modelBuilder.Entity("Garage3.Models.VehicleType", b =>
+                {
+                    b.Navigation("Vehicles");
                 });
 #pragma warning restore 612, 618
         }

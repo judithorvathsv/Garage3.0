@@ -35,12 +35,6 @@ namespace Garage3.Models
         public int OwnerId { get; set; }
         public int VehicleTypeId { get; set; }
 
-
-        //navigation
-        public Owner Owner { get; set; }
-
-
-
         //navigation
         public VehicleType VehicleType { get; set; }
         public Owner Owner { get; set; }

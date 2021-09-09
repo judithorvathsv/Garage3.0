@@ -72,6 +72,43 @@ namespace Garage3.Controllers
             var model = new OverviewListViewModel();
             model.VehicleTypesSelectList = await GetAllVehicleTypesAsync();
 
+
+            var allVehicles = db.Vehicle;
+            var allOwner = db.Owner;
+            
+
+           
+            var vehicles = GetOverviewViewModelAsEnumerable(allVehicles);
+            
+            model.VehicleTypesSelectList = await GetAllVehicleTypesAsync();
+            model.Overview = vehicles;
+
+            return View("Overview", model);
+        }
+
+
+        /*
+private IEnumerable<OverviewViewModel> GetOverviewViewModelAsEnumerable(IQueryable<Vehicle> allVehicles)
+{
+    return allVehicles.Select(v => new OverviewViewModel
+    {
+
+        VehicleId = v.VehicleId,
+        // VehicleType = v.VehicleType,
+        VehicleRegistrationNumber = v.RegistrationNumber,
+        //VehicleArrivalTime = v.TimeOfArrival,
+        //VehicleParkDuration = DateTime.Now - v.TimeOfArrival
+
+    }).AsEnumerable();
+}
+*/
+
+        /*
+        public async Task<IActionResult> Overview()
+        {
+            var model = new OverviewListViewModel();
+            model.VehicleTypesSelectList = await GetAllVehicleTypesAsync();
+
             var allVehicles = db.Vehicle;
 
             //IQueryable<OverviewViewModel> vehicles = GetOverviewViewModel(allVehicles);
@@ -101,6 +138,10 @@ namespace Garage3.Controllers
 
             return View("Overview", model);
         }
+        */
+
+
+
 
         private async Task<IEnumerable<SelectListItem>> GetVehicleTypesAsync()
         {

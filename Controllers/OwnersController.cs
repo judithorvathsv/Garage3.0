@@ -211,35 +211,26 @@ namespace Garage3.Controllers
                                  from f in ThisList.DefaultIfEmpty()
 
                                  group p by new
-                                 {                                    
-                                     p.FirstName,
-                                     p.LastName,
-                                     p.SocialSecurityNumber,
+                                 {
                                      p.OwnerId,
-
+                                     p.SocialSecurityNumber,
+                                     p.FirstName,
+                                     p.LastName      
                                  } into gcs
-                                 select new
-                                 {                               
+
+                                 select new MemberDetailsViewModel
+                                 {
+                                     Id = gcs.Key.OwnerId,
+                                     SocialSecurityNumber = gcs.Key.SocialSecurityNumber,
                                      FirstName = gcs.Key.FirstName,
                                      LastName = gcs.Key.LastName,
-                                     SocialSecurityNumber = gcs.Key.SocialSecurityNumber,
-                                     Id = gcs.Key.OwnerId,
+                                     FullName = gcs.Key.FirstName + " " + gcs.Key.LastName,
                                      NumberOfVehicles = gcs.Select(x => x).Distinct().Count(),
                                  })
-                               .ToList()
-                                .Select(x => new Models.ViewModels.MemberDetailsViewModel()
-                                {                                   
-                                    FirstName = x.FirstName,
-                                    LastName = x.LastName,
-                                    FullName = x.FirstName + " " + x.LastName,
-                                    SocialSecurityNumber = x.SocialSecurityNumber,
-                                    Id = x.Id,
-                                    NumberOfVehicles = x.NumberOfVehicles
-                                });
+                             .ToList()                      
+                             .OrderBy(x => x.FirstName.Substring(0, 3), StringComparer.Ordinal).ToList();   
 
-            var sortedMemberList = listWithEmpty.OrderBy(x => x.FirstName.Substring(0, 1), StringComparer.Ordinal);
-
-            return View(sortedMemberList);
+            return View(listWithEmpty);
         }
     }
 }

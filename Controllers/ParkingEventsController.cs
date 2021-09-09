@@ -57,66 +57,22 @@ namespace Garage3.Controllers
         //[ValidateAntiForgeryToken]
         public async Task<IActionResult> Park(int id)
         {
-            var vehicle = await _context.Vehicle.Where(v => v.VehicleId == id).FirstOrDefaultAsync();
-            var occupiedSpaces = new List<ParkingEvent>();
+            var parkingVehicle = await _context.Vehicle.Where(v => v.VehicleId == id).FirstOrDefaultAsync();
+            var parkingPlace = await _context.ParkingPlace.Where(pp => pp.IsOccupied == false).FirstOrDefaultAsync();
 
-            var availableSpaces = await _context.ParkingPlace.Where(pp => pp.IsOccupied == false)
-                                                             .Select(pp => pp.ParkingPlaceId)
-                                                             .ToListAsync();
+            parkingPlace.IsOccupied = true;
 
-            for (int i = 0; i < vehicle.VehicleType.Size; i++)
+            var parkingEvent = new ParkingEvent
             {
-                occupiedSpaces.Add(new ParkingEvent { VehicleId = id, ParkingPlaceId = availableSpaces.First() });
-            }
+                ParkingPlace = parkingPlace,
+                Vehicle = parkingVehicle,
+                TimeOfArrival = DateTime.Now
+            };
 
+            _context.ParkingEvent.Update(parkingEvent);
+            await _context.SaveChangesAsync();
 
-
-            foreach (var item in occupiedSpaces)
-            {
-                _context.ParkingEvent.Add(item);
-            }
-
-            return View(new OwnerDetailsViewModel { Id = id });
-
-        //    var parkingEvent = new ParkingEvent
-        //    {
-        //        VehicleId = id,
-        //        ParkingPlaceId =,
-        //        TimeOfArrival = DateTime.Now
-        //    }
-
-
-        //    ParkingEvent parkingEvent = new ParkingEvent();
-        //    parkingEvent.ParkingPlace.ParkingPlaceId = 1;
-
-        //    parkingEvent.TimeOfArrival = DateTime.Now;
-        //    parkingEvent.Vehicle.VehicleId = 1;
-
-        //    //parkingEvent.ParkingPlace.ParkingPlaceId;
-        //    //parkingEvent.Vehicle.RegistrationNumber = regnumber;
-        //    if (ModelState.IsValid)
-        //    {
-        //        _context.Add(parkingEvent);
-        //        await _context.SaveChangesAsync();
-        //        return RedirectToAction(nameof(Index));
-        //    }
-        //    return View(parkingEvent);
-        //}
-
-        //// GET: ParkingEvents/Edit/5
-        //public async Task<IActionResult> Edit(int? id)
-        //{
-        //    if (id == null)
-        //    {
-        //        return NotFound();
-        //    }
-
-        //    var parkingEvent = await _context.ParkingEvent.FindAsync(id);
-        //    if (parkingEvent == null)
-        //    {
-        //        return NotFound();
-        //    }
-        //    return View(parkingEvent);
+            return RedirectToAction("Member","Owners", new OwnerDetailsViewModel { Id = id });
         }
 
         // POST: ParkingEvents/Edit/
@@ -185,7 +141,6 @@ namespace Garage3.Controllers
 
         private bool ParkingEventExists(int id)
         {
-            return _context.ParkingEvent.Any(e => e.ParkingPlace.ParkingPlaceId == id);
             return _context.ParkingEvent.Any(e => e.ParkingPlace.ParkingPlaceId == id);
         }
     }

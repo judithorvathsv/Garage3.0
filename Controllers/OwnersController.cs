@@ -175,7 +175,7 @@ namespace Garage3.Controllers
                 .Join(db.VehicleType, vo => vo.v.VehicleType.VehicleTypeId, vt => vt.VehicleTypeId, (vo, vt) => new { vo, vt })
                 .Select(m => new OwnerDetailsViewModel
                 {
-                    Id = id,
+                    Id = m.vo.v.VehicleId,
                     SocialSecurityNumber = m.vo.o.SocialSecurityNumber,
                     FullName = m.vo.o.FirstName + " " + m.vo.o.LastName,
                     RegistrationNumber = m.vo.v.RegistrationNumber,

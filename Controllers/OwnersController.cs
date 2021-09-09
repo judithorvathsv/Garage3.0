@@ -176,14 +176,39 @@ namespace Garage3.Controllers
                     RegistrationNumber = m.vo.v.RegistrationNumber,
                     Model = m.vo.v.VehicleModel
 
-                }).ToListAsync();
-
-
-            if (vehicles == null)
+            try
             {
-                return NotFound();
+                var vehicle = await db.Vehicle
+                        .Join( db.Owner,
+                         v => v.Owner.SocialSecurityNumber, m => m.SocialSecurityNumber,
+                         (v,m) => new { Vehi = v, Memb = m })
+                         .Where(m => m.Memb.SocialSecurityNumber == ssn)
+                         .Join(db.VehicleType, 
+                         vh => vh.Vehi.VehicleType.VehicleTypeId,
+                         t => t.VehicleTypeId,
+                         (vh,t) => new {ve = vh, type = t })
+                     
+                         .Select(o => new OwnerDetailsViewModel
+                         {
+                             SocialSecurityNumber = o.ve.Memb.SocialSecurityNumber,
+                             FullName = o.ve.Memb.FirstName + " " + o.ve.Memb.LastName,
+                             RegistrationNumber = o.ve.Vehi.RegistrationNumber,
+                             Brand =  o.ve.Vehi.Brand,
+                             VehicleModel = o.ve.Vehi.VehicleModel,
+                             VehicleType = o.type.Type
+                              
+                         }).ToListAsync();
+
+                if (vehicle == null)
+                {
+                    return NotFound();
+                }
+                return View(vehicle);
             }
-            return View(vehicles);
+            catch (Exception)
+            {
+                throw;
+            }
         }
 
         private bool OwnerExists(string id)

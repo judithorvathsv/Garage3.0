@@ -7,7 +7,8 @@ using System.Threading.Tasks;
 namespace Garage3.Models.ViewModels
 {
     public class MemberDetailsViewModel
-    {       
+    {
+        public int Id { get; set; }
         [Key]       
         [Display(Name = "Social Security Number")]      
         public string SocialSecurityNumber { get; set; }

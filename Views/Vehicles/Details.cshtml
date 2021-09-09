@@ -7,7 +7,8 @@
 <h1>Details</h1>
 
 <div>
-    <p class="text-danger">@TempData["ChangedVehicle"]</p>
+    @*<p class="text-danger">@TempData["ChangedVehicle"]</p>*@
+
     @*@if (Model.IsParked)
     {
         <h5>Your vehicle is Parked from @Model.TimeOfArrival.ToShortDateString() @Model.TimeOfArrival.ToShortTimeString()</h5>
@@ -69,7 +70,10 @@
         }*@
     </dl>
 </div>
-<p class="text-danger">@TempData["Message"]</p>
+
+@*<p class="text-danger">@TempData["Message"]</p>*@
+
+
 <div class="form-group">
     @*@if (Model.IsParked)
     {

@@ -8,6 +8,8 @@ using Microsoft.EntityFrameworkCore;
 using Garage3.Data;
 using Garage3.Models;
 using Garage3.Models.ViewModels;
+using AutoMapper;
+using Bogus;
 
 namespace Garage3.Controllers
 {
@@ -16,14 +18,19 @@ namespace Garage3.Controllers
 
         private readonly Garage3Context db;
 
+        private readonly IMapper mapper;
+        private readonly Faker faker;
+
         public OwnersController(Garage3Context context)
         {
             db = context;
+
         }
 
         // GET: Owners
         public async Task<IActionResult> Index()
-        {
+        {       
+
             return View(await db.Owner.ToListAsync());
         }
 
@@ -68,7 +75,7 @@ namespace Garage3.Controllers
                     };
                     db.Add(member);
                     await db.SaveChangesAsync();
-                    return RedirectToAction("Register", "Vehicles", new { ssn = member.SocialSecurityNumber });
+                    return RedirectToAction("Register", "Vehicles", new { id = member.OwnerId });
                 }
                 else
                 {
@@ -160,20 +167,17 @@ namespace Garage3.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        public async Task<IActionResult> Member(string ssn)
+        public async Task<IActionResult> Member(int id)
         {
-            if (ssn == null)
-            {
-                return NotFound();
-            }
             try
             {
             var vehicles = await db.Vehicle
-                .Where(v => v.Owner.SocialSecurityNumber == ssn)
+                .Where(v => v.OwnerId == id)
                 .Join(db.Owner, v => v.Owner.SocialSecurityNumber, o => o.SocialSecurityNumber, (v, o) => new { v, o })
                 .Join(db.VehicleType, vo => vo.v.VehicleType.VehicleTypeId, vt => vt.VehicleTypeId, (vo, vt) => new { vo, vt })
                 .Select(m => new OwnerDetailsViewModel
                 {
+                    Id = id,
                     SocialSecurityNumber = m.vo.o.SocialSecurityNumber,
                     FullName = m.vo.o.FirstName + " " + m.vo.o.LastName,
                     RegistrationNumber = m.vo.v.RegistrationNumber,
@@ -205,17 +209,19 @@ namespace Garage3.Controllers
         {
             var listWithEmpty = (from p in db.Owner
                                  join f in db.Vehicle
-                                 on p.SocialSecurityNumber equals f.Owner.SocialSecurityNumber into ThisList
+                                 on p.OwnerId equals f.VehicleId into ThisList
                                  from f in ThisList.DefaultIfEmpty()
 
                                  group p by new
                                  {
+                                     p.OwnerId,
                                      p.FirstName,
                                      p.LastName,
                                      p.SocialSecurityNumber
                                  } into gcs
                                  select new
                                  {
+                                     Id = gcs.Key.OwnerId,
                                      FirstName = gcs.Key.FirstName,
                                      LastName = gcs.Key.LastName,
                                      SocialSecurityNumber = gcs.Key.SocialSecurityNumber,
@@ -224,6 +230,7 @@ namespace Garage3.Controllers
                                .ToList()
                                 .Select(x => new Models.ViewModels.MemberDetailsViewModel()
                                 {
+                                    Id = x.Id,
                                     FirstName = x.FirstName,
                                     LastName = x.LastName,
                                     FullName = x.FirstName + " " + x.LastName,

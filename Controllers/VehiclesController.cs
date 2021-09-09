@@ -67,7 +67,7 @@ namespace Garage3.Controllers
             return View(vehicle);
         }
 
-        public async Task<IActionResult> Overview(int parkedStatus)
+        public async Task<IActionResult> Overview()
         {
             var model = new OverviewListViewModel();
             model.VehicleTypesSelectList = await GetAllVehicleTypesAsync();
@@ -75,9 +75,9 @@ namespace Garage3.Controllers
             var allVehicles = db.Vehicle;
 
             //IQueryable<OverviewViewModel> vehicles = GetOverviewViewModel(allVehicles);
-            string parkedStatusStr = parkedStatus.ToString();
+           // string parkedStatusStr = parkedStatus.ToString();
             var vehicles = GetOverviewViewModelAsEnumerable(allVehicles);
-            parkedStatus = ParkingStatus(parkedStatusStr, model, ref vehicles);
+           // parkedStatus = ParkingStatus(parkedStatusStr, model, ref vehicles);
 
             //if (parkedStatus == 3)
             //{
@@ -267,22 +267,20 @@ namespace Garage3.Controllers
             }).AsEnumerable();
         }
         [HttpGet]
-        public async Task<IActionResult> Register(string ssn)
+        public async Task<IActionResult> Register(int id)
         {
-            if (ssn != null)
+            if (await db.Owner.AnyAsync(o => o.OwnerId == id))
             {
-                if (await db.Owner.AnyAsync(o => o.SocialSecurityNumber == ssn))
+                var model = new RegisterVehicleViewModel
                 {
-                    var model = new RegisterVehicleViewModel
-                    {
-                        VehicleTypes = await GetAllVehicleTypesAsync(),
-                        SocialSecurityNumber = ssn
-                    };
-                    return View(model);
-                }
+                    VehicleTypes = await GetAllVehicleTypesAsync(),
+                    Id = id
+                };
+                return View(model);
             }
             return NotFound();
         }
+
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Register(RegisterVehicleViewModel model)
@@ -299,7 +297,7 @@ namespace Garage3.Controllers
                         VehicleTypeId = model.VehicleTypeId,
                         Brand = model.Brand,
                         VehicleModel = model.VehicleModel,
-                        //OwnerId = model.SocialSecurityNumber // TODO Fix
+                        OwnerId = model.Id
                     };
 
                     db.Add(vehicle);

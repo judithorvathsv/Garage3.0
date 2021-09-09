@@ -87,61 +87,6 @@ namespace Garage3.Controllers
         }
 
 
-        /*
-private IEnumerable<OverviewViewModel> GetOverviewViewModelAsEnumerable(IQueryable<Vehicle> allVehicles)
-{
-    return allVehicles.Select(v => new OverviewViewModel
-    {
-
-        VehicleId = v.VehicleId,
-        // VehicleType = v.VehicleType,
-        VehicleRegistrationNumber = v.RegistrationNumber,
-        //VehicleArrivalTime = v.TimeOfArrival,
-        //VehicleParkDuration = DateTime.Now - v.TimeOfArrival
-
-    }).AsEnumerable();
-}
-*/
-
-        /*
-        public async Task<IActionResult> Overview()
-        {
-            var model = new OverviewListViewModel();
-            model.VehicleTypesSelectList = await GetAllVehicleTypesAsync();
-
-            var allVehicles = db.Vehicle;
-
-            //IQueryable<OverviewViewModel> vehicles = GetOverviewViewModel(allVehicles);
-           // string parkedStatusStr = parkedStatus.ToString();
-            var vehicles = GetOverviewViewModelAsEnumerable(allVehicles);
-           // parkedStatus = ParkingStatus(parkedStatusStr, model, ref vehicles);
-
-            //if (parkedStatus == 3)
-            //{
-            //    model.AllStatus = true;
-            //    ViewData["ParkedStatus"] = "3";
-            //}
-            //else if (parkedStatus == 2)
-            //{
-            //    model.UnparkedStatus = true;
-            //    ViewData["ParkedStatus"] = "2";
-            //    vehicles = vehicles.Where(u => u.VehicleParked.Equals(false));
-            //}
-            //else
-            //{
-            //    model.ParkedStatus = true;
-            //    ViewData["ParkedStatus"] = "1";
-            //    vehicles = vehicles.Where(u => u.VehicleParked.Equals(true));
-            //}
-            model.VehicleTypesSelectList = await GetAllVehicleTypesAsync();
-            model.Overview = vehicles;
-
-            return View("Overview", model);
-        }
-        */
-
-
-
 
         private async Task<IEnumerable<SelectListItem>> GetVehicleTypesAsync()
         {

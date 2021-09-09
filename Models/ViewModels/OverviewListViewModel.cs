@@ -11,11 +11,11 @@ namespace Garage3.Models.ViewModels
     public class OverviewListViewModel
     {
         public IEnumerable<SelectListItem> VehicleTypesSelectList { get; set; }
-        public IEnumerable<OverviewViewModel> Overview { get; set; }
+        public IEnumerable<OverviewViewModel> Overview { get; set; } 
 
         //SelectListBox
         public string Regnumber { get; set; }
-        //public VehicleTypes? Types { get; set; }
+        public VehicleType Types { get; set; }
 
         // Radiobuttons
         public bool ParkedStatus { get; set; }

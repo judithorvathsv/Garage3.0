@@ -17,8 +17,7 @@ namespace Garage3.Controllers
     {
         private readonly Garage3Context db;
 
-        private readonly IMapper mapper;
-        private readonly Faker faker;
+        
 
         public OwnersController(Garage3Context context)
         {

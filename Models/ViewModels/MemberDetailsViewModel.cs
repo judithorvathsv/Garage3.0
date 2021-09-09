@@ -8,7 +8,6 @@ namespace Garage3.Models.ViewModels
 {
     public class MemberDetailsViewModel
     {       
-
         [Key]       
         [Display(Name = "Social Security Number")]      
         public string SocialSecurityNumber { get; set; }
@@ -22,7 +21,6 @@ namespace Garage3.Models.ViewModels
 
         [Display(Name = "Name")]
         public string FullName { get; set; }
-
 
         [Display(Name = "Number of vehicles")]
         public int NumberOfVehicles { get; set; }

@@ -1,7 +1,7 @@
 ﻿@model IEnumerable<Garage3.Models.ViewModels.MemberDetailsViewModel>;
 
 @{
-    ViewData["Title"] = "MemberOverview";
+    ViewData["Title"] = "Member Overview";
 }
 
 <h1>Members Overview</h1>
@@ -22,7 +22,7 @@
             <td> @Html.DisplayFor(modelItem => item.NumberOfVehicles)  </td>    
 
             <td>
-                <a class="btn btn-primary" asp-action="Members" asp-route-ssn="@item.SocialSecurityNumber">Member</a>
+                <a class="btn btn-primary" asp-action="Member" asp-route-ssn="@item.SocialSecurityNumber">Details</a>
             </td>
         </tr>
     }

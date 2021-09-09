@@ -8,13 +8,11 @@ namespace Garage3.Models
 {
     public class ParkingPlace
     {
-        [Key]
-        public int Id { get; set; }
-
+        public int ParkingPlaceId { get; set; }
         public bool IsOccupied { get; set; }
 
+        // NAV
         public ICollection<Vehicle> Vehicles { get; set; }
-
         public ICollection<ParkingEvent> ParkingEvents { get; set; }
 
     }

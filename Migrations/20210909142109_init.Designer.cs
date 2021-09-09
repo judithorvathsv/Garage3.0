@@ -10,8 +10,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Garage3.Migrations
 {
     [DbContext(typeof(Garage3Context))]
-    [Migration("20210909100305_Init")]
-    partial class Init
+    [Migration("20210909142109_init")]
+    partial class init
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -183,9 +183,7 @@ namespace Garage3.Migrations
             modelBuilder.Entity("Garage3.Models.ParkingPlace", b =>
                 {
                     b.Property<int>("ParkingPlaceId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("int");
 
                     b.Property<bool>("IsOccupied")
                         .HasColumnType("bit");

@@ -12,17 +12,17 @@ namespace Garage3.Controllers
 {
     public class ParkingEventsController : Controller
     {
-        private readonly Garage3Context _context;
+        private readonly Garage3Context db;
 
         public ParkingEventsController(Garage3Context context)
         {
-            _context = context;
+            db = context;
         }
 
         // GET: ParkingEvents
         public async Task<IActionResult> Index()
         {
-            return View(await _context.ParkingEvent.ToListAsync());
+            return View(await db.ParkingEvent.ToListAsync());
         }
 
         // GET: ParkingEvents/Details/5
@@ -33,7 +33,7 @@ namespace Garage3.Controllers
                 return NotFound();
             }
 
-            var parkingEvent = await _context.ParkingEvent
+            var parkingEvent = await db.ParkingEvent
                 .FirstOrDefaultAsync(m => m.Vehicle.VehicleId == id);
             if (parkingEvent == null)
             {
@@ -54,23 +54,47 @@ namespace Garage3.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         //[HttpPost]
         //[ValidateAntiForgeryToken]
-        public async Task<IActionResult> Park(string regnumber)
+        public async Task<IActionResult> Park(int id)
         {
             ParkingEvent parkingEvent = new ParkingEvent();
-            parkingEvent.ParkingPlace.ParkingPlaceId = 1;
+            parkingEvent.VehicleId = id;
+
+            //MakeParkingPlaces();
+
+        //public int ParkingPlaceId { get; set; }
+        //public int VehicleId { get; set; }
 
             parkingEvent.TimeOfArrival = DateTime.Now;
-            parkingEvent.Vehicle.VehicleId = 1;
+            var freeparkingplaceid = db.ParkingPlace.Any(p => p.IsOccupied).Equals(false);
+            //parkingEvent.ParkingPlace.IsOccupied = true;
+            parkingEvent.ParkingPlaceId = 1;
+
 
             //parkingEvent.ParkingPlace.ParkingPlaceId;
             //parkingEvent.Vehicle.RegistrationNumber = regnumber;
             if (ModelState.IsValid)
             {
-                _context.Add(parkingEvent);
-                await _context.SaveChangesAsync();
+                db.Add(parkingEvent);
+                await db.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
             }
             return View(parkingEvent);
+        }
+
+        private void UpdateParkingPlace()
+        {
+
+        }
+
+        private void MakeParkingPlaces()
+        {
+            for (int i = 0; i < 20; i++)
+            {
+                var parkingplace = new ParkingPlace();
+                parkingplace.IsOccupied = false;
+                db.Add(parkingplace);
+                db.SaveChanges();
+            }
         }
 
         // GET: ParkingEvents/Edit/5
@@ -81,7 +105,7 @@ namespace Garage3.Controllers
                 return NotFound();
             }
 
-            var parkingEvent = await _context.ParkingEvent.FindAsync(id);
+            var parkingEvent = await db.ParkingEvent.FindAsync(id);
             if (parkingEvent == null)
             {
                 return NotFound();
@@ -105,8 +129,8 @@ namespace Garage3.Controllers
             {
                 try
                 {
-                    _context.Update(parkingEvent);
-                    await _context.SaveChangesAsync();
+                    db.Update(parkingEvent);
+                    await db.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -132,7 +156,7 @@ namespace Garage3.Controllers
                 return NotFound();
             }
 
-            var parkingEvent = await _context.ParkingEvent
+            var parkingEvent = await db.ParkingEvent
                 .FirstOrDefaultAsync(m => m.ParkingPlace.ParkingPlaceId == id);
             if (parkingEvent == null)
             {
@@ -147,16 +171,22 @@ namespace Garage3.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var parkingEvent = await _context.ParkingEvent.FindAsync(id);
-            _context.ParkingEvent.Remove(parkingEvent);
-            await _context.SaveChangesAsync();
+            var parkingEvent = await db.ParkingEvent.FindAsync(id);
+            db.ParkingEvent.Remove(parkingEvent);
+            await db.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
         private bool ParkingEventExists(int id)
         {
-            return _context.ParkingEvent.Any(e => e.ParkingPlace.ParkingPlaceId == id);
-            return _context.ParkingEvent.Any(e => e.ParkingPlace.ParkingPlaceId == id);
+            return db.ParkingEvent.Any(e => e.ParkingPlace.ParkingPlaceId == id);
+            return db.ParkingEvent.Any(e => e.ParkingPlace.ParkingPlaceId == id);
+        }
+
+        public override bool Equals(object obj)
+        {
+            return obj is ParkingEventsController controller &&
+                   EqualityComparer<Garage3Context>.Default.Equals(db, controller.db);
         }
     }
 }

@@ -8,7 +8,6 @@ namespace Garage3.Models
 {
     public class VehicleType
     {
-        [Key]    
         public int VehicleTypeId { get; set; }
     
         [Display(Name = "Vehicle type")]
@@ -16,9 +15,8 @@ namespace Garage3.Models
         [MaxLength(35)]
         [MinLength(3)]
         public string Type { get; set; }
-     
         public int Size { get; set; }
 
-        List<Vehicle> Vehicles { get; set; } = new List<Vehicle>();
+        public ICollection<Vehicle> Vehicles { get; set; }
     }
 }

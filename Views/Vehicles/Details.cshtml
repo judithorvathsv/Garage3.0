@@ -7,7 +7,8 @@
 <h1>Details</h1>
 
 <div>
-    <p class="text-danger">@TempData["ChangedVehicle"]</p>
+    @*<p class="text-danger">@TempData["ChangedVehicle"]</p>*@
+
     @*@if (Model.IsParked)
     {
         <h5>Your vehicle is Parked from @Model.TimeOfArrival.ToShortDateString() @Model.TimeOfArrival.ToShortTimeString()</h5>
@@ -69,7 +70,10 @@
         }*@
     </dl>
 </div>
-<p class="text-danger">@TempData["Message"]</p>
+
+@*<p class="text-danger">@TempData["Message"]</p>*@
+
+
 <div class="form-group">
     @*@if (Model.IsParked)
     {
@@ -79,7 +83,7 @@
     {
         <a class="btn btn-primary" asp-action="ParkRegisteredVehicle" asp-route-id="@Model.Id">Park</a>
     }*@
-    <a class="btn btn-secondary" asp-action="Change" asp-route-id="@Model.Id">Change</a>
+    <a class="btn btn-secondary" asp-action="Change" asp-route-id="@Model.VehicleId">Change</a>
 
 </div>
 

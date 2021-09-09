@@ -8,7 +8,7 @@ namespace Garage3.Models.ViewModels
 {
     public class OwnerDetailsViewModel
     {
-        [Display(Name = "Soc Sec Num")]
+        [Display(Name = "Social Security Number")]
         public string SocialSecurityNumber { get; set; }
 
         [Display(Name = "Firstname")]

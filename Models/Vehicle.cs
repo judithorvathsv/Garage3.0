@@ -9,7 +9,7 @@ namespace Garage3.Models
 {
     public class Vehicle
     {
-        public int Id { get; set; }
+        public int VehicleId { get; set; }
 
         [Display(Name = "Registration number")]
         [Required(ErrorMessage = "Please enter registration number!")]
@@ -29,19 +29,23 @@ namespace Garage3.Models
         [Required(ErrorMessage = "Please enter model!")]   
         [MaxLength(20)]
         [MinLength(1, ErrorMessage = "The model name must be longer!")]
-        public string VehicleModel { get; set; }  
+        public string VehicleModel { get; set; }
 
-       
-
+        // FK
         public int OwnerId { get; set; }
         public int VehicleTypeId { get; set; }
 
-        //[ForeignKey()]
+
+        //navigation
+        public Owner Owner { get; set; }
+
+
+
         //navigation
         public VehicleType VehicleType { get; set; }
         public Owner Owner { get; set; }
 
-        //navigation
+        // M:M NAV
         public ICollection<ParkingPlace> ParkingPlaces { get; set; }
         public ICollection<ParkingEvent> ParkingEvents { get; set; }
 

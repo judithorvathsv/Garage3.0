@@ -30,6 +30,7 @@ namespace Garage3.Data
                 pe => pe.HasOne(pe => pe.ParkingPlace).WithMany(v => v.ParkingEvents),
                 pe => pe.HasOne(pe => pe.Vehicle).WithMany(pp => pp.ParkingEvents));
 
+            modelBuilder.Entity<ParkingEvent>().HasKey(x => new { x.ParkingPlaceId, x.VehicleId });
         }
     }
 }

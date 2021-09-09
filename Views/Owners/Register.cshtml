@@ -1,21 +1,24 @@
-﻿@model Garage3.Models.Owner
+﻿@model RegisterMemberViewModel
 
 @{
-    ViewData["Title"] = "Create";
+    ViewData["Title"] = "Register as a member";
 }
 
-<h1>Create</h1>
+<h1>Register</h1>
 
-<h4>Owner</h4>
+<h4>Member Information</h4>
 <hr />
 <div class="row">
     <div class="col-md-4">
-        <form asp-action="Create">
+        <form asp-action="Register" method="post">
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
             <div class="form-group">
                 <label asp-for="SocialSecurityNumber" class="control-label"></label>
-                <input asp-for="SocialSecurityNumber" class="form-control" />
+                <input asp-for="SocialSecurityNumber" class="form-control" placeholder="YYMMDD-XXXX" autofocus />
                 <span asp-validation-for="SocialSecurityNumber" class="text-danger"></span>
+                <span class="text-danger">@TempData["SSNMessage"]</span>
+
             </div>
             <div class="form-group">
                 <label asp-for="FirstName" class="control-label"></label>
@@ -28,14 +31,14 @@
                 <span asp-validation-for="LastName" class="text-danger"></span>
             </div>
             <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
+                <input type="submit" value="Register" class="btn btn-primary" />
             </div>
         </form>
     </div>
 </div>
 
 <div>
-    <a asp-action="Index">Back to List</a>
+    <a asp-action="Index" asp-controller="Vehicles">To the Startpage</a>
 </div>
 
 @section Scripts {

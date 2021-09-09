@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Garage3.Data;
 using Garage3.Models;
+using Garage3.Models.ViewModels;
 
 namespace Garage3.Controllers
 {
@@ -44,26 +45,38 @@ namespace Garage3.Controllers
             return View(owner);
         }
 
-        // GET: Owners/Create
-        public IActionResult Create()
+        public IActionResult Register()
         {
             return View();
         }
 
-        // POST: Owners/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("SocialSecurityNumber,FirstName,LastName")] Owner owner)
+        public async Task<IActionResult> Register(RegisterMemberViewModel model)
         {
             if (ModelState.IsValid)
             {
-                db.Add(owner);
-                await db.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
+                bool memberIsRegistered = await db.Owner.AnyAsync(v => v.SocialSecurityNumber == model.SocialSecurityNumber);
+                if (!memberIsRegistered)
+                {
+
+                    var member = new Owner
+                    {
+                        SocialSecurityNumber = model.SocialSecurityNumber,
+                        FirstName = model.FirstName,
+                        LastName = model.LastName
+                    };
+                    db.Add(member);
+                    await db.SaveChangesAsync();
+                    return RedirectToAction("Register", "Vehicles", new { ssn = member.SocialSecurityNumber });
+                }
+                else
+                {
+                    var existingMember = await db.Owner.FirstOrDefaultAsync(v => v.SocialSecurityNumber.Contains(model.SocialSecurityNumber));
+                    TempData["SSNMessage"] = "A member with this social security number already exists!";
+                }
             }
-            return View(owner);
+            return View(model);
         }
 
         // GET: Owners/Edit/5
@@ -141,15 +154,86 @@ namespace Garage3.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(string SocialSecurityNumber)
         {
-            var owner = await db.Owner.FindAsync(SocialSecurityNumber);
+            var owner = await db.Owner.FindAsync(id);
             db.Owner.Remove(owner);
             await db.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
+        public async Task<IActionResult> Member(string ssn)
+        {
+            if (ssn == null)
+            {
+                return NotFound();
+            }
+            try
+            {
+            var vehicles = await db.Vehicle
+                .Where(v => v.Owner.SocialSecurityNumber == ssn)
+                .Join(db.Owner, v => v.Owner.SocialSecurityNumber, o => o.SocialSecurityNumber, (v, o) => new { v, o })
+                .Join(db.VehicleType, vo => vo.v.VehicleType.VehicleTypeId, vt => vt.VehicleTypeId, (vo, vt) => new { vo, vt })
+                .Select(m => new OwnerDetailsViewModel
+                {
+                    SocialSecurityNumber = m.vo.o.SocialSecurityNumber,
+                    FullName = m.vo.o.FirstName + " " + m.vo.o.LastName,
+                    RegistrationNumber = m.vo.v.RegistrationNumber,
+                    Brand = m.vo.v.Brand,
+                    VehicleType = m.vo.v.VehicleType.Type,
+                    VehicleModel = m.vo.v.VehicleModel
+                }).ToListAsync();
+
+                if (vehicles == null)
+                {
+                    return NotFound();
+                }
+                return View(vehicles);
+            }
+            catch (Exception)
+            {
+                throw;
+            }
+        }
+
         private bool OwnerExists(string id)
         {
             return db.Owner.Any(e => e.SocialSecurityNumber == id);
+        }
+
+
+        [ActionName("Overview")]
+        public async Task<IActionResult> Overview()
+        {
+            var listWithEmpty = (from p in db.Owner
+                                 join f in db.Vehicle
+                                 on p.SocialSecurityNumber equals f.Owner.SocialSecurityNumber into ThisList
+                                 from f in ThisList.DefaultIfEmpty()
+
+                                 group p by new
+                                 {
+                                     p.FirstName,
+                                     p.LastName,
+                                     p.SocialSecurityNumber
+                                 } into gcs
+                                 select new
+                                 {
+                                     FirstName = gcs.Key.FirstName,
+                                     LastName = gcs.Key.LastName,
+                                     SocialSecurityNumber = gcs.Key.SocialSecurityNumber,
+                                     NumberOfVehicles = gcs.Select(x => x).Distinct().Count(),
+                                 })
+                               .ToList()
+                                .Select(x => new Models.ViewModels.MemberDetailsViewModel()
+                                {
+                                    FirstName = x.FirstName,
+                                    LastName = x.LastName,
+                                    FullName = x.FirstName + " " + x.LastName,
+                                    SocialSecurityNumber = x.SocialSecurityNumber,
+                                    NumberOfVehicles = x.NumberOfVehicles
+                                });
+
+            var sortedMemberList = listWithEmpty.OrderBy(x => x.FirstName.Substring(0, 1), StringComparer.Ordinal);
+
+            return View(sortedMemberList);
         }
     }
 }

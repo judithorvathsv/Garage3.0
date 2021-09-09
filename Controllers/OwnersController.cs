@@ -211,25 +211,29 @@ namespace Garage3.Controllers
                                  from f in ThisList.DefaultIfEmpty()
 
                                  group p by new
-                                 {
+                                 {                                    
                                      p.FirstName,
                                      p.LastName,
-                                     p.SocialSecurityNumber
+                                     p.SocialSecurityNumber,
+                                     p.OwnerId,
+
                                  } into gcs
                                  select new
-                                 {
+                                 {                               
                                      FirstName = gcs.Key.FirstName,
                                      LastName = gcs.Key.LastName,
                                      SocialSecurityNumber = gcs.Key.SocialSecurityNumber,
+                                     Id = gcs.Key.OwnerId,
                                      NumberOfVehicles = gcs.Select(x => x).Distinct().Count(),
                                  })
                                .ToList()
                                 .Select(x => new Models.ViewModels.MemberDetailsViewModel()
-                                {
+                                {                                   
                                     FirstName = x.FirstName,
                                     LastName = x.LastName,
                                     FullName = x.FirstName + " " + x.LastName,
                                     SocialSecurityNumber = x.SocialSecurityNumber,
+                                    Id = x.Id,
                                     NumberOfVehicles = x.NumberOfVehicles
                                 });
 

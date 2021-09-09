@@ -24,8 +24,6 @@ namespace Garage3.Controllers
         {
             db = context;
 
-            this.mapper = mapper;
-            faker = new Faker();
         }
 
         // GET: Owners

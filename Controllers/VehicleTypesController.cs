@@ -138,9 +138,9 @@ namespace Garage3.Controllers
         // POST: VehicleTypes/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(int VehicleTypeId)
+        public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var vehicleType = await db.VehicleType.FindAsync(VehicleTypeId);
+            var vehicleType = await db.VehicleType.FindAsync(id);
             db.VehicleType.Remove(vehicleType);
             await db.SaveChangesAsync();
             return RedirectToAction(nameof(Index));

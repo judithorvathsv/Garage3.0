@@ -152,7 +152,7 @@ namespace Garage3.Controllers
         // POST: Owners/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(string SocialSecurityNumber)
+        public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var owner = await db.Owner.FindAsync(id);
             db.Owner.Remove(owner);

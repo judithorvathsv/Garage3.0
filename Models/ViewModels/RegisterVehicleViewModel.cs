@@ -9,6 +9,7 @@ namespace Garage3.Models.ViewModels
 {
     public class RegisterVehicleViewModel
     {
+        [Required]
         public string SocialSecurityNumber {  get; set; }
         public string Name {  get; set; }
 

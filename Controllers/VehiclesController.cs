@@ -266,7 +266,7 @@ namespace Garage3.Controllers
 
             }).AsEnumerable();
         }
-
+        [HttpGet]
         public async Task<IActionResult> Register(string ssn)
         {
             if (ssn != null)
@@ -287,28 +287,35 @@ namespace Garage3.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Register(RegisterVehicleViewModel model)
         {
-            bool vehicleIsRegistered = await db.Vehicle.AnyAsync(v => v.RegistrationNumber == model.RegistrationNumber);
-
-            if (!vehicleIsRegistered)
+            if (ModelState.IsValid)
             {
-                var vehicle = new Vehicle
-                {
-                    RegistrationNumber = model.RegistrationNumber.ToUpper(),
-                    VehicleType = model.VehicleType,
-                    Brand = model.Brand,
-                    VehicleModel = model.VehicleModel
-                };
+                bool vehicleIsRegistered = await db.Vehicle.AnyAsync(v => v.RegistrationNumber == model.RegistrationNumber);
 
-                db.Add(vehicle);
-                await db.SaveChangesAsync();
-                TempData["Message"] = "";
-                return RedirectToAction("Details", new { id = vehicle.Id });
+                if (!vehicleIsRegistered)
+                {
+                    var vehicle = new Vehicle
+                    {
+                        RegistrationNumber = model.RegistrationNumber.ToUpper(),
+                        VehicleType = model.VehicleType,
+                        Brand = model.Brand,
+                        VehicleModel = model.VehicleModel
+                    };
+
+                    db.Add(vehicle);
+                    await db.SaveChangesAsync();
+                    TempData["RegMessage"] = "";
+                    return RedirectToAction("Details", new { id = vehicle.Id });
+                }
+                else
+                {
+                    var existingvehicle = await db.Vehicle.FirstOrDefaultAsync(v => v.RegistrationNumber.Contains(model.RegistrationNumber));
+                    TempData["RegMessage"] = "A vehicle with this registration number is already registered!";
+                    return RedirectToAction("Details", new { id = existingvehicle.Id });
+                }
             }
             else
             {
-                var existingvehicle = await db.Vehicle.FirstOrDefaultAsync(v => v.RegistrationNumber.Contains(model.RegistrationNumber));
-                TempData["Message"] = "A vehicle with this registration number is already registered!";
-                return RedirectToAction("Details", new { id = existingvehicle.Id });
+                return View(model);
             }
 
         }

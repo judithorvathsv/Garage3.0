@@ -49,18 +49,33 @@ namespace Garage3.Controllers
             return View();
         }
 
-        [HttpPost][ValidateAntiForgeryToken]
+        [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Register(RegisterMemberViewModel model)
         {
-            var member = new Owner
+            if (ModelState.IsValid)
             {
-                SocialSecurityNumber = model.SocialSecurityNumber,
-                FirstName = model.FirstName,
-                LastName = model.LastName
-            };
-            db.Add(member);
-                await db.SaveChangesAsync();
-                return RedirectToAction("Register", "Vehicles", new { ssn = member.SocialSecurityNumber} );
+                bool memberIsRegistered = await db.Owner.AnyAsync(v => v.SocialSecurityNumber == model.SocialSecurityNumber);
+                if (!memberIsRegistered)
+                {
+
+                    var member = new Owner
+                    {
+                        SocialSecurityNumber = model.SocialSecurityNumber,
+                        FirstName = model.FirstName,
+                        LastName = model.LastName
+                    };
+                    db.Add(member);
+                    await db.SaveChangesAsync();
+                    return RedirectToAction("Register", "Vehicles", new { ssn = member.SocialSecurityNumber });
+                }
+                else
+                {
+                    var existingMember = await db.Owner.FirstOrDefaultAsync(v => v.SocialSecurityNumber.Contains(model.SocialSecurityNumber));
+                    TempData["SSNMessage"] = "A member with this social security number already exists!";
+                }
+            }
+            return View(model);
         }
 
         // GET: Owners/Edit/5

@@ -213,9 +213,7 @@ namespace Garage3.Migrations
             modelBuilder.Entity("Garage3.Models.ParkingPlace", b =>
                 {
                     b.Property<int>("ParkingPlaceId")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("int")
-                        .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
+                        .HasColumnType("int");
 
                     b.Property<bool>("IsOccupied")
                         .HasColumnType("bit");

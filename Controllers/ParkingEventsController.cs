@@ -13,17 +13,17 @@ namespace Garage3.Controllers
 {
     public class ParkingEventsController : Controller
     {
-        private readonly Garage3Context _context;
+        private readonly Garage3Context db;
 
         public ParkingEventsController(Garage3Context context)
         {
-            _context = context;
+            db = context;
         }
 
         // GET: ParkingEvents
         public async Task<IActionResult> Index()
         {
-            return View(await _context.ParkingEvent.ToListAsync());
+            return View(await db.ParkingEvent.ToListAsync());
         }
 
         // GET: ParkingEvents/Details/5
@@ -34,7 +34,7 @@ namespace Garage3.Controllers
                 return NotFound();
             }
 
-            var parkingEvent = await _context.ParkingEvent
+            var parkingEvent = await db.ParkingEvent
                 .FirstOrDefaultAsync(m => m.Vehicle.VehicleId == id);
             if (parkingEvent == null)
             {
@@ -57,8 +57,8 @@ namespace Garage3.Controllers
         //[ValidateAntiForgeryToken]
         public async Task<IActionResult> Park(int id)
         {
-            var parkingVehicle = await _context.Vehicle.Where(v => v.VehicleId == id).FirstOrDefaultAsync();
-            var parkingPlace = await _context.ParkingPlace.Where(pp => pp.IsOccupied == false).FirstOrDefaultAsync();
+            var parkingVehicle = await db.Vehicle.Where(v => v.VehicleId == id).FirstOrDefaultAsync();
+            var parkingPlace = await db.ParkingPlace.Where(pp => pp.IsOccupied == false).FirstOrDefaultAsync();
             id = parkingVehicle.OwnerId;
             parkingPlace.IsOccupied = true;
 
@@ -69,8 +69,8 @@ namespace Garage3.Controllers
                 TimeOfArrival = DateTime.Now
             };
 
-            _context.ParkingEvent.Update(parkingEvent);
-            await _context.SaveChangesAsync();
+            db.ParkingEvent.Update(parkingEvent);
+            await db.SaveChangesAsync();
 
             return RedirectToAction("Member","Owners", new OwnerDetailsViewModel { Id = id});
         }
@@ -91,8 +91,8 @@ namespace Garage3.Controllers
             {
                 try
                 {
-                    _context.Update(parkingEvent);
-                    await _context.SaveChangesAsync();
+                    db.Update(parkingEvent);
+                    await db.SaveChangesAsync();
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -118,7 +118,7 @@ namespace Garage3.Controllers
                 return NotFound();
             }
 
-            var parkingEvent = await _context.ParkingEvent
+            var parkingEvent = await db.ParkingEvent
                 .FirstOrDefaultAsync(m => m.ParkingPlace.ParkingPlaceId == id);
             if (parkingEvent == null)
             {
@@ -133,15 +133,21 @@ namespace Garage3.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
         {
-            var parkingEvent = await _context.ParkingEvent.FindAsync(id);
-            _context.ParkingEvent.Remove(parkingEvent);
-            await _context.SaveChangesAsync();
+            var parkingEvent = await db.ParkingEvent.FindAsync(id);
+            db.ParkingEvent.Remove(parkingEvent);
+            await db.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
         private bool ParkingEventExists(int id)
         {
-            return _context.ParkingEvent.Any(e => e.ParkingPlace.ParkingPlaceId == id);
+            return db.ParkingEvent.Any(e => e.ParkingPlace.ParkingPlaceId == id);
+        }
+
+        public override bool Equals(object obj)
+        {
+            return obj is ParkingEventsController controller &&
+                   EqualityComparer<Garage3Context>.Default.Equals(db, controller.db);
         }
     }
 }

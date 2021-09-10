@@ -164,7 +164,7 @@ namespace Garage3.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        public async Task<IActionResult> Member(int id)
+        public async Task<IActionResult> MemberDetails(int id)
         {
             try
             {

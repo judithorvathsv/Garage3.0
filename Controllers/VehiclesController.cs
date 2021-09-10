@@ -117,20 +117,21 @@ namespace Garage3.Controllers
             var model = new OverviewListViewModel();
 
             var listWithEmpty = (from f in db.Vehicle
-                                 join p in db.Owner on f.OwnerId equals p.OwnerId                       
-                                 join t in db.ParkingEvent on f.VehicleId equals t.VehicleId            
-                                 join ft in db.VehicleType on f.VehicleTypeId equals ft.VehicleTypeId                           
-                                 into l from ft in l.DefaultIfEmpty()                                 
+                                 join p in db.Owner on f.OwnerId equals p.OwnerId
+                                 join t in db.ParkingEvent on f.VehicleId equals t.VehicleId
+                                 join ft in db.VehicleType on f.VehicleTypeId equals ft.VehicleTypeId
+                                 into l
+                                 from ft in l.DefaultIfEmpty()
 
                                  select new OverviewViewModel
                                  {
                                      VehicleId = f.VehicleId,
                                      FullName = p.FirstName + " " + p.LastName,
-                                     VehicleRegistrationNumber = f.RegistrationNumber,                
+                                     VehicleRegistrationNumber = f.RegistrationNumber,
                                      VehicleArrivalTime = t.TimeOfArrival,
                                      VehicleParkDuration = t.TimeOfArrival - DateTime.Now,
-                                     VehicleType = ft.Type 
-                                     
+                                     VehicleType = ft.Type
+
 
                                  }).Distinct();
 
@@ -202,7 +203,7 @@ namespace Garage3.Controllers
 
 
 
-    
+
         //For vehicle Overview sorting
         private IEnumerable<OverviewViewModel> GetOverviewViewModelAsEnumerable()
         {
@@ -210,7 +211,7 @@ namespace Garage3.Controllers
                         join p in db.Owner on f.OwnerId equals p.OwnerId                       //owner db
                         join t in db.ParkingEvent on f.VehicleId equals t.VehicleId            //parkingevent db
                         join ft in db.VehicleType on f.VehicleTypeId equals ft.VehicleTypeId //vehicletype db
-                       
+
                         select new OverviewViewModel
                         {
                             VehicleId = f.VehicleId,
@@ -281,9 +282,9 @@ namespace Garage3.Controllers
             return View("Overview", model);
         }
 
-       
 
-    [HttpGet, ActionName("OverviewSort")]
+
+        [HttpGet, ActionName("OverviewSort")]
         public async Task<IActionResult> OverviewSort(string sortingVehicle)
         {
             //string parkedStatusStr = sortingVehicle.Split(",")[1];
@@ -436,29 +437,20 @@ namespace Garage3.Controllers
             {
                 bool vehicleIsRegistered = await db.Vehicle.AnyAsync(v => v.RegistrationNumber == model.RegistrationNumber);
 
-                if (!vehicleIsRegistered)
+                var vehicle = new Vehicle
                 {
-                    var vehicle = new Vehicle
-                    {
-                        RegistrationNumber = model.RegistrationNumber.ToUpper(),
-                        VehicleTypeId = model.VehicleTypeId,
-                        Brand = model.Brand,
-                        VehicleModel = model.VehicleModel,
-                        OwnerId = model.Id,
+                    RegistrationNumber = model.RegistrationNumber.ToUpper(),
+                    VehicleTypeId = model.VehicleTypeId,
+                    Brand = model.Brand,
+                    VehicleModel = model.VehicleModel,
+                    OwnerId = model.Id,
 
-                    };
+                };
 
-                    db.Add(vehicle);
-                    await db.SaveChangesAsync();
-                    TempData["RegMessage"] = "";
-                    return RedirectToAction("Details", new { id = vehicle.VehicleId });
-                }
-                else
-                {
-                    var existingvehicle = await db.Vehicle.FirstOrDefaultAsync(v => v.RegistrationNumber.Contains(model.RegistrationNumber));
-                    TempData["RegMessage"] = "A vehicle with this registration number is already registered!";
-                    return RedirectToAction("Details", new { id = existingvehicle.VehicleId });
-                }
+                db.Add(vehicle);
+                await db.SaveChangesAsync();
+                TempData["RegMessage"] = "";
+                return RedirectToAction("Details", new { id = vehicle.VehicleId });
             }
             else
             {
@@ -719,6 +711,13 @@ namespace Garage3.Controllers
         //    };
         //    return View(model);
         //}
+        public async Task<IActionResult> CheckUnique(string registrationnumber)
+        {
+            bool regExists = await db.Vehicle.AnyAsync(v => v.RegistrationNumber == registrationnumber);
 
+            if (regExists) return Json("A vehicle with this registration number aldready exists.");
+
+            return Json(true);
+        }
     }
 }

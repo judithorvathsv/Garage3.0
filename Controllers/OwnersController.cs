@@ -61,10 +61,6 @@ namespace Garage3.Controllers
         {
             if (ModelState.IsValid)
             {
-                bool memberIsRegistered = await db.Owner.AnyAsync(v => v.SocialSecurityNumber == model.SocialSecurityNumber);
-                if (!memberIsRegistered)
-                {
-
                     var member = new Owner
                     {
                         SocialSecurityNumber = model.SocialSecurityNumber,
@@ -75,12 +71,6 @@ namespace Garage3.Controllers
                     await db.SaveChangesAsync();
                     return RedirectToAction("Register", "Vehicles", new { id = member.OwnerId });
                 }
-                else
-                {
-                    var existingMember = await db.Owner.FirstOrDefaultAsync(v => v.SocialSecurityNumber.Contains(model.SocialSecurityNumber));
-                    TempData["SSNMessage"] = "A member with this social security number already exists!";
-                }
-            }
             return View(model);
         }
 
@@ -168,6 +158,7 @@ namespace Garage3.Controllers
         {
             try
             {
+                var owner = await db.Owner.Where(o => o.OwnerId == id).FirstOrDefaultAsync();
                 var vehicles = await db.Vehicle
                 .Where(v => v.OwnerId == id)
                 .Include(v => v.Owner)
@@ -183,6 +174,8 @@ namespace Garage3.Controllers
                 var model = new OwnerDetailsViewModel
                 {
                     Id = id,
+                    SocialSecurityNumber = owner.SocialSecurityNumber,
+                    FullName = $"{owner.FirstName} {owner.LastName}",
                     Vehicles = vehicles
                 };
                 if (vehicles == null)
@@ -233,6 +226,15 @@ namespace Garage3.Controllers
 
             return View(listWithEmpty);
 
+        }
+
+        public async Task<IActionResult> CheckUnique(string socialsecuritynumber)
+        {
+            bool ssnExists = await db.Owner.AnyAsync(o => o.SocialSecurityNumber == socialsecuritynumber);
+
+            if (ssnExists) return Json("A user with this social security number aldready exists.");
+            
+            return Json(true);
         }
     }
 }

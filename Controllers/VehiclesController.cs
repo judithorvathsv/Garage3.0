@@ -200,9 +200,9 @@ namespace Garage3.Controllers
         }
         */
 
-       
 
 
+    
         //For vehicle Overview sorting
         private IEnumerable<OverviewViewModel> GetOverviewViewModelAsEnumerable()
         {
@@ -223,29 +223,44 @@ namespace Garage3.Controllers
                         });
             return list.AsEnumerable();
         }
-   
+
 
         //For vehicle Overview filtering regnumber, type
         public async Task<IActionResult> Filter(OverviewListViewModel viewModel)
-        {            
+        {
             var model = new OverviewListViewModel();
             var vehicleAndOwner = GetOverviewViewModelAsEnumerable();
 
             var result = string.IsNullOrWhiteSpace(viewModel.Regnumber) ?
                                vehicleAndOwner :
                                vehicleAndOwner.Where(m => m.VehicleRegistrationNumber.StartsWith(viewModel.Regnumber.ToUpper()));
-           
-          
-
-            OverviewListViewModel vehicleTypeViewModel = new OverviewListViewModel();
-      
-
-            //model.VehicleTypes = await GetAllVehicleTypesAsync();
 
 
-            //result = viewModel.Types == null ?
-            //result :
+
+
+
+            result = viewModel.Types == null ?
+            result :
+            result.Where(x => x.VehicleId == model.Types.VehicleTypeId);
+
+            //result= (from x in vehicleAndOwner select new SelectListItem
+            //{ Text = x.ToString(), Value = x.ToString()  }
+            //  ).Distinct().ToList();
+
+            //result.Where(x=>x.VehicleId==viewModel.VehicleTypeId) ;
+
+
+            //result.Where(x => x.VehicleId == model.Types.VehicleTypeId);
+            /*
+            result.Where(v => v.VehicleType == viewModel.VehicleTypes.Select(g => new SelectListItem()
+              {
+                  Text = g.ToString(),
+                  Value = g.ToString()
+              }).ToList(); 
+            */
+            //result.Where(v => v.VehicleTypeId == viewModel.VehicleTypes.Select(v=>v.Text))  );
             //result.Where(v => v.VehicleType == viewModel.Types);
+            //result.GetVehicleTypesAsync();
 
             IQueryable<OverviewViewModel> vehicleAndOwnerQuerable = result.Select(v => new OverviewViewModel
             {

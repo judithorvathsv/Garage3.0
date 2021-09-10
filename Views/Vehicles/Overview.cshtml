@@ -30,7 +30,7 @@
                                 <input type="text" class="form-control form-control-sm" name="Regnumber" style="text-transform:uppercase;" placeholder="Regnumber..." />
                             </div>
                             <div class="input-group-append w-50">                            
-                                    <select asp-for="VehicleTypeId" class="form-control" asp-items="@await vehicleTypeSelect.GetVehicleTypesAsync()" >
+                                    <select name="VehicleTypeId" asp-for="VehicleTypeId" class="form-control" asp-items="@await vehicleTypeSelect.GetVehicleTypesAsync()" >
                                         <option selected="selected" value="">Please select</option>
                                     </select>   
                             </div>

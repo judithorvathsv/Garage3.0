@@ -13,29 +13,26 @@ namespace Garage3.Models.ViewModels
 
         [Display(Name = "Registration number")]      
         public string RegistrationNumber { get; set; }
-
         
-        public string Brand { get; set; }
+        public string VehicleType { get; set; }
 
+        public string Brand { get; set; }
 
         [Display(Name = "Vehicle model")]      
         public string VehicleModel { get; set; }
 
-
         public int VehicleTypeId { get; set; }
 
-
         public string SocialSecurityNumber { get; set; }
-
         
         [Display(Name = "Firstname")]       
         public string FirstName { get; set; }
-
    
         [Display(Name = "Lastname")]       
         public string LastName { get; set; }
 
-
+        [Display(Name = "Name")]
+        public string FullName { get; set; }
 
 
 

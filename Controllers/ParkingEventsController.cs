@@ -163,13 +163,8 @@ namespace Garage3.Controllers
             return View("Details", model);
         }
 
-        // GET: ParkingEvents/Edit/5
-        public async Task<IActionResult> Edit(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
+            db.ParkingEvent.Update(parkingEvent);
+            await db.SaveChangesAsync();
 
             var parkingEvent = await db.ParkingEvent.FindAsync(id);
             if (parkingEvent == null)
@@ -246,6 +241,12 @@ namespace Garage3.Controllers
         private bool ParkingEventExists(int id)
         {
             return db.ParkingEvent.Any(e => e.ParkingPlace.ParkingPlaceId == id);
+        }
+
+        public override bool Equals(object obj)
+        {
+            return obj is ParkingEventsController controller &&
+                   EqualityComparer<Garage3Context>.Default.Equals(db, controller.db);
         }
     }
 }

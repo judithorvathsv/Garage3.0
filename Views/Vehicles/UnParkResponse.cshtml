@@ -1,4 +1,4 @@
-﻿@model Garage3.Models.ViewModels.UnParkResponseViewModel
+﻿@model UnParkResponseViewModel
 
 @{
     ViewData["Title"] = "UnParkResponse";
@@ -9,10 +9,13 @@
 <p>Do you want a receipt?</p>
 <div class="row">
     <div class="p-1">
-        <a class="btn btn-primary" asp-controller="Vehicles" asp-action="Receipt" asp-route-id="@Model.Id" asp-route-departureTime="@Model.VehicleDepartureTime">Yes I want a receipt</a>
+        <a class="btn btn-primary" asp-controller="Vehicles" asp-action="Receipt" 
+           asp-route-id="@Model.Id" 
+           asp-route-departureTime="@Model.VehicleDepartureTime"
+           asp-route-arrivalTime="@Model.VehicleArrivalTime"
+           >Yes I want a receipt</a>
     </div>
     <div class="p-1">
-        <a class="btn btn-primary" asp-controller="Vehicles" asp-action="Index">No receipt, back to Index page</a>
+        <a class="btn btn-primary" asp-controller="Vehicles" asp-action="Overview">No receipt, back to Overview</a>
     </div>
 </div>
-

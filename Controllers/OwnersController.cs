@@ -169,19 +169,32 @@ namespace Garage3.Controllers
         {
             try
             {
-            var vehicles = await db.Vehicle
-                .Where(v => v.OwnerId == id)
-                .Join(db.Owner, v => v.Owner.SocialSecurityNumber, o => o.SocialSecurityNumber, (v, o) => new { v, o })
-                .Join(db.VehicleType, vo => vo.v.VehicleType.VehicleTypeId, vt => vt.VehicleTypeId, (vo, vt) => new { vo, vt })
-                .Select(m => new OwnerDetailsViewModel
+            //var vehicles2 = await db.Vehicle
+            //    .Where(v => v.OwnerId == id)
+            //    .Join(db.Owner, v => v.Owner.SocialSecurityNumber, o => o.SocialSecurityNumber, (v, o) => new { v, o })
+            //    .Join(db.VehicleType, vo => vo.v.VehicleType.VehicleTypeId, vt => vt.VehicleTypeId, (vo, vt) => new { vo, vt })
+            //    .Select(m => new OwnerDetailsViewModel
+            //    {
+            //        Id = m.vo.v.VehicleId,
+            //        SocialSecurityNumber = m.vo.o.SocialSecurityNumber,
+            //        FullName = m.vo.o.FirstName + " " + m.vo.o.LastName,
+            //        RegistrationNumber = m.vo.v.RegistrationNumber,
+            //        Brand = m.vo.v.Brand,
+            //        VehicleType = m.vo.v.VehicleType.Type,
+            //        VehicleModel = m.vo.v.VehicleModel
+            //    }).ToListAsync();
+
+                var vehicles = await db.Vehicle
+                .Where(v => v.OwnerId == id).Select(m => new OwnerDetailsViewModel
                 {
-                    Id = m.vo.v.VehicleId,
-                    SocialSecurityNumber = m.vo.o.SocialSecurityNumber,
-                    FullName = m.vo.o.FirstName + " " + m.vo.o.LastName,
-                    RegistrationNumber = m.vo.v.RegistrationNumber,
-                    Brand = m.vo.v.Brand,
-                    VehicleType = m.vo.v.VehicleType.Type,
-                    VehicleModel = m.vo.v.VehicleModel
+                    Id = m.VehicleId,
+                    OwnerId = m.Owner.OwnerId,
+                    SocialSecurityNumber = m.Owner.SocialSecurityNumber,
+                    FullName = m.Owner.FirstName + " " + m.Owner.LastName,
+                    RegistrationNumber = m.RegistrationNumber,
+                    Brand = m.Brand,
+                    VehicleType = m.VehicleType.Type,
+                    VehicleModel = m.VehicleModel
                 }).ToListAsync();
 
                 if (vehicles == null)

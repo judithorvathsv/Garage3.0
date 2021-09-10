@@ -75,9 +75,9 @@ namespace Garage3.Controllers
             var allVehicles = db.Vehicle;
 
             //IQueryable<OverviewViewModel> vehicles = GetOverviewViewModel(allVehicles);
-           // string parkedStatusStr = parkedStatus.ToString();
+            // string parkedStatusStr = parkedStatus.ToString();
             var vehicles = GetOverviewViewModelAsEnumerable(allVehicles);
-           // parkedStatus = ParkingStatus(parkedStatusStr, model, ref vehicles);
+            // parkedStatus = ParkingStatus(parkedStatusStr, model, ref vehicles);
 
             //if (parkedStatus == 3)
             //{
@@ -269,16 +269,18 @@ namespace Garage3.Controllers
         [HttpGet]
         public async Task<IActionResult> Register(int id)
         {
-            if (await db.Owner.AnyAsync(o => o.OwnerId == id))
+            var owner = await db.Owner.FindAsync(id);
+            if (owner == null) return NotFound();
+            else
             {
                 var model = new RegisterVehicleViewModel
                 {
                     VehicleTypes = await GetAllVehicleTypesAsync(),
-                    Id = id
+                    Id = id,
+                    FullName = $"{owner.FirstName} {owner.LastName}"
                 };
                 return View(model);
             }
-            return NotFound();
         }
 
         [HttpPost]
@@ -298,7 +300,7 @@ namespace Garage3.Controllers
                         Brand = model.Brand,
                         VehicleModel = model.VehicleModel,
                         OwnerId = model.Id,
-                        
+
                     };
 
                     db.Add(vehicle);
@@ -527,10 +529,10 @@ namespace Garage3.Controllers
                 VehicleArrivalTime = arrivalTime,
                 VehicleDepartureTime = departureTime,
                 VehicleParkDuration = arrivalTime - departureTime,
-                VehicleParkPrice = (departureTime - arrivalTime).TotalHours * 100
+                VehicleParkPrice = (departureTime - arrivalTime).TotalHours * 100,
 
-                //MemberFullName = $"{vehicle.Owner.FirstName}" 
-                //MemberSSN
+                MemberFullName = $"{vehicle.Owner.FirstName}",
+                MemberSSN = vehicle.Owner.SocialSecurityNumber
             };
 
             return View(model);

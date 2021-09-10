@@ -8,25 +8,26 @@ namespace Garage3.Models.ViewModels
 {
     public class ReceiptViewModel
     {
+        // Vehicle
         [Display(Name = "Registration Plate")]
         public string VehicleRegistrationNumber { get; set; }
-
-
+        
         [Display(Name = "Arrival Time")]
         public DateTime VehicleArrivalTime { get; set; }
-
-
+        
         [Display(Name = "Departure Time")]
         public DateTime VehicleDepartureTime { get; set; }
-
-
+        
         [Display(Name = "Duration Parked")]
         [DisplayFormat(DataFormatString = "{0:%d} day(s) {0:hh'h 'mm'm 'ss's'}", ApplyFormatInEditMode = true)]
         public TimeSpan VehicleParkDuration { get; set; }
-
-
+        
         [Display(Name = "Total cost")]
         [DisplayFormat(DataFormatString = "{0:C0}", ApplyFormatInEditMode = true)]
         public double VehicleParkPrice { get; set; }
+
+        // Member
+        public string MemberFullName { get; set; }
+        public string MemberSSN { get; set; }
     }
 }

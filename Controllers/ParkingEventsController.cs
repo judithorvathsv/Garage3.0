@@ -62,49 +62,37 @@ namespace Garage3.Controllers
         public async Task<IActionResult> Park(int id, int vehcleid)
         {
 
-            // var vehicle = await db.Vehicle.Where(v => v.VehicleId == vehcleid)
-            //.Join(db.VehicleType, v => v.VehicleTypeId, t => t.VehicleTypeId, (v, t) => new { v, t })
-            //     .Select(vh => new { vh.v.VehicleType, vh.t.Size, vh.v })
-            //    .FirstOrDefaultAsync();
-
-            var member = await db.Owner.Where(o => o.OwnerId == id).Select(o => o).FirstOrDefaultAsync();
-
-            var occupiedSpaces = new List<ParkingEvent>();
-
-            //var availableSpaces = await db.ParkingPlace.Where(pp => pp.IsOccupied == false)
-            //                                     .Select(pp => pp.ParkingPlaceId)
-            //                                     .ToListAsync();
-
-            var numberOfPlaces = await db.ParkingPlace.CountAsync();
-
-            var parkingPlaceId = await db.ParkingPlace.AsNoTracking().OrderBy(pp => pp.ParkingPlaceId).Select(pp => pp.ParkingPlaceId).FirstOrDefaultAsync();
-
+            //var member = await db.Owner.Where(o => o.OwnerId == id).Select(o => o).FirstOrDefaultAsync();
+            var numberOfPlaces = await db.ParkingPlace.AsNoTracking().CountAsync();
+            //Hämtar det sista inlagda värdet
+            var parkingPlaceId = await db.ParkingPlace.AsNoTracking().OrderBy(pp => pp.ParkingPlaceId).Select(pp => pp.ParkingPlaceId).LastOrDefaultAsync();
             var parkingVehicle = await db.Vehicle.Include(v => v.VehicleType).Where(v => v.VehicleId == vehcleid).FirstOrDefaultAsync();
             var parkingPlace = await db.ParkingPlace.AsNoTracking().Where(pp => pp.IsOccupied == false).FirstOrDefaultAsync();
             var parkingplace = new ParkingPlace();
 
-            if (numberOfPlaces < GarageCaspacity)
+
+            if (parkingPlaceId <= GarageCaspacity)
             {
-                if (parkingPlaceId <= GarageCaspacity)
+
+                if (parkingPlace != null)
                 {
+                    parkingplace.ParkingPlaceId = parkingPlace.ParkingPlaceId;
+                    parkingplace.IsOccupied = true;
 
-                    if (parkingPlace != null)
+                    var parkingevent = new ParkingEvent
                     {
-                        parkingplace.ParkingPlaceId = parkingPlace.ParkingPlaceId;
-                        parkingplace.IsOccupied = true;
+                        ParkingPlace = parkingplace,
+                        Vehicle = parkingVehicle,
+                        TimeOfArrival = DateTime.Now
+                    };
 
-                        var parkingevent = new ParkingEvent
-                        {
-                            ParkingPlace = parkingplace,
-                            Vehicle = parkingVehicle,
-                            TimeOfArrival = DateTime.Now
-                        };
+                    db.ParkingEvent.Update(parkingevent);
+                    await db.SaveChangesAsync();
 
-                        db.ParkingEvent.Update(parkingevent);
-                        await db.SaveChangesAsync();
-
-                    }
-                    else
+                }
+                else
+                {
+                    if (numberOfPlaces < GarageCaspacity)
                     {
                         parkingplace.ParkingPlaceId = parkingPlaceId + 1;
                         parkingplace.IsOccupied = true;
@@ -118,68 +106,61 @@ namespace Garage3.Controllers
                         db.ParkingEvent.Add(parkingevent);
                         await db.SaveChangesAsync();
                     }
+                    else
+                    {
+                        TempData["NoPlacesMessage"] = "There are no places in this garage";
+                    }
 
                 }
-                else
-                {
-                    parkingplace.ParkingPlaceId = parkingPlace.ParkingPlaceId;
-                    parkingplace.IsOccupied = true;
-                }
-
-                var model = new OwnerDetailsViewModel
-                {
-                    Id = id,
-                    FullName = member.FirstName + " " + member.LastName,
-                    SocialSecurityNumber = member.SocialSecurityNumber,
-                    IsParked = true,
-                    VehicleId = parkingVehicle.VehicleId,
-                    RegistrationNumber = parkingVehicle.RegistrationNumber,
-                    Brand = parkingVehicle.Brand,
-                    VehicleModel = parkingVehicle.VehicleModel,
-                    VehicleType = parkingVehicle.VehicleType.Type
-                };
-
-                return View("Details", model);
             }
-            else
+
+            var model = new OwnerDetailsViewModel
             {
-                TempData["NoPlacesMessage"] = "There are no places in this garage";
-                return View("Details");
-            }
+                Id = id,
+                FullName = parkingVehicle.Owner.FirstName + " " + parkingVehicle.Owner.LastName,
+                SocialSecurityNumber = parkingVehicle.Owner.SocialSecurityNumber,
+                IsParked = true,
+                VehicleId = parkingVehicle.VehicleId,
+                RegistrationNumber = parkingVehicle.RegistrationNumber,
+                Brand = parkingVehicle.Brand,
+                VehicleModel = parkingVehicle.VehicleModel,
+                VehicleType = parkingVehicle.VehicleType.Type
+            };
 
-            //parkingevent.VehicleId = vehcleid;
-            //parkingevent.ParkingPlaceId = availableSpaces.First();
-            //parkingevent.TimeOfArrival = DateTime.Now;
-
-            //for (int i = 0; i < vehicle.VehicleType.Size; i++)
-            //{
-            //    occupiedSpaces.Add(new ParkingEvent { VehicleId = vehcleid, ParkingPlaceId = availableSpaces.First() });
-            //}
-
-            //foreach (var item in occupiedSpaces)
-            //{
-            //    db.ParkingEvent.Add(item);
-            //    await db.SaveChangesAsync();
-            //}
-
+            return View("Details", model);
 
         }
 
         public async Task<IActionResult> UnPark(int id, int vehcleid)
         {
             var parkingplaceid = await db.ParkingEvent.Where(p => p.VehicleId == vehcleid).Select(p => p.ParkingPlaceId).FirstOrDefaultAsync();
-            //var parkingPlaceId = await db.ParkingPlace.Where(pp => pp.ParkingPlaceId == parkingplaceid).Select(pp => pp.ParkingPlaceId).FirstOrDefaultAsync();
-            //var parkingVehicle = await db.Vehicle.Where(v => v.VehicleId == vehcleid).FirstOrDefaultAsync();
+            var parkingVehicle = await db.Vehicle.Include(v => v.VehicleType).Where(v => v.VehicleId == vehcleid).FirstOrDefaultAsync();
+            var member = await db.Owner.Where(o => o.OwnerId == id).Select(o => o).FirstOrDefaultAsync();
 
             var parkingplace = new ParkingPlace
             {
                 ParkingPlaceId = parkingplaceid,
                 IsOccupied = false
             };
+
             db.ParkingPlace.Update(parkingplace);
             await db.SaveChangesAsync();
 
-            return View("Details");
+
+            var model = new OwnerDetailsViewModel
+            {
+                Id = id,
+                FullName = member.FirstName + " " + member.LastName,
+                SocialSecurityNumber = member.SocialSecurityNumber,
+                IsParked = false,
+                VehicleId = parkingVehicle.VehicleId,
+                RegistrationNumber = parkingVehicle.RegistrationNumber,
+                Brand = parkingVehicle.Brand,
+                VehicleModel = parkingVehicle.VehicleModel,
+                VehicleType = parkingVehicle.VehicleType.Type
+            };
+
+            return View("Details", model);
         }
 
         // GET: ParkingEvents/Edit/5

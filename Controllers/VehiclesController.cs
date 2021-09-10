@@ -79,23 +79,6 @@ namespace Garage3.Controllers
             var vehicles = GetOverviewViewModelAsEnumerable(allVehicles);
             parkedStatus = ParkingStatus(parkedStatusStr, model, ref vehicles);
 
-            //if (parkedStatus == 3)
-            //{
-            //    model.AllStatus = true;
-            //    ViewData["ParkedStatus"] = "3";
-            //}
-            //else if (parkedStatus == 2)
-            //{
-            //    model.UnparkedStatus = true;
-            //    ViewData["ParkedStatus"] = "2";
-            //    vehicles = vehicles.Where(u => u.VehicleParked.Equals(false));
-            //}
-            //else
-            //{
-            //    model.ParkedStatus = true;
-            //    ViewData["ParkedStatus"] = "1";
-            //    vehicles = vehicles.Where(u => u.VehicleParked.Equals(true));
-            //}
             model.VehicleTypesSelectList = await GetAllVehicleTypesAsync();
             model.Overview = vehicles;
 

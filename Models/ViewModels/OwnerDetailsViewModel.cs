@@ -9,6 +9,7 @@ namespace Garage3.Models.ViewModels
     public class OwnerDetailsViewModel
     {
         public int Id { get; set; }
+        public int VehicleId { get; set; }
 
         [Display(Name = "Social Security Number")]
         public string SocialSecurityNumber { get; set; }
@@ -29,5 +30,7 @@ namespace Garage3.Models.ViewModels
         public string Brand { get; set; }
         public string VehicleModel { get; set; }
         public string VehicleType { get; set; }
+
+        public bool IsParked { get; set; }
     }
 }

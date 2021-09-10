@@ -167,7 +167,7 @@ namespace Garage3.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        public async Task<IActionResult> Member(int id)
+        public async Task<IActionResult> MemberDetails(int id)
         {
             try
             {
@@ -180,10 +180,12 @@ namespace Garage3.Controllers
                     Id = id,
                     SocialSecurityNumber = m.vo.o.SocialSecurityNumber,
                     FullName = m.vo.o.FirstName + " " + m.vo.o.LastName,
+                    VehicleId = m.vo.v.VehicleId,
                     RegistrationNumber = m.vo.v.RegistrationNumber,
                     Brand = m.vo.v.Brand,
                     VehicleType = m.vo.v.VehicleType.Type,
-                    VehicleModel = m.vo.v.VehicleModel
+                    VehicleModel = m.vo.v.VehicleModel,
+                    IsParked = false
                 }).ToListAsync();
 
                 if (vehicles == null)

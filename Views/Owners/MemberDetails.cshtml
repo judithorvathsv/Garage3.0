@@ -1,7 +1,7 @@
 ﻿@model IEnumerable<Garage3.Models.ViewModels.OwnerDetailsViewModel>
 
 @{
-    ViewData["Title"] = "Member Details";
+    ViewData["Title"] = "Member details";
 }
 
 <h1>Member Details</h1>
@@ -45,7 +45,13 @@
                     <td> @Html.DisplayFor(modelItem => item.VehicleModel)</td>
                     <td> @Html.DisplayFor(modelItem => item.VehicleType)  </td>
                     <td>
-                        <a class="btn btn-primary" asp-controller="ParkingEvents"  asp-action="Park" asp-route-regnumber="@item.RegistrationNumber">Park</a>
+                      
+                        @if(@item.IsParked == false){
+                        <a class="btn btn-primary" asp-controller="ParkingEvents" asp-action="Park" asp-route-id="@Model.FirstOrDefault().Id" asp-route-vehcleid="@item.VehicleId">Park</a>
+                        }else{
+                        <a class="btn btn-primary" asp-controller="ParkingEvents" asp-action="UnPark" asp-route-id="@Model.FirstOrDefault().Id" asp-route-vehcleid="@item.VehicleId">Unpark</a>
+                        }
+
                     </td>
                 </tr>
             }

@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using Garage3.Data;
 using Garage3.Models;
 using Garage3.Models.ViewModels;
-
+using System.Data;
 
 namespace Garage3.Controllers
 {
@@ -114,24 +114,25 @@ namespace Garage3.Controllers
 
         public async Task<IActionResult> Overview()
         {
-
             var model = new OverviewListViewModel();
 
             var listWithEmpty = (from f in db.Vehicle
-                                 join p in db.Owner on f.OwnerId equals p.OwnerId                       //owner db
-                                 join t in db.ParkingEvent on f.VehicleId equals t.VehicleId            //parkingevent db
-                                 join ft in db.VehicleType on f.VehicleTypeId equals ft.VehicleTypeId //vehicletype db
+                                 join p in db.Owner on f.OwnerId equals p.OwnerId                       
+                                 join t in db.ParkingEvent on f.VehicleId equals t.VehicleId            
+                                 join ft in db.VehicleType on f.VehicleTypeId equals ft.VehicleTypeId                           
+                                 into l from ft in l.DefaultIfEmpty()                                 
 
                                  select new OverviewViewModel
                                  {
                                      VehicleId = f.VehicleId,
                                      FullName = p.FirstName + " " + p.LastName,
-                                     VehicleRegistrationNumber = f.RegistrationNumber,
+                                     VehicleRegistrationNumber = f.RegistrationNumber,                
                                      VehicleArrivalTime = t.TimeOfArrival,
                                      VehicleParkDuration = t.TimeOfArrival - DateTime.Now,
-                                     VehicleType = ft.Type
+                                     VehicleType = ft.Type 
+                                     
 
-                                 });
+                                 }).Distinct();
 
             model.Overview = listWithEmpty;
             return View(nameof(Overview), model);
@@ -201,7 +202,7 @@ namespace Garage3.Controllers
 
 
 
-
+    
         //For vehicle Overview sorting
         private IEnumerable<OverviewViewModel> GetOverviewViewModelAsEnumerable()
         {
@@ -209,7 +210,7 @@ namespace Garage3.Controllers
                         join p in db.Owner on f.OwnerId equals p.OwnerId                       //owner db
                         join t in db.ParkingEvent on f.VehicleId equals t.VehicleId            //parkingevent db
                         join ft in db.VehicleType on f.VehicleTypeId equals ft.VehicleTypeId //vehicletype db
-
+                       
                         select new OverviewViewModel
                         {
                             VehicleId = f.VehicleId,
@@ -224,7 +225,7 @@ namespace Garage3.Controllers
         }
 
 
-        //For vehicle Overview filtering
+        //For vehicle Overview filtering regnumber, type
         public async Task<IActionResult> Filter(OverviewListViewModel viewModel)
         {
             var model = new OverviewListViewModel();
@@ -238,10 +239,28 @@ namespace Garage3.Controllers
 
 
 
+            result = viewModel.Types == null ?
+            result :
+            result.Where(x => x.VehicleId == model.Types.VehicleTypeId);
 
-            //result = viewModel.Types == null ?
-            //result :
+            //result= (from x in vehicleAndOwner select new SelectListItem
+            //{ Text = x.ToString(), Value = x.ToString()  }
+            //  ).Distinct().ToList();
+
+            //result.Where(x=>x.VehicleId==viewModel.VehicleTypeId) ;
+
+
+            //result.Where(x => x.VehicleId == model.Types.VehicleTypeId);
+            /*
+            result.Where(v => v.VehicleType == viewModel.VehicleTypes.Select(g => new SelectListItem()
+              {
+                  Text = g.ToString(),
+                  Value = g.ToString()
+              }).ToList(); 
+            */
+            //result.Where(v => v.VehicleTypeId == viewModel.VehicleTypes.Select(v=>v.Text))  );
             //result.Where(v => v.VehicleType == viewModel.Types);
+            //result.GetVehicleTypesAsync();
 
             IQueryable<OverviewViewModel> vehicleAndOwnerQuerable = result.Select(v => new OverviewViewModel
             {
@@ -257,13 +276,14 @@ namespace Garage3.Controllers
             }).AsQueryable();
 
             model.Overview = vehicleAndOwnerQuerable.AsEnumerable();
-            model.VehicleTypesSelectList = await GetVehicleTypesAsync();
+            //model.VehicleTypes = await GetVehicleTypesAsync();
 
             return View("Overview", model);
         }
 
+       
 
-        [HttpGet, ActionName("OverviewSort")]
+    [HttpGet, ActionName("OverviewSort")]
         public async Task<IActionResult> OverviewSort(string sortingVehicle)
         {
             //string parkedStatusStr = sortingVehicle.Split(",")[1];
@@ -322,8 +342,6 @@ namespace Garage3.Controllers
             }
 
             model.Overview = vehicleAndMember;
-            model.VehicleTypesSelectList = await GetVehicleTypesAsync();
-
             return PartialView(nameof(Overview), model);
         }
 
@@ -476,6 +494,8 @@ namespace Garage3.Controllers
         }
         public async Task<IActionResult> UnPark(int? id)
         {
+            var vehicle = await db.Vehicle.FirstOrDefaultAsync(x => x.VehicleId == id);
+            //vehicle.IsParked = false;
             var departureTime = DateTime.Now;
             var parkingEvent = await db.ParkingEvent
                 .Where(pe => pe.VehicleId == id)

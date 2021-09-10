@@ -6,6 +6,7 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.EntityFrameworkCore;
 using Garage3.Data;
+using Garage3.Services;
 
 namespace Garage3
 {
@@ -23,7 +24,9 @@ namespace Garage3
         {
             services.AddControllersWithViews();
             services.AddDbContext<Garage3Context>(options =>
-                    options.UseSqlServer(Configuration.GetConnectionString("Garage3Context")));       
+                    options.UseSqlServer(Configuration.GetConnectionString("Garage3Context")));
+
+            services.AddTransient<IVehicleTypeSelectService, VehicleTypeSelectService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

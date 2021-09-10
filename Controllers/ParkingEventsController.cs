@@ -57,8 +57,8 @@ namespace Garage3.Controllers
         //[ValidateAntiForgeryToken]
         public async Task<IActionResult> Park(int id)
         {
-            var parkingVehicle = await _context.Vehicle.Where(v => v.VehicleId == id).FirstOrDefaultAsync();
-            var parkingPlace = await _context.ParkingPlace.Where(pp => pp.IsOccupied == false).FirstOrDefaultAsync();
+            var parkingVehicle = await db.Vehicle.Where(v => v.VehicleId == id).FirstOrDefaultAsync();
+            var parkingPlace = await db.ParkingPlace.Where(pp => pp.IsOccupied == false).FirstOrDefaultAsync();
             id = parkingVehicle.OwnerId;
             parkingPlace.IsOccupied = true;
 
@@ -69,8 +69,8 @@ namespace Garage3.Controllers
                 TimeOfArrival = DateTime.Now
             };
 
-            _context.ParkingEvent.Update(parkingEvent);
-            await _context.SaveChangesAsync();
+            db.ParkingEvent.Update(parkingEvent);
+            await db.SaveChangesAsync();
 
             return RedirectToAction("Member","Owners", new OwnerDetailsViewModel { Id = id});
         }
@@ -141,7 +141,6 @@ namespace Garage3.Controllers
 
         private bool ParkingEventExists(int id)
         {
-            return db.ParkingEvent.Any(e => e.ParkingPlace.ParkingPlaceId == id);
             return db.ParkingEvent.Any(e => e.ParkingPlace.ParkingPlaceId == id);
         }
 

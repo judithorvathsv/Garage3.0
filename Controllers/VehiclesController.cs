@@ -107,9 +107,9 @@ namespace Garage3.Controllers
          }
          */
 
-        
 
-   
+
+
 
 
         public async Task<IActionResult> Overview()
@@ -129,7 +129,7 @@ namespace Garage3.Controllers
                                      VehicleRegistrationNumber = f.RegistrationNumber,                
                                      VehicleArrivalTime = t.TimeOfArrival,
                                      VehicleParkDuration = t.TimeOfArrival - DateTime.Now,
-                                     VehicleType = ft.Type, 
+                                     VehicleType = ft.Type 
                                      
 
                                  }).Distinct();
@@ -470,31 +470,22 @@ namespace Garage3.Controllers
             }
             return RedirectToAction("Details", new { id = vehicle.VehicleId });
         }
-        [HttpGet]
         public async Task<IActionResult> UnPark(int? id)
         {
             var vehicle = await db.Vehicle.FirstOrDefaultAsync(x => x.VehicleId == id);
             //vehicle.IsParked = false;
             var departureTime = DateTime.Now;
+            var parkingEvent = await db.ParkingEvent
+                .Where(pe => pe.VehicleId == id)
+                .Include(pe => pe.ParkingPlace)
+                .FirstOrDefaultAsync();
 
-            try
-            {
-                db.Update(vehicle);
-                await db.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
+            parkingEvent.ParkingPlace.IsOccupied = false;
+            var arrivalTime = parkingEvent.TimeOfArrival;
+            db.Remove(parkingEvent);
+            db.SaveChanges();
 
-                if (vehicle.VehicleId != id)
-                {
-                    return NotFound();
-                }
-                else
-                {
-                    throw;
-                }
-            }
-            return RedirectToAction("UnparkResponse", new { id = vehicle.VehicleId, departureTime });
+            return RedirectToAction("UnparkResponse", new { id, departureTime, arrivalTime });
         }
 
 
@@ -618,7 +609,7 @@ namespace Garage3.Controllers
         {
             return db.Vehicle.Any(e => e.VehicleId == id);
         }
-        public async Task<IActionResult> UnParkResponse(int id, DateTime departureTime)
+        public async Task<IActionResult> UnParkResponse(int id, DateTime departureTime, DateTime arrivalTime)
         {
             //    var v = db.Vehicle
             //.Select(v => v.Id);
@@ -626,9 +617,9 @@ namespace Garage3.Controllers
                 .Select(v => new UnParkResponseViewModel
                 {
                     Id = v.VehicleId,
-                    //VehicleType = v.VehicleType,
+                    //VehicleType = v.VehicleType.Type,
                     VehicleRegistrationNumber = v.RegistrationNumber,
-                    //VehicleArrivalTime = v.TimeOfArrival,
+                    VehicleArrivalTime = arrivalTime,
                     VehicleDepartureTime = departureTime,
                     //VehicleParkDuration=v.
                     //VehicleParkPrice
@@ -641,20 +632,22 @@ namespace Garage3.Controllers
             //return View(nameof(UnParkResponse));
         }
 
-        public async Task<IActionResult> Receipt(int id, DateTime departureTime)
+        public async Task<IActionResult> Receipt(int Id, DateTime departureTime, DateTime arrivalTime)
         {
-            var vehicle = await db.Vehicle.FindAsync(id);
-            var arrivalTime = vehicle.ParkingEvents.Select(pe => pe.TimeOfArrival).FirstOrDefault();
+            var vehicle = await db.Vehicle
+                .Include(v => v.ParkingEvents)
+                .Include(v => v.Owner)
+                .FirstOrDefaultAsync(v => v.VehicleId == Id);
 
             var model = new ReceiptViewModel
             {
                 VehicleRegistrationNumber = vehicle.RegistrationNumber,
-                VehicleArrivalTime = arrivalTime,
+                VehicleArrivalTime = vehicle.ParkingEvents.Select(pe => pe.TimeOfArrival).FirstOrDefault(),
                 VehicleDepartureTime = departureTime,
                 VehicleParkDuration = arrivalTime - departureTime,
                 VehicleParkPrice = (departureTime - arrivalTime).TotalHours * 100,
 
-                MemberFullName = $"{vehicle.Owner.FirstName}",
+                MemberFullName = $"{vehicle.Owner.LastName}, {vehicle.Owner.FirstName}",
                 MemberSSN = vehicle.Owner.SocialSecurityNumber
             };
 

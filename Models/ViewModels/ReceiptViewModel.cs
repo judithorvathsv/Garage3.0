@@ -8,7 +8,6 @@ namespace Garage3.Models.ViewModels
 {
     public class ReceiptViewModel
     {
-        // Vehicle
         [Display(Name = "Registration Plate")]
         public string VehicleRegistrationNumber { get; set; }
         
@@ -27,7 +26,9 @@ namespace Garage3.Models.ViewModels
         public double VehicleParkPrice { get; set; }
 
         // Member
+        [Display(Name = "Name")]
         public string MemberFullName { get; set; }
+        [Display(Name = "Social Security Number")]
         public string MemberSSN { get; set; }
     }
 }

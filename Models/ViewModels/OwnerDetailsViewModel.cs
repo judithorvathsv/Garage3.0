@@ -8,29 +8,11 @@ namespace Garage3.Models.ViewModels
 {
     public class OwnerDetailsViewModel
     {
-        public int OwnerId { get; set; }
         public int Id { get; set; }
-
-        [Display(Name = "Social Security Number")]
-        public string SocialSecurityNumber { get; set; }
-
-        [Display(Name = "Firstname")]
-        public string FirstName { get; set; }
-
-
-        [Display(Name = "Lastname")]
-        public string LastName { get; set; }
-
         [Display(Name = "Name")]
         public string FullName { get; set; }
+        public string SocialSecurityNumber { get; set; }
 
-        [Display(Name = "RegistrationNumber")]
-        public string RegistrationNumber { get; set; }
-
-        public string Brand { get; set; }
-        public string VehicleModel { get; set; }
-        public string VehicleType { get; set; }
-
-        IEnumerable<Vehicle> Vehicles { get; set; }
+        public IEnumerable<Vehicle> Vehicles { get; set; }
     }
 }

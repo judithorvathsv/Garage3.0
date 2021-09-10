@@ -17,7 +17,7 @@ namespace Garage3.Controllers
     {
         private readonly Garage3Context db;
 
-        
+
 
         public OwnersController(Garage3Context context)
         {
@@ -27,7 +27,7 @@ namespace Garage3.Controllers
 
         // GET: Owners
         public async Task<IActionResult> Index()
-        {       
+        {
 
             return View(await db.Owner.ToListAsync());
         }
@@ -168,39 +168,28 @@ namespace Garage3.Controllers
         {
             try
             {
-            //var vehicles2 = await db.Vehicle
-            //    .Where(v => v.OwnerId == id)
-            //    .Join(db.Owner, v => v.Owner.SocialSecurityNumber, o => o.SocialSecurityNumber, (v, o) => new { v, o })
-            //    .Join(db.VehicleType, vo => vo.v.VehicleType.VehicleTypeId, vt => vt.VehicleTypeId, (vo, vt) => new { vo, vt })
-            //    .Select(m => new OwnerDetailsViewModel
-            //    {
-            //        Id = m.vo.v.VehicleId,
-            //        SocialSecurityNumber = m.vo.o.SocialSecurityNumber,
-            //        FullName = m.vo.o.FirstName + " " + m.vo.o.LastName,
-            //        RegistrationNumber = m.vo.v.RegistrationNumber,
-            //        Brand = m.vo.v.Brand,
-            //        VehicleType = m.vo.v.VehicleType.Type,
-            //        VehicleModel = m.vo.v.VehicleModel
-            //    }).ToListAsync();
-
                 var vehicles = await db.Vehicle
-                .Where(v => v.OwnerId == id).Select(m => new OwnerDetailsViewModel
+                .Where(v => v.OwnerId == id)
+                .Include(v => v.Owner)
+                .Select(m => new Vehicle
                 {
-                    Id = m.VehicleId,
-                    OwnerId = m.Owner.OwnerId,
-                    SocialSecurityNumber = m.Owner.SocialSecurityNumber,
-                    FullName = m.Owner.FirstName + " " + m.Owner.LastName,
+                    VehicleId = m.VehicleId,
                     RegistrationNumber = m.RegistrationNumber,
                     Brand = m.Brand,
-                    VehicleType = m.VehicleType.Type,
-                    VehicleModel = m.VehicleModel
+                    VehicleType = m.VehicleType,
+                    VehicleModel = m.VehicleModel,
                 }).ToListAsync();
 
+                var model = new OwnerDetailsViewModel
+                {
+                    Id = id,
+                    Vehicles = vehicles
+                };
                 if (vehicles == null)
                 {
                     return NotFound();
                 }
-                return View(vehicles);
+                return View(model);
             }
             catch (Exception)
             {
@@ -217,10 +206,10 @@ namespace Garage3.Controllers
         [ActionName("Overview")]
         public async Task<IActionResult> Overview()
         {
-   
+
             var listWithEmpty = (from p in db.Owner
                                  join f in db.Vehicle
-                                 on p.OwnerId equals f.OwnerId                        
+                                 on p.OwnerId equals f.OwnerId
 
                                  group p by new
                                  {
@@ -230,7 +219,7 @@ namespace Garage3.Controllers
                                      p.LastName
                                  } into gcs
 
-                                select new MemberDetailsViewModel
+                                 select new MemberDetailsViewModel
                                  {
                                      Id = gcs.Key.OwnerId,
                                      SocialSecurityNumber = gcs.Key.SocialSecurityNumber,
@@ -238,7 +227,7 @@ namespace Garage3.Controllers
                                      LastName = gcs.Key.LastName,
                                      FullName = gcs.Key.FirstName + " " + gcs.Key.LastName,
                                      NumberOfVehicles = gcs.Count(),
-                                 })      
+                                 })
                              .ToList()
                              .OrderBy(x => x.FirstName.Substring(0, 3), StringComparer.Ordinal).ToList();
 

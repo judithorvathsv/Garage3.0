@@ -8,6 +8,7 @@
 <div>
     <h4>Member</h4>
     <hr />
+    <span class="text-danger">@TempData["NoPlacesMessage"]</span>
     <dl class="row">
         <dt class="col-sm-2">
             @Html.DisplayNameFor(model => model.FullName)
@@ -21,9 +22,7 @@
         <dd class="col-sm-10">
             @Html.DisplayFor(model => model.SocialSecurityNumber)
         </dd>
-
     </dl>
-
 </div>
 <div>
     <h4>Vehicles</h4>

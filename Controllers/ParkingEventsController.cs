@@ -14,6 +14,7 @@ namespace Garage3.Controllers
     public class ParkingEventsController : Controller
     {
         private readonly Garage3Context db;
+        private const int GarageCaspacity = 20;
 
         public Garage3Context Context => db;
 
@@ -58,46 +59,94 @@ namespace Garage3.Controllers
         //[HttpPost]
         //[ValidateAntiForgeryToken]
 
-        public async Task<IActionResult> Park(int id,int vehcleid)
+        public async Task<IActionResult> Park(int id, int vehcleid)
         {
 
-            var vehicle = await db.Vehicle.Where(v => v.VehicleId == vehcleid)
-                .Join(db.VehicleType, v => v.VehicleTypeId, t => t.VehicleTypeId, (v,t) => new { v,t })
-                .Select(vh => new {  vh.v.VehicleType, vh.t.Size, vh.v })
-                .FirstOrDefaultAsync();
+            // var vehicle = await db.Vehicle.Where(v => v.VehicleId == vehcleid)
+            //.Join(db.VehicleType, v => v.VehicleTypeId, t => t.VehicleTypeId, (v, t) => new { v, t })
+            //     .Select(vh => new { vh.v.VehicleType, vh.t.Size, vh.v })
+            //    .FirstOrDefaultAsync();
 
             var member = await db.Owner.Where(o => o.OwnerId == id).Select(o => o).FirstOrDefaultAsync();
 
             var occupiedSpaces = new List<ParkingEvent>();
 
-            var availableSpaces = await db.ParkingPlace.Where(pp => pp.IsOccupied == false)
-                                                 .Select(pp => pp.ParkingPlaceId)
-                                                 .ToListAsync();
+            //var availableSpaces = await db.ParkingPlace.Where(pp => pp.IsOccupied == false)
+            //                                     .Select(pp => pp.ParkingPlaceId)
+            //                                     .ToListAsync();
 
-            var parkingVehicle = await db.Vehicle.Where(v => v.VehicleId == vehcleid).FirstOrDefaultAsync();
-            var parkingPlace = await db.ParkingPlace.Where(pp => pp.IsOccupied == false).FirstOrDefaultAsync();
+            var numberOfPlaces = await db.ParkingPlace.CountAsync();
+
+            var parkingPlaceId = await db.ParkingPlace.AsNoTracking().OrderBy(pp => pp.ParkingPlaceId).Select(pp => pp.ParkingPlaceId).FirstOrDefaultAsync();
+
+            var parkingVehicle = await db.Vehicle.Include(v => v.VehicleType).Where(v => v.VehicleId == vehcleid).FirstOrDefaultAsync();
+            var parkingPlace = await db.ParkingPlace.AsNoTracking().Where(pp => pp.IsOccupied == false).FirstOrDefaultAsync();
             var parkingplace = new ParkingPlace();
 
-            if (parkingPlace != null)
+            if (numberOfPlaces < GarageCaspacity)
             {
-                parkingplace.ParkingPlaceId = parkingPlace.ParkingPlaceId;
-                parkingPlace.IsOccupied = true;
+                if (parkingPlaceId <= GarageCaspacity)
+                {
 
+                    if (parkingPlace != null)
+                    {
+                        parkingplace.ParkingPlaceId = parkingPlace.ParkingPlaceId;
+                        parkingplace.IsOccupied = true;
+
+                        var parkingevent = new ParkingEvent
+                        {
+                            ParkingPlace = parkingplace,
+                            Vehicle = parkingVehicle,
+                            TimeOfArrival = DateTime.Now
+                        };
+
+                        db.ParkingEvent.Update(parkingevent);
+                        await db.SaveChangesAsync();
+
+                    }
+                    else
+                    {
+                        parkingplace.ParkingPlaceId = parkingPlaceId + 1;
+                        parkingplace.IsOccupied = true;
+
+                        var parkingevent = new ParkingEvent
+                        {
+                            ParkingPlace = parkingplace,
+                            Vehicle = parkingVehicle,
+                            TimeOfArrival = DateTime.Now
+                        };
+                        db.ParkingEvent.Add(parkingevent);
+                        await db.SaveChangesAsync();
+                    }
+
+                }
+                else
+                {
+                    parkingplace.ParkingPlaceId = parkingPlace.ParkingPlaceId;
+                    parkingplace.IsOccupied = true;
+                }
+
+                var model = new OwnerDetailsViewModel
+                {
+                    Id = id,
+                    FullName = member.FirstName + " " + member.LastName,
+                    SocialSecurityNumber = member.SocialSecurityNumber,
+                    IsParked = true,
+                    VehicleId = parkingVehicle.VehicleId,
+                    RegistrationNumber = parkingVehicle.RegistrationNumber,
+                    Brand = parkingVehicle.Brand,
+                    VehicleModel = parkingVehicle.VehicleModel,
+                    VehicleType = parkingVehicle.VehicleType.Type
+                };
+
+                return View("Details", model);
             }
             else
             {
-                var parkingPlaceId = await db.ParkingPlace.OrderBy(pp => pp.ParkingPlaceId).Select(pp => pp.ParkingPlaceId).LastOrDefaultAsync();
-                parkingplace.ParkingPlaceId = parkingPlaceId +1;
-                parkingplace.IsOccupied = true;
+                TempData["NoPlacesMessage"] = "There are no places in this garage";
+                return View("Details");
             }
-      
 
-             var parkingevent = new ParkingEvent
-            {
-                ParkingPlace = parkingplace,
-                Vehicle = parkingVehicle,
-                TimeOfArrival = DateTime.Now
-            };
             //parkingevent.VehicleId = vehcleid;
             //parkingevent.ParkingPlaceId = availableSpaces.First();
             //parkingevent.TimeOfArrival = DateTime.Now;
@@ -107,121 +156,115 @@ namespace Garage3.Controllers
             //    occupiedSpaces.Add(new ParkingEvent { VehicleId = vehcleid, ParkingPlaceId = availableSpaces.First() });
             //}
 
-            db.ParkingEvent.Add(parkingevent);
-            await db.SaveChangesAsync();
-
-
             //foreach (var item in occupiedSpaces)
             //{
             //    db.ParkingEvent.Add(item);
             //    await db.SaveChangesAsync();
             //}
-            var model = new OwnerDetailsViewModel
+
+
+        }
+
+        public async Task<IActionResult> UnPark(int id, int vehcleid)
+        {
+            var parkingplaceid = await db.ParkingEvent.Where(p => p.VehicleId == vehcleid).Select(p => p.ParkingPlaceId).FirstOrDefaultAsync();
+            //var parkingPlaceId = await db.ParkingPlace.Where(pp => pp.ParkingPlaceId == parkingplaceid).Select(pp => pp.ParkingPlaceId).FirstOrDefaultAsync();
+            //var parkingVehicle = await db.Vehicle.Where(v => v.VehicleId == vehcleid).FirstOrDefaultAsync();
+
+            var parkingplace = new ParkingPlace
             {
-                Id = id,
-                FullName = member.FirstName + " " + member.LastName,
-                SocialSecurityNumber = member.SocialSecurityNumber,
-                IsParked = true,
-                VehicleId = parkingVehicle.VehicleId,
-                RegistrationNumber = parkingVehicle.RegistrationNumber,
-                Brand = parkingVehicle.Brand,
-                VehicleModel = parkingVehicle.VehicleModel,
-                VehicleType = vehicle.VehicleType.Type
+                ParkingPlaceId = parkingplaceid,
+                IsOccupied = false
             };
-    
-
-            return View("Details", model);
-
-        }
-
-        private void UpdateStatus()
-        {
-
-        }
-
-// GET: ParkingEvents/Edit/5
-public async Task<IActionResult> Edit(int? id)
-{
-    if (id == null)
-    {
-        return NotFound();
-    }
-
-    var parkingEvent = await db.ParkingEvent.FindAsync(id);
-    if (parkingEvent == null)
-    {
-        return NotFound();
-    }
-    return View(parkingEvent);
-}
-
-// POST: ParkingEvents/Edit/
-// To protect from overposting attacks, enable the specific properties you want to bind to.
-// For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-[HttpPost]
-[ValidateAntiForgeryToken]
-public async Task<IActionResult> Edit(int id, [Bind("TimeOfArrival")] ParkingEvent parkingEvent)
-{
-    if (id != parkingEvent.ParkingPlace.ParkingPlaceId)
-    {
-        return NotFound();
-    }
-
-    if (ModelState.IsValid)
-    {
-        try
-        {
-            db.Update(parkingEvent);
+            db.ParkingPlace.Update(parkingplace);
             await db.SaveChangesAsync();
+
+            return View("Details");
         }
-        catch (DbUpdateConcurrencyException)
+
+        // GET: ParkingEvents/Edit/5
+        public async Task<IActionResult> Edit(int? id)
         {
-            if (!ParkingEventExists(parkingEvent.ParkingPlace.ParkingPlaceId))
+            if (id == null)
             {
                 return NotFound();
             }
-            else
+
+            var parkingEvent = await db.ParkingEvent.FindAsync(id);
+            if (parkingEvent == null)
             {
-                throw;
+                return NotFound();
             }
+            return View(parkingEvent);
         }
-        return RedirectToAction(nameof(Index));
-    }
-    return View(parkingEvent);
-}
 
-// GET: ParkingEvents/Delete/5
-public async Task<IActionResult> Delete(int? id)
-{
-    if (id == null)
-    {
-        return NotFound();
-    }
+        // POST: ParkingEvents/Edit/
+        // To protect from overposting attacks, enable the specific properties you want to bind to.
+        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(int id, [Bind("TimeOfArrival")] ParkingEvent parkingEvent)
+        {
+            if (id != parkingEvent.ParkingPlace.ParkingPlaceId)
+            {
+                return NotFound();
+            }
 
-    var parkingEvent = await db.ParkingEvent
-        .FirstOrDefaultAsync(m => m.ParkingPlace.ParkingPlaceId == id);
-    if (parkingEvent == null)
-    {
-        return NotFound();
-    }
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    db.Update(parkingEvent);
+                    await db.SaveChangesAsync();
+                }
+                catch (DbUpdateConcurrencyException)
+                {
+                    if (!ParkingEventExists(parkingEvent.ParkingPlace.ParkingPlaceId))
+                    {
+                        return NotFound();
+                    }
+                    else
+                    {
+                        throw;
+                    }
+                }
+                return RedirectToAction(nameof(Index));
+            }
+            return View(parkingEvent);
+        }
 
-    return View(parkingEvent);
-}
+        // GET: ParkingEvents/Delete/5
+        public async Task<IActionResult> Delete(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
 
-// POST: ParkingEvents/Delete/5
-[HttpPost, ActionName("Delete")]
-[ValidateAntiForgeryToken]
-public async Task<IActionResult> DeleteConfirmed(int id)
-{
-    var parkingEvent = await db.ParkingEvent.FindAsync(id);
-    db.ParkingEvent.Remove(parkingEvent);
-    await db.SaveChangesAsync();
-    return RedirectToAction(nameof(Index));
-}
+            var parkingEvent = await db.ParkingEvent
+                .FirstOrDefaultAsync(m => m.ParkingPlace.ParkingPlaceId == id);
+            if (parkingEvent == null)
+            {
+                return NotFound();
+            }
 
-private bool ParkingEventExists(int id)
-{
-    return db.ParkingEvent.Any(e => e.ParkingPlace.ParkingPlaceId == id);
-}
+            return View(parkingEvent);
+        }
+
+        // POST: ParkingEvents/Delete/5
+        [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteConfirmed(int id)
+        {
+            var parkingEvent = await db.ParkingEvent.FindAsync(id);
+            db.ParkingEvent.Remove(parkingEvent);
+            await db.SaveChangesAsync();
+            return RedirectToAction(nameof(Index));
+        }
+
+        private bool ParkingEventExists(int id)
+        {
+            return db.ParkingEvent.Any(e => e.ParkingPlace.ParkingPlaceId == id);
+        }
     }
 }

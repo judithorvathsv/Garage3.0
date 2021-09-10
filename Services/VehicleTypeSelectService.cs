@@ -27,11 +27,11 @@ namespace Garage3.Services
                                 Value = type.VehicleTypeId.ToString(),
                             }).ToListAsync();
 
-            typesList.Insert(0, new SelectListItem()
-            {
-                Text = "----Select----",
-                Value = string.Empty
-            });
+            //typesList.Insert(0, new SelectListItem()
+            //{
+            //    Text = "----Select----",
+            //    Value = string.Empty
+            //});
 
             return typesList;
 

@@ -231,18 +231,39 @@ namespace Garage3.Controllers
             var model = new OverviewListViewModel();
             var vehicleAndOwner = GetOverviewViewModelAsEnumerable();
 
-            var result = string.IsNullOrWhiteSpace(viewModel.Regnumber) ?
-                               vehicleAndOwner :
-                               vehicleAndOwner.Where(m => m.VehicleRegistrationNumber.StartsWith(viewModel.Regnumber.ToUpper()));
+            var result =  vehicleAndOwner;
+          
+           
+            //type: empty
+            if (viewModel.VehicleTypeId == 0)
+            {
+                if(viewModel.Regnumber == null) //type: empty, regnr : empty                
+                    result = vehicleAndOwner;                
+                else                            //type: empty, regnr: selected                
+                    result = vehicleAndOwner.Where(m => m.VehicleRegistrationNumber.StartsWith(viewModel.Regnumber.ToUpper()));                
+            }
 
-            var vehicleType = db.VehicleType.FindAsync(viewModel.VehicleTypeId).Result.Type;
-            result = result.Where(r => r.VehicleType == vehicleType);
+            //type: selected, regnr: empty 
+            if (viewModel.Regnumber == null && viewModel.VehicleTypeId != 0)   
+            {                
+                 var vehicleType = db.VehicleType.FindAsync(viewModel.VehicleTypeId).Result.Type;
+                 result = result.Where(r => r.VehicleType == vehicleType);
+             }            
 
-            //var resultList = viewModel.Types == null ?
-            //result :
-            //result.Where(x => x.VehicleId == model.Types.VehicleTypeId);
-
-            IQueryable<OverviewViewModel> vehicleAndOwnerQuerable = result.Select(v => new OverviewViewModel
+            // tpe: selected, regnr: selected
+            else 
+            {
+                if (viewModel.VehicleTypeId != 0 && viewModel.Regnumber != null)
+                {
+                    var vehicleType = db.VehicleType.FindAsync(viewModel.VehicleTypeId).Result.Type;
+                    result = vehicleAndOwner.Where(
+                        m => m.VehicleRegistrationNumber.StartsWith(viewModel.Regnumber.ToUpper())
+                        &&
+                        m.VehicleType == vehicleType);                   
+                }              
+            }
+    
+            model.Overview = result.Select(v => new OverviewViewModel
             {
                 VehicleId = v.VehicleId,
                 FullName = v.FullName,
@@ -251,11 +272,9 @@ namespace Garage3.Controllers
                 VehicleParkDuration = v.VehicleArrivalTime - DateTime.Now,
                 VehicleType = v.VehicleType
                 //VehicleParked = false
+            }).AsEnumerable();
 
-            }).AsQueryable();
-
-            model.Overview = vehicleAndOwnerQuerable.AsEnumerable();
-            model.VehicleTypes = await GetVehicleTypesAsync();
+            model.VehicleTypes = await GetVehicleTypesAsync();        
             return View("Overview", model);
         }
 

@@ -26,5 +26,7 @@ namespace Garage3.Models.ViewModels
         [Display(Name = "Number of vehicles")]
         public int NumberOfVehicles { get; set; }
 
+   
+
     }
 }

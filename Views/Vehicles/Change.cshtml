@@ -12,7 +12,7 @@
         <form asp-action="Change">
             @*<input asp-for="VehicleId" type="hidden" />*@
             <input asp-for="VehicleTypeId" type="hidden" />
-            @*<input asp-for="OwnerId" type="hidden" />*@
+            <input asp-for="OwnerId" type="hidden" />
             <div class="form-group">
                 <label asp-for="RegistrationNumber" class="control-label"></label>
                 <input asp-for="RegistrationNumber" class="form-control" readonly="@(true)" />
@@ -21,7 +21,7 @@
             <div class="form-group">
                 <label asp-for="VehicleType" class="control-label typeLabel">Type  </label>
                 <select asp-for="VehicleTypeId" asp-items="Model.VehicleTypes" class="form-control">
-                    <option selected="selected" value="VehicleTypeId">Please select</option>
+                    <option selected="selected" value="">Please select</option>
                 </select>
                 <span asp-validation-for="VehicleTypeId" class="text-danger"></span>
                 @*<select asp-for="VehicleTypeId" class="form-control" asp-items="@await vehicleTypeSelect.GetVehicleTypesAsync()">

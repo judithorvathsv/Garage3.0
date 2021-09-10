@@ -67,13 +67,11 @@ namespace Garage3.Controllers
                     VehicleTypeId = v.VehicleTypeId,
                     VehicleType = v.VehicleType.Type,
                     RegistrationNumber = v.RegistrationNumber,
-                    //VehicleArrivalTime = v.TimeOfArrival,
+                    VehicleModel = v.VehicleModel,
                     Brand = v.Brand
-                    //VehicleParkDuration=v.
-                    //VehicleParkPrice
                 })
                 .FirstOrDefaultAsync(v => v.Id == id);
-            
+
 
             if (vehicle == null)
             {
@@ -91,9 +89,9 @@ namespace Garage3.Controllers
             var allVehicles = db.Vehicle;
 
             //IQueryable<OverviewViewModel> vehicles = GetOverviewViewModel(allVehicles);
-           // string parkedStatusStr = parkedStatus.ToString();
+            // string parkedStatusStr = parkedStatus.ToString();
             var vehicles = GetOverviewViewModelAsEnumerable(allVehicles);
-           // parkedStatus = ParkingStatus(parkedStatusStr, model, ref vehicles);
+            // parkedStatus = ParkingStatus(parkedStatusStr, model, ref vehicles);
 
             //if (parkedStatus == 3)
             //{
@@ -136,7 +134,7 @@ namespace Garage3.Controllers
             return await db.VehicleType.Select(vt => new SelectListItem
             {
                 Text = vt.Type,
-                Value = vt.VehicleTypeId.ToString()
+                Value = vt.VehicleTypeId.ToString(),
             }).ToListAsync();
         }
 
@@ -291,7 +289,9 @@ namespace Garage3.Controllers
                 {
                     VehicleTypes = await GetAllVehicleTypesAsync(),
                     Id = id
+
                 };
+                model.OwnerId = id;
                 return View(model);
             }
             return NotFound();
@@ -313,7 +313,7 @@ namespace Garage3.Controllers
                         VehicleTypeId = model.VehicleTypeId,
                         Brand = model.Brand,
                         VehicleModel = model.VehicleModel,
-                        OwnerId = model.Id
+                        OwnerId = model.OwnerId
                     };
 
                     db.Add(vehicle);
@@ -401,33 +401,47 @@ namespace Garage3.Controllers
             {
                 return NotFound();
             }
-            var vehicleTypes =  GetAllVehicleTypesAsync().Result;
-                    
+
             var model = await db.Vehicle
                .Select(v => new RegisterVehicleViewModel
                {
-                   VehicleTypes = vehicleTypes,
-                   //Id = id, //Ownerid
+                   // VehicleTypes = GetAllVehicleTypesAsync().Result,
                    Id = v.VehicleId,
                    VehicleTypeId = v.VehicleTypeId,
                    VehicleType = v.VehicleType.Type,
                    RegistrationNumber = v.RegistrationNumber,
-                    //VehicleArrivalTime = v.TimeOfArrival,
-                    Brand = v.Brand
-                    //VehicleParkDuration=v.
-                    //VehicleParkPrice
-                })
+                   Brand = v.Brand,
+                   OwnerId = vehicle.OwnerId,
+                   VehicleModel = v.VehicleModel
+
+               })
                .FirstOrDefaultAsync(v => v.Id == Id);
+
+
+            model.VehicleTypes = GetAllVehicleTypesAsync().Result;
+            string vTypeId = model.VehicleTypeId.ToString();
+            foreach (var item in model.VehicleTypes)
+            {
+                if (item.Value == vTypeId)
+                {
+                    item.Selected = true;
+                    break;
+                }
+            }
+            
+            //var x = model.VehicleTypes.FirstOrDefault(s => s.Text == "Bus");//.Selected ==true;
+            //x.Selected = true;
+
             return View(model);
         }
 
         public bool Equals(Vehicle b1, Vehicle b2)
         {
             if (b1.RegistrationNumber == b2.RegistrationNumber
-                //  &&                 b1.Color == b2.Color 
+                 && b1.VehicleTypeId == b2.VehicleTypeId
                 && b1.Brand == b2.Brand
                 && b1.VehicleModel == b2.VehicleModel
-                //&& b1.NumberOfWheels == b2.NumberOfWheels 
+                && b1.OwnerId == b2.OwnerId
                 && b1.VehicleType == b2.VehicleType)
                 return true;
             else
@@ -437,36 +451,45 @@ namespace Garage3.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Change(int Id, Vehicle vehicle)
+        public async Task<IActionResult> Change(int? Id, RegisterVehicleViewModel model)
         {
             //från databasen
             var v1 = await db.Vehicle.AsNoTracking().FirstOrDefaultAsync(v => v.VehicleId == Id);
 
-            if (!Equals(v1, vehicle))
+            if (!Equals(v1, model))
             {
 
-                if (Id != vehicle.VehicleId)
+                if (Id != model.Id)
                 {
                     return NotFound();
                 }
 
-                //string str = vehicle.Color;
-                vehicle.RegistrationNumber = v1.RegistrationNumber;
-                //vehicle.Color = FirstLetterToUpper(str);
-                //vehicle.TimeOfArrival = v1.TimeOfArrival;
+
+                //model.RegistrationNumber = v1.RegistrationNumber;
+                //model.VehicleModel = v1.VehicleModel;
+
+                Vehicle v = new Vehicle();
+                v.RegistrationNumber = model.RegistrationNumber;
+                v.VehicleModel = model.VehicleModel;
+                v.VehicleId = model.Id;
+                v.VehicleTypeId = model.VehicleTypeId;
+                v.Brand = model.Brand;
+                v.OwnerId = v1.OwnerId;
+
+
 
                 if (ModelState.IsValid)
                 {
                     try
                     {
-                        db.Update(vehicle);
+                        db.Update(v);
                         await db.SaveChangesAsync();
                         TempData["ChangedVehicle"] = "The vehicle is changed!";
-                        return RedirectToAction("Details", new { vehicle.VehicleId });
+                        return RedirectToAction("Details", new { model.Id });
                     }
                     catch (DbUpdateConcurrencyException)
                     {
-                        if (!VehicleExists(vehicle.VehicleId))
+                        if (!VehicleExists(model.Id))
                         {
                             return NotFound();
                         }
@@ -478,7 +501,7 @@ namespace Garage3.Controllers
                 }
             }
             //return View(vehicle);
-            return RedirectToAction("Details", new { vehicle.VehicleId });
+            return RedirectToAction("Details", new { model.Id });
         }
 
         private string FirstLetterToUpper(string str)

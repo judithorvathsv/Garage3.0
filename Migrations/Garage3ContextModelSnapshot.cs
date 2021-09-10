@@ -176,6 +176,38 @@ namespace Garage3.Migrations
                     b.HasIndex("VehicleId");
 
                     b.ToTable("ParkingEvent");
+
+                    b.HasData(
+                        new
+                        {
+                            ParkingPlaceId = 1,
+                            VehicleId = 1,
+                            TimeOfArrival = new DateTime(2021, 9, 9, 10, 28, 56, 23, DateTimeKind.Local).AddTicks(3674)
+                        },
+                        new
+                        {
+                            ParkingPlaceId = 2,
+                            VehicleId = 2,
+                            TimeOfArrival = new DateTime(2021, 9, 5, 10, 28, 56, 25, DateTimeKind.Local).AddTicks(2366)
+                        },
+                        new
+                        {
+                            ParkingPlaceId = 3,
+                            VehicleId = 3,
+                            TimeOfArrival = new DateTime(2021, 9, 8, 10, 28, 56, 25, DateTimeKind.Local).AddTicks(2388)
+                        },
+                        new
+                        {
+                            ParkingPlaceId = 4,
+                            VehicleId = 15,
+                            TimeOfArrival = new DateTime(2021, 9, 3, 10, 28, 56, 25, DateTimeKind.Local).AddTicks(2392)
+                        },
+                        new
+                        {
+                            ParkingPlaceId = 5,
+                            VehicleId = 16,
+                            TimeOfArrival = new DateTime(2021, 9, 7, 10, 28, 56, 25, DateTimeKind.Local).AddTicks(2395)
+                        });
                 });
 
             modelBuilder.Entity("Garage3.Models.ParkingPlace", b =>
@@ -189,6 +221,33 @@ namespace Garage3.Migrations
                     b.HasKey("ParkingPlaceId");
 
                     b.ToTable("ParkingPlace");
+
+                    b.HasData(
+                        new
+                        {
+                            ParkingPlaceId = 1,
+                            IsOccupied = true
+                        },
+                        new
+                        {
+                            ParkingPlaceId = 2,
+                            IsOccupied = true
+                        },
+                        new
+                        {
+                            ParkingPlaceId = 3,
+                            IsOccupied = true
+                        },
+                        new
+                        {
+                            ParkingPlaceId = 4,
+                            IsOccupied = true
+                        },
+                        new
+                        {
+                            ParkingPlaceId = 5,
+                            IsOccupied = true
+                        });
                 });
 
             modelBuilder.Entity("Garage3.Models.Vehicle", b =>

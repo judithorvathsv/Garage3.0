@@ -1,4 +1,5 @@
 ﻿@model OverviewListViewModel;
+@inject IVehicleTypeSelectService vehicleTypeSelect;
 
 @{
     ViewData["Title"] = "Overview";
@@ -21,69 +22,94 @@
             {
                 <h5>All vehicles</h5>
             }
-        </div>
+        </div> 
 
-        <div class="col-sm-8 col-md-8 col-lg-5 pt-3">
-            <form asp-action="Filter" class="input-group ml-1" id="FilterForm" method="get">
-                <div class="input-group-append w-25">
-                    <input type="text" class="form-control form-control-sm" name="Regnumber" style="text-transform:uppercase;" placeholder="Regnumber..." />
-                </div>
-                <div class="input-group-append w-50">
-                    <select name="Types" asp-items="@Model.VehicleTypesSelectList" class="form-control form-control-sm">
-                        <option selected="selected" value="">Please select type</option>
-                    </select>
-                </div>
-                <div class="input-group-append">
-                    <button type="submit" class="btn btn-outline-primary btn-sm">Search</button>
-                </div>
-            </form>
-        </div>
-        <div class="col-sm-4 col-md-4 col-lg-3 pt-3 pr-4">
+                    <div class="col-sm-8 col-md-8 col-lg-5 pt-3">
+                        <form asp-action="Filter" class="input-group ml-1" id="FilterForm" method="get">
+                            <div class="input-group-append w-25">
+                                <input type="text" class="form-control form-control-sm" name="Regnumber" style="text-transform:uppercase;" placeholder="Regnumber..." />
+                            </div>
+                            <div class="input-group-append w-50">                            
+                                    <select name="VehicleTypeId" asp-for="VehicleTypeId" class="form-control" asp-items="@await vehicleTypeSelect.GetVehicleTypesAsync()" >
+                                        <option selected="selected" value="">Please select</option>
+                                    </select>   
+                            </div>
+                            <div class="input-group-append">
+                                <button type="submit" class="btn btn-outline-primary btn-sm">Search</button>
+                            </div>
+                        </form>
+                    </div>
+
+
+
+
+
+
+        <!--<div class="col-sm-4 col-md-4 col-lg-3 pt-3 pr-4">
             <form asp-action="Overview" id="StatusForm" method="get">
                 <div class="btn-group btn-group-sm btn-group-toggle" id="checkboxes" data-toggle="buttons">
                     <input type="hidden" id="parkedStatus" name="parkedStatus" value="0" />
                     <label class="btn btn-secondary" id="Parked">
-                        <input type="radio" value="1" id='ParkedStatus' autocomplete="off">Parked
+                        <input type="radio" value="1" id='ParkedStatus' autocomplete="off">Parked-->
                         @*<a asp-action="Overview" asp-route-parkedStatus="1">Parked</a>*@
-                    </label>
+                    <!--</label>
                     <label class="btn btn-secondary" id="Unparked">
-                        <input type="radio" value="2" id='UnParkedStatus' autocomplete="off">Unparked
+                        <input type="radio" value="2" id='UnParkedStatus' autocomplete="off">Unparked-->
                         @*<a asp-action="Overview" asp-route-parkedStatus="2">Unparked</a>*@
-                    </label>
+                    <!--</label>
                     <label class="btn btn-secondary" id="All">
-                        <input type="radio" value="3" id='AllStatus' autocomplete="off">All
+                        <input type="radio" value="3" id='AllStatus' autocomplete="off">All-->
                         @*<a asp-action="Overview" asp-route-parkedStatus="3">All</a>*@
-                    </label>
+                    <!--</label>
                 </div>
             </form>
-        </div>
+        </div>-->
     </div>
 
     @*<partial name="OverviewPartial" model="@Model.Overview" />*@
     <table class="table">
         <thead>
             <tr>
-                @*<th> <a asp-action="OverviewSort" asp-route-sortingVehicle="@ViewData["VehicleTypeSorting"],@ViewData["ParkedStatus"]">@Html.DisplayNameFor(model => model.Overview.First().VehicleType)</a> </!--th>  *@
-                <th> <a asp-action="OverviewSort" asp-route-sortingVehicle="@ViewData["RegistrationNumberSorting"],@ViewData["ParkedStatus"]">@Html.DisplayNameFor(model => model.Overview.First().VehicleRegistrationNumber)</a> </th>
-                <th> <a asp-action="OverviewSort" asp-route-sortingVehicle="@ViewData["ArrivalTimeSorting"], @ViewData["ParkedStatus"]">@Html.DisplayNameFor(model => model.Overview.First().VehicleArrivalTime)</a> </th>
-                <th> <a asp-action="OverviewSort" asp-route-sortingVehicle="@ViewData["DurationParkedSorting"],@ViewData["ParkedStatus"]">@Html.DisplayNameFor(model => model.Overview.First().VehicleParkDuration)</a> </th>
+                <th> <a asp-action="OverviewSort" asp-route-sortingVehicle="@ViewData["RegistrationNumberSorting"]">@Html.DisplayNameFor(model => model.Overview.First().VehicleRegistrationNumber)</a> </th>
+                <th> <a asp-action="OverviewSort" asp-route-sortingVehicle="@ViewData["VehicleTypeSorting"]">@Html.DisplayNameFor(model => model.Overview.First().VehicleType)</a> </th>
+                <th> <a asp-action="OverviewSort" asp-route-sortingVehicle="@ViewData["OwnerSorting"]">@Html.DisplayNameFor(model => model.Overview.First().FullName)</a> </th>
+                <th> <a asp-action="OverviewSort" asp-route-sortingVehicle="@ViewData["ArrivalTimeSorting"]">@Html.DisplayNameFor(model => model.Overview.First().VehicleArrivalTime)</a> </th>
+                <th> <a asp-action="OverviewSort" asp-route-sortingVehicle="@ViewData["DurationParkedSorting"]">@Html.DisplayNameFor(model => model.Overview.First().VehicleParkDuration)</a> </th>
+
+                @*<th> <a asp-action="OverviewSort" asp-route-sortingVehicle="@ViewData["VehicleTypeSorting"],@ViewData["ParkedStatus"]">@Html.DisplayNameFor(model => model.Overview.First().VehicleType)</a> </!--th>
+        <th> <a asp-action="OverviewSort" asp-route-sortingVehicle="@ViewData["RegistrationNumberSorting"],@ViewData["ParkedStatus"]">@Html.DisplayNameFor(model => model.Overview.First().VehicleRegistrationNumber)</a> </th>
+        <th> <a asp-action="OverviewSort" asp-route-sortingVehicle="@ViewData["ArrivalTimeSorting"], @ViewData["ParkedStatus"]">@Html.DisplayNameFor(model => model.Overview.First().VehicleArrivalTime)</a> </th>
+        <th> <a asp-action="OverviewSort" asp-route-sortingVehicle="@ViewData["DurationParkedSorting"],@ViewData["ParkedStatus"]">@Html.DisplayNameFor(model => model.Overview.First().VehicleParkDuration)</a> </th>*@
                 <th></th>
             </tr>
         </thead>
         <tbody>
             @foreach (var item in Model.Overview)
             {
-                <tr>
-                    @*<td>  @Html.DisplayFor(modelItem => item.VehicleType) </td>*@
-                    <td>  @Html.DisplayFor(modelItem => item.VehicleRegistrationNumber) </td>
-                    <td>  @Html.DisplayFor(modelItem => item.VehicleArrivalTime)  </td>
-                    <td>  @Html.DisplayFor(modelItem => item.VehicleParkDuration) </td>
-                    <td>
-                        <a asp-action="Details" asp-route-id="@item.VehicleId">Details</a> |
-                        <a asp-action="Change" asp-route-id="@item.VehicleId">Change</a> |
-                        <a asp-action="Delete" asp-route-id="@item.VehicleId">Delete</a>
-                    </td>
-                </tr>
+            <tr>
+
+
+                <td>  @Html.DisplayFor(modelItem => item.VehicleRegistrationNumber) </td>
+
+                <td>  @Html.DisplayFor(modelItem => item.VehicleType) </td>
+
+                <td>  @Html.DisplayFor(modelItem => item.FullName) </td>
+
+                <td>  @Html.DisplayFor(modelItem => item.VehicleArrivalTime)  </td>
+
+                <td>  @Html.DisplayFor(modelItem => item.VehicleParkDuration) </td>
+
+
+
+
+
+
+                <td>
+                    <a asp-action="Details" asp-route-id="@item.VehicleId">Details</a> |
+                    <a asp-action="Change" asp-route-id="@item.VehicleId">Change</a> |
+                    <a asp-action="Delete" asp-route-id="@item.VehicleId">Delete</a>
+                </td>
+            </tr>
             }
         </tbody>
     </table>

@@ -17,8 +17,7 @@ namespace Garage3.Controllers
     {
         private readonly Garage3Context db;
 
-        private readonly IMapper mapper;
-        private readonly Faker faker;
+
 
         public OwnersController(Garage3Context context)
         {
@@ -28,7 +27,7 @@ namespace Garage3.Controllers
 
         // GET: Owners
         public async Task<IActionResult> Index()
-        {       
+        {
 
             return View(await db.Owner.ToListAsync());
         }
@@ -169,26 +168,28 @@ namespace Garage3.Controllers
         {
             try
             {
-            var vehicles = await db.Vehicle
+                var vehicles = await db.Vehicle
                 .Where(v => v.OwnerId == id)
-                .Join(db.Owner, v => v.Owner.SocialSecurityNumber, o => o.SocialSecurityNumber, (v, o) => new { v, o })
-                .Join(db.VehicleType, vo => vo.v.VehicleType.VehicleTypeId, vt => vt.VehicleTypeId, (vo, vt) => new { vo, vt })
-                .Select(m => new OwnerDetailsViewModel
+                .Include(v => v.Owner)
+                .Select(m => new Vehicle
                 {
-                    Id = id,
-                    SocialSecurityNumber = m.vo.o.SocialSecurityNumber,
-                    FullName = m.vo.o.FirstName + " " + m.vo.o.LastName,
-                    RegistrationNumber = m.vo.v.RegistrationNumber,
-                    Brand = m.vo.v.Brand,
-                    VehicleType = m.vo.v.VehicleType.Type,
-                    VehicleModel = m.vo.v.VehicleModel
+                    VehicleId = m.VehicleId,
+                    RegistrationNumber = m.RegistrationNumber,
+                    Brand = m.Brand,
+                    VehicleType = m.VehicleType,
+                    VehicleModel = m.VehicleModel,
                 }).ToListAsync();
 
+                var model = new OwnerDetailsViewModel
+                {
+                    Id = id,
+                    Vehicles = vehicles
+                };
                 if (vehicles == null)
                 {
                     return NotFound();
                 }
-                return View(vehicles);
+                return View(model);
             }
             catch (Exception)
             {
@@ -205,40 +206,33 @@ namespace Garage3.Controllers
         [ActionName("Overview")]
         public async Task<IActionResult> Overview()
         {
+
             var listWithEmpty = (from p in db.Owner
                                  join f in db.Vehicle
-                                 on p.OwnerId equals f.VehicleId into ThisList
-                                 from f in ThisList.DefaultIfEmpty()
+                                 on p.OwnerId equals f.OwnerId
 
                                  group p by new
                                  {
                                      p.OwnerId,
+                                     p.SocialSecurityNumber,
                                      p.FirstName,
-                                     p.LastName,
-                                     p.SocialSecurityNumber
+                                     p.LastName
                                  } into gcs
-                                 select new
+
+                                 select new MemberDetailsViewModel
                                  {
                                      Id = gcs.Key.OwnerId,
+                                     SocialSecurityNumber = gcs.Key.SocialSecurityNumber,
                                      FirstName = gcs.Key.FirstName,
                                      LastName = gcs.Key.LastName,
-                                     SocialSecurityNumber = gcs.Key.SocialSecurityNumber,
-                                     NumberOfVehicles = gcs.Select(x => x).Distinct().Count(),
+                                     FullName = gcs.Key.FirstName + " " + gcs.Key.LastName,
+                                     NumberOfVehicles = gcs.Count(),
                                  })
-                               .ToList()
-                                .Select(x => new Models.ViewModels.MemberDetailsViewModel()
-                                {
-                                    Id = x.Id,
-                                    FirstName = x.FirstName,
-                                    LastName = x.LastName,
-                                    FullName = x.FirstName + " " + x.LastName,
-                                    SocialSecurityNumber = x.SocialSecurityNumber,
-                                    NumberOfVehicles = x.NumberOfVehicles
-                                });
+                             .ToList()
+                             .OrderBy(x => x.FirstName.Substring(0, 3), StringComparer.Ordinal).ToList();
 
-            var sortedMemberList = listWithEmpty.OrderBy(x => x.FirstName.Substring(0, 1), StringComparer.Ordinal);
+            return View(listWithEmpty);
 
-            return View(sortedMemberList);
         }
     }
 }

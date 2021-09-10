@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Garage3.Data;
 using Garage3.Models;
+using Garage3.Models.ViewModels;
 
 namespace Garage3.Controllers
 {
@@ -56,61 +57,22 @@ namespace Garage3.Controllers
         //[ValidateAntiForgeryToken]
         public async Task<IActionResult> Park(int id)
         {
-            ParkingEvent parkingEvent = new ParkingEvent();
-            parkingEvent.VehicleId = id;
+            var parkingVehicle = await _context.Vehicle.Where(v => v.VehicleId == id).FirstOrDefaultAsync();
+            var parkingPlace = await _context.ParkingPlace.Where(pp => pp.IsOccupied == false).FirstOrDefaultAsync();
+            id = parkingVehicle.OwnerId;
+            parkingPlace.IsOccupied = true;
 
-            //MakeParkingPlaces();
-
-        //public int ParkingPlaceId { get; set; }
-        //public int VehicleId { get; set; }
-
-            parkingEvent.TimeOfArrival = DateTime.Now;
-            var freeparkingplaceid = db.ParkingPlace.Any(p => p.IsOccupied).Equals(false);
-            //parkingEvent.ParkingPlace.IsOccupied = true;
-            parkingEvent.ParkingPlaceId = 1;
-
-
-            //parkingEvent.ParkingPlace.ParkingPlaceId;
-            //parkingEvent.Vehicle.RegistrationNumber = regnumber;
-            if (ModelState.IsValid)
+            var parkingEvent = new ParkingEvent
             {
-                db.Add(parkingEvent);
-                await db.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
-            }
-            return View(parkingEvent);
-        }
+                ParkingPlace = parkingPlace,
+                Vehicle = parkingVehicle,
+                TimeOfArrival = DateTime.Now
+            };
 
-        private void UpdateParkingPlace()
-        {
+            _context.ParkingEvent.Update(parkingEvent);
+            await _context.SaveChangesAsync();
 
-        }
-
-        private void MakeParkingPlaces()
-        {
-            for (int i = 0; i < 20; i++)
-            {
-                var parkingplace = new ParkingPlace();
-                parkingplace.IsOccupied = false;
-                db.Add(parkingplace);
-                db.SaveChanges();
-            }
-        }
-
-        // GET: ParkingEvents/Edit/5
-        public async Task<IActionResult> Edit(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
-
-            var parkingEvent = await db.ParkingEvent.FindAsync(id);
-            if (parkingEvent == null)
-            {
-                return NotFound();
-            }
-            return View(parkingEvent);
+            return RedirectToAction("Member","Owners", new OwnerDetailsViewModel { Id = id});
         }
 
         // POST: ParkingEvents/Edit/

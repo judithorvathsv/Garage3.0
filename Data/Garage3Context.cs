@@ -105,8 +105,6 @@ namespace Garage3.Data
 
 
 //            var events = modelBuilder.Entity<ParkingEvent>().HasData(
-
-////new ParkingEvent { ParkingPlaceId = 3, VehicleId = 1, TimeOfArrival = DateTime.ParseExact("2021-09-08 08:00:01", "yyyy-MM-dd hh:mm tt", null) },
 //new ParkingEvent { ParkingPlaceId = 1, VehicleId = 1, TimeOfArrival = DateTime.Now.AddDays(-1) },
 //new ParkingEvent { ParkingPlaceId = 2, VehicleId = 1, TimeOfArrival = DateTime.Now.AddDays(-1) },
 //new ParkingEvent { ParkingPlaceId = 3, VehicleId = 1, TimeOfArrival = DateTime.Now.AddDays(-1) },
@@ -131,7 +129,6 @@ namespace Garage3.Data
 
 //new ParkingEvent { ParkingPlaceId = 19, VehicleId = 16, TimeOfArrival = DateTime.Now.AddDays(-3) }
 //              );
-
         }
     }
 }

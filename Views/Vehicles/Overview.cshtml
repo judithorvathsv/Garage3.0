@@ -1,4 +1,5 @@
 ﻿@model OverviewListViewModel;
+@inject IVehicleTypeSelectService vehicleTypeSelect;
 
 @{
     ViewData["Title"] = "Overview";
@@ -21,23 +22,29 @@
             {
                 <h5>All vehicles</h5>
             }
-        </div>
+        </div> 
 
-        <div class="col-sm-8 col-md-8 col-lg-5 pt-3">
-            <form asp-action="Filter" class="input-group ml-1" id="FilterForm" method="get">
-                <div class="input-group-append w-25">
-                    <input type="text" class="form-control form-control-sm" name="Regnumber" style="text-transform:uppercase;" placeholder="Regnumber..." />
-                </div>
-                <div class="input-group-append w-50">
-                    <select name="Types" asp-items="@Model.VehicleTypesSelectList" class="form-control form-control-sm">
-                        <option selected="selected" value="">Please select type</option>
-                    </select>
-                </div>
-                <div class="input-group-append">
-                    <button type="submit" class="btn btn-outline-primary btn-sm">Search</button>
-                </div>
-            </form>
-        </div>
+                    <div class="col-sm-8 col-md-8 col-lg-5 pt-3">
+                        <form asp-action="Filter" class="input-group ml-1" id="FilterForm" method="get">
+                            <div class="input-group-append w-25">
+                                <input type="text" class="form-control form-control-sm" name="Regnumber" style="text-transform:uppercase;" placeholder="Regnumber..." />
+                            </div>
+                            <div class="input-group-append w-50">                            
+                                    <select asp-for="VehicleTypeId" class="form-control" asp-items="@await vehicleTypeSelect.GetVehicleTypesAsync()" >
+                                        <option selected="selected" value="">Please select</option>
+                                    </select>   
+                            </div>
+                            <div class="input-group-append">
+                                <button type="submit" class="btn btn-outline-primary btn-sm">Search</button>
+                            </div>
+                        </form>
+                    </div>
+
+
+
+
+
+
         <!--<div class="col-sm-4 col-md-4 col-lg-3 pt-3 pr-4">
             <form asp-action="Overview" id="StatusForm" method="get">
                 <div class="btn-group btn-group-sm btn-group-toggle" id="checkboxes" data-toggle="buttons">

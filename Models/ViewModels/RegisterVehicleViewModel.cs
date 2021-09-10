@@ -11,7 +11,6 @@ namespace Garage3.Models.ViewModels
     {
         [Required]
         public int Id {  get; set; }
-
         [Required]
         public string RegistrationNumber {  get; set; }
         public string Brand {  get; set; }
@@ -19,5 +18,6 @@ namespace Garage3.Models.ViewModels
 
         public int VehicleTypeId {  get; set; }
         public IEnumerable<SelectListItem> VehicleTypes { get; set; }
+        public string FullName { get; set; }
     }
 }

@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Garage3.Data;
 using Garage3.Models;
+using Garage3.Models.ViewModels;
 
 namespace Garage3.Controllers
 {
@@ -54,39 +55,24 @@ namespace Garage3.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         //[HttpPost]
         //[ValidateAntiForgeryToken]
-        public async Task<IActionResult> Park(string regnumber)
+        public async Task<IActionResult> Park(int id)
         {
-            ParkingEvent parkingEvent = new ParkingEvent();
-            parkingEvent.ParkingPlace.ParkingPlaceId = 1;
+            var parkingVehicle = await _context.Vehicle.Where(v => v.VehicleId == id).FirstOrDefaultAsync();
+            var parkingPlace = await _context.ParkingPlace.Where(pp => pp.IsOccupied == false).FirstOrDefaultAsync();
 
-            parkingEvent.TimeOfArrival = DateTime.Now;
-            parkingEvent.Vehicle.VehicleId = 1;
+            parkingPlace.IsOccupied = true;
 
-            //parkingEvent.ParkingPlace.ParkingPlaceId;
-            //parkingEvent.Vehicle.RegistrationNumber = regnumber;
-            if (ModelState.IsValid)
+            var parkingEvent = new ParkingEvent
             {
-                _context.Add(parkingEvent);
-                await _context.SaveChangesAsync();
-                return RedirectToAction(nameof(Index));
-            }
-            return View(parkingEvent);
-        }
+                ParkingPlace = parkingPlace,
+                Vehicle = parkingVehicle,
+                TimeOfArrival = DateTime.Now
+            };
 
-        // GET: ParkingEvents/Edit/5
-        public async Task<IActionResult> Edit(int? id)
-        {
-            if (id == null)
-            {
-                return NotFound();
-            }
+            _context.ParkingEvent.Update(parkingEvent);
+            await _context.SaveChangesAsync();
 
-            var parkingEvent = await _context.ParkingEvent.FindAsync(id);
-            if (parkingEvent == null)
-            {
-                return NotFound();
-            }
-            return View(parkingEvent);
+            return RedirectToAction("Member","Owners", new OwnerDetailsViewModel { Id = id });
         }
 
         // POST: ParkingEvents/Edit/
@@ -155,7 +141,6 @@ namespace Garage3.Controllers
 
         private bool ParkingEventExists(int id)
         {
-            return _context.ParkingEvent.Any(e => e.ParkingPlace.ParkingPlaceId == id);
             return _context.ParkingEvent.Any(e => e.ParkingPlace.ParkingPlaceId == id);
         }
     }

@@ -8,6 +8,7 @@ namespace Garage3.Models.ViewModels
 {
     public class OwnerDetailsViewModel
     {
+        public int OwnerId { get; set; }
         public int Id { get; set; }
 
         [Display(Name = "Social Security Number")]
@@ -29,5 +30,7 @@ namespace Garage3.Models.ViewModels
         public string Brand { get; set; }
         public string VehicleModel { get; set; }
         public string VehicleType { get; set; }
+
+        IEnumerable<Vehicle> Vehicles { get; set; }
     }
 }

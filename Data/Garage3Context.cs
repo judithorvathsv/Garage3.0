@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
 using Garage3.Models;
+using Microsoft.Extensions.Logging;
 
 namespace Garage3.Data
 {
@@ -20,9 +21,16 @@ namespace Garage3.Data
         public DbSet<VehicleType> VehicleType { get; set; }
         public DbSet<ParkingEvent> ParkingEvent { get; set; }
 
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+        {
+            base.OnConfiguring(optionsBuilder);
+            optionsBuilder.LogTo(Console.WriteLine, LogLevel.Information);
+        }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
+
             modelBuilder.Entity<Vehicle>()
                 .HasMany(v => v.ParkingPlaces)
                 .WithMany(pp => pp.Vehicles)
@@ -105,8 +113,6 @@ namespace Garage3.Data
 
 
 //            var events = modelBuilder.Entity<ParkingEvent>().HasData(
-
-////new ParkingEvent { ParkingPlaceId = 3, VehicleId = 1, TimeOfArrival = DateTime.ParseExact("2021-09-08 08:00:01", "yyyy-MM-dd hh:mm tt", null) },
 //new ParkingEvent { ParkingPlaceId = 1, VehicleId = 1, TimeOfArrival = DateTime.Now.AddDays(-1) },
 //new ParkingEvent { ParkingPlaceId = 2, VehicleId = 1, TimeOfArrival = DateTime.Now.AddDays(-1) },
 //new ParkingEvent { ParkingPlaceId = 3, VehicleId = 1, TimeOfArrival = DateTime.Now.AddDays(-1) },
@@ -131,7 +137,6 @@ namespace Garage3.Data
 
 //new ParkingEvent { ParkingPlaceId = 19, VehicleId = 16, TimeOfArrival = DateTime.Now.AddDays(-3) }
 //              );
-
         }
     }
 }

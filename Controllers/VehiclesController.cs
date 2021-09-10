@@ -235,36 +235,15 @@ namespace Garage3.Controllers
                                vehicleAndOwner :
                                vehicleAndOwner.Where(m => m.VehicleRegistrationNumber.StartsWith(viewModel.Regnumber.ToUpper()));
 
+            var vehicleType = db.VehicleType.FindAsync(viewModel.VehicleTypeId).Result.Type;
+            result = result.Where(r => r.VehicleType == vehicleType);
 
-
-
-
-            result = viewModel.Types == null ?
-            result :
-            result.Where(x => x.VehicleId == model.Types.VehicleTypeId);
-
-            //result= (from x in vehicleAndOwner select new SelectListItem
-            //{ Text = x.ToString(), Value = x.ToString()  }
-            //  ).Distinct().ToList();
-
-            //result.Where(x=>x.VehicleId==viewModel.VehicleTypeId) ;
-
-
+            //var resultList = viewModel.Types == null ?
+            //result :
             //result.Where(x => x.VehicleId == model.Types.VehicleTypeId);
-            /*
-            result.Where(v => v.VehicleType == viewModel.VehicleTypes.Select(g => new SelectListItem()
-              {
-                  Text = g.ToString(),
-                  Value = g.ToString()
-              }).ToList(); 
-            */
-            //result.Where(v => v.VehicleTypeId == viewModel.VehicleTypes.Select(v=>v.Text))  );
-            //result.Where(v => v.VehicleType == viewModel.Types);
-            //result.GetVehicleTypesAsync();
 
             IQueryable<OverviewViewModel> vehicleAndOwnerQuerable = result.Select(v => new OverviewViewModel
             {
-
                 VehicleId = v.VehicleId,
                 FullName = v.FullName,
                 VehicleRegistrationNumber = v.VehicleRegistrationNumber,
@@ -276,8 +255,7 @@ namespace Garage3.Controllers
             }).AsQueryable();
 
             model.Overview = vehicleAndOwnerQuerable.AsEnumerable();
-            //model.VehicleTypes = await GetVehicleTypesAsync();
-
+            model.VehicleTypes = await GetVehicleTypesAsync();
             return View("Overview", model);
         }
 

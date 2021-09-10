@@ -59,7 +59,7 @@ namespace Garage3.Controllers
         {
             var parkingVehicle = await _context.Vehicle.Where(v => v.VehicleId == id).FirstOrDefaultAsync();
             var parkingPlace = await _context.ParkingPlace.Where(pp => pp.IsOccupied == false).FirstOrDefaultAsync();
-
+            id = parkingVehicle.OwnerId;
             parkingPlace.IsOccupied = true;
 
             var parkingEvent = new ParkingEvent
@@ -72,7 +72,7 @@ namespace Garage3.Controllers
             _context.ParkingEvent.Update(parkingEvent);
             await _context.SaveChangesAsync();
 
-            return RedirectToAction("Member","Owners", new OwnerDetailsViewModel { Id = id });
+            return RedirectToAction("Member","Owners", id);
         }
 
         // POST: ParkingEvents/Edit/

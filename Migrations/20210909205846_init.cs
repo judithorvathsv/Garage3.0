@@ -3,7 +3,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace Garage3.Migrations
 {
-    public partial class Init : Migration
+    public partial class init : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -127,6 +127,32 @@ namespace Garage3.Migrations
                 });
 
             migrationBuilder.InsertData(
+                table: "ParkingPlace",
+                columns: new[] { "ParkingPlaceId", "IsOccupied" },
+                values: new object[,]
+                {
+                    { 12, true },
+                    { 19, true },
+                    { 18, true },
+                    { 17, true },
+                    { 16, true },
+                    { 15, true },
+                    { 14, true },
+                    { 13, true },
+                    { 11, true },
+                    { 7, true },
+                    { 9, true },
+                    { 8, true },
+                    { 6, true },
+                    { 5, true },
+                    { 4, true },
+                    { 3, true },
+                    { 2, true },
+                    { 1, true },
+                    { 10, true }
+                });
+
+            migrationBuilder.InsertData(
                 table: "VehicleType",
                 columns: new[] { "VehicleTypeId", "Size", "Type" },
                 values: new object[,]
@@ -135,13 +161,25 @@ namespace Garage3.Migrations
                     { 7, 1, "Canoe" },
                     { 6, 9, "Boat" },
                     { 5, 6, "Van" },
-                    { 2, 6, "Truck" },
-                    { 3, 6, "Bus" },
                     { 1, 3, "Car" },
-                    { 9, 9, "Airplane" },
-                    { 4, 1, "Motorcycle" },
-                    { 10, 9, "Helicopter" }
+                    { 3, 6, "Bus" },
+                    { 2, 6, "Truck" }
                 });
+
+            migrationBuilder.InsertData(
+                table: "VehicleType",
+                columns: new[] { "VehicleTypeId", "Size", "Type" },
+                values: new object[] { 9, 9, "Airplane" });
+
+            migrationBuilder.InsertData(
+                table: "VehicleType",
+                columns: new[] { "VehicleTypeId", "Size", "Type" },
+                values: new object[] { 4, 1, "Motorcycle" });
+
+            migrationBuilder.InsertData(
+                table: "VehicleType",
+                columns: new[] { "VehicleTypeId", "Size", "Type" },
+                values: new object[] { 10, 9, "Helicopter" });
 
             migrationBuilder.InsertData(
                 table: "Vehicle",
@@ -163,6 +201,32 @@ namespace Garage3.Migrations
                     { 14, "Saab", 2, "MNO-931", "AreoX", 1 },
                     { 16, "Yamaha", 4, "AAB-123", "VMAX", 4 },
                     { 15, "Boeing", 3, "N12345", "777", 9 }
+                });
+
+            migrationBuilder.InsertData(
+                table: "ParkingEvent",
+                columns: new[] { "ParkingPlaceId", "VehicleId", "TimeOfArrival" },
+                values: new object[,]
+                {
+                    { 1, 1, new DateTime(2021, 9, 8, 22, 58, 46, 667, DateTimeKind.Local).AddTicks(9612) },
+                    { 16, 15, new DateTime(2021, 9, 2, 22, 58, 46, 669, DateTimeKind.Local).AddTicks(7495) },
+                    { 15, 15, new DateTime(2021, 9, 2, 22, 58, 46, 669, DateTimeKind.Local).AddTicks(7493) },
+                    { 14, 15, new DateTime(2021, 9, 2, 22, 58, 46, 669, DateTimeKind.Local).AddTicks(7491) },
+                    { 13, 15, new DateTime(2021, 9, 2, 22, 58, 46, 669, DateTimeKind.Local).AddTicks(7489) },
+                    { 12, 15, new DateTime(2021, 9, 2, 22, 58, 46, 669, DateTimeKind.Local).AddTicks(7487) },
+                    { 11, 15, new DateTime(2021, 9, 2, 22, 58, 46, 669, DateTimeKind.Local).AddTicks(7485) },
+                    { 10, 15, new DateTime(2021, 9, 2, 22, 58, 46, 669, DateTimeKind.Local).AddTicks(7483) },
+                    { 17, 15, new DateTime(2021, 9, 2, 22, 58, 46, 669, DateTimeKind.Local).AddTicks(7497) },
+                    { 19, 16, new DateTime(2021, 9, 6, 22, 58, 46, 669, DateTimeKind.Local).AddTicks(7502) },
+                    { 8, 3, new DateTime(2021, 9, 7, 22, 58, 46, 669, DateTimeKind.Local).AddTicks(7479) },
+                    { 7, 3, new DateTime(2021, 9, 7, 22, 58, 46, 669, DateTimeKind.Local).AddTicks(7477) },
+                    { 6, 2, new DateTime(2021, 9, 4, 22, 58, 46, 669, DateTimeKind.Local).AddTicks(7475) },
+                    { 5, 2, new DateTime(2021, 9, 4, 22, 58, 46, 669, DateTimeKind.Local).AddTicks(7472) },
+                    { 4, 2, new DateTime(2021, 9, 4, 22, 58, 46, 669, DateTimeKind.Local).AddTicks(7470) },
+                    { 3, 1, new DateTime(2021, 9, 8, 22, 58, 46, 669, DateTimeKind.Local).AddTicks(7466) },
+                    { 2, 1, new DateTime(2021, 9, 8, 22, 58, 46, 669, DateTimeKind.Local).AddTicks(7444) },
+                    { 9, 3, new DateTime(2021, 9, 7, 22, 58, 46, 669, DateTimeKind.Local).AddTicks(7481) },
+                    { 18, 15, new DateTime(2021, 9, 2, 22, 58, 46, 669, DateTimeKind.Local).AddTicks(7500) }
                 });
 
             migrationBuilder.CreateIndex(

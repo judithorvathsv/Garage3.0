@@ -59,12 +59,28 @@ namespace Garage3.Controllers
 
             var vehicle = await db.Vehicle
                 .FirstOrDefaultAsync(m => m.VehicleId == id);
+            //var Vehicletype = await db.VehicleType.FirstOrDefaultAsync(t => t.VehicleTypeId == vehicle.VehicleTypeId);
+            var model = await db.Vehicle
+                .Select(v => new RegisterVehicleViewModel
+                {
+                    Id = v.VehicleId,
+                    VehicleTypeId = v.VehicleTypeId,
+                    VehicleType = v.VehicleType.Type,
+                    RegistrationNumber = v.RegistrationNumber,
+                    //VehicleArrivalTime = v.TimeOfArrival,
+                    Brand = v.Brand
+                    //VehicleParkDuration=v.
+                    //VehicleParkPrice
+                })
+                .FirstOrDefaultAsync(v => v.Id == id);
+            
+
             if (vehicle == null)
             {
                 return NotFound();
             }
 
-            return View(vehicle);
+            return View(model);
         }
 
         public async Task<IActionResult> Overview()
@@ -385,7 +401,24 @@ namespace Garage3.Controllers
             {
                 return NotFound();
             }
-            return View(vehicle);
+            var vehicleTypes =  GetAllVehicleTypesAsync().Result;
+                    
+            var model = await db.Vehicle
+               .Select(v => new RegisterVehicleViewModel
+               {
+                   VehicleTypes = vehicleTypes,
+                   //Id = id, //Ownerid
+                   Id = v.VehicleId,
+                   VehicleTypeId = v.VehicleTypeId,
+                   VehicleType = v.VehicleType.Type,
+                   RegistrationNumber = v.RegistrationNumber,
+                    //VehicleArrivalTime = v.TimeOfArrival,
+                    Brand = v.Brand
+                    //VehicleParkDuration=v.
+                    //VehicleParkPrice
+                })
+               .FirstOrDefaultAsync(v => v.Id == Id);
+            return View(model);
         }
 
         public bool Equals(Vehicle b1, Vehicle b2)

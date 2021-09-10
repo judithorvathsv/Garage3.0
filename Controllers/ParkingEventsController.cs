@@ -72,7 +72,7 @@ namespace Garage3.Controllers
             _context.ParkingEvent.Update(parkingEvent);
             await _context.SaveChangesAsync();
 
-            return RedirectToAction("Member","Owners", id);
+            return RedirectToAction("Member","Owners", new OwnerDetailsViewModel { Id = id});
         }
 
         // POST: ParkingEvents/Edit/

@@ -8,7 +8,7 @@ using Microsoft.EntityFrameworkCore;
 using Garage3.Data;
 using Garage3.Models;
 using Garage3.Models.ViewModels;
-
+using System.Data;
 
 namespace Garage3.Controllers
 {
@@ -114,24 +114,26 @@ namespace Garage3.Controllers
 
         public async Task<IActionResult> Overview()
         {
-
             var model = new OverviewListViewModel();
 
             var listWithEmpty = (from f in db.Vehicle
-                                 join p in db.Owner on f.OwnerId equals p.OwnerId                       //owner db
-                                 join t in db.ParkingEvent on f.VehicleId equals t.VehicleId            //parkingevent db
-                                 join ft in db.VehicleType on f.VehicleTypeId equals ft.VehicleTypeId //vehicletype db
+                                 join p in db.Owner on f.OwnerId equals p.OwnerId                       
+                                 join t in db.ParkingEvent on f.VehicleId equals t.VehicleId            
+                                 join ft in db.VehicleType on f.VehicleTypeId equals ft.VehicleTypeId                           
+                                 into l from ft in l.DefaultIfEmpty()
+
+                                 
 
                                  select new OverviewViewModel
                                  {
                                      VehicleId = f.VehicleId,
                                      FullName = p.FirstName + " " + p.LastName,
-                                     VehicleRegistrationNumber = f.RegistrationNumber,
+                                     VehicleRegistrationNumber = f.RegistrationNumber,                
                                      VehicleArrivalTime = t.TimeOfArrival,
                                      VehicleParkDuration = t.TimeOfArrival - DateTime.Now,
-                                     VehicleType = ft.Type                              
+                                     VehicleType = ft.Type
 
-                                 });           
+                                 }).Distinct();
 
             model.Overview = listWithEmpty;
             return View(nameof(Overview), model);
@@ -209,7 +211,7 @@ namespace Garage3.Controllers
                         join p in db.Owner on f.OwnerId equals p.OwnerId                       //owner db
                         join t in db.ParkingEvent on f.VehicleId equals t.VehicleId            //parkingevent db
                         join ft in db.VehicleType on f.VehicleTypeId equals ft.VehicleTypeId //vehicletype db
-
+                       
                         select new OverviewViewModel
                         {
                             VehicleId = f.VehicleId,

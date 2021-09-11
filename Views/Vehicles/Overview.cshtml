@@ -27,12 +27,11 @@
                     <div class="col-sm-8 col-md-8 col-lg-5 pt-3">
                         <form asp-action="Filter" class="input-group ml-1" id="FilterForm" method="get">
                             <div class="input-group-append w-25">
-                                <input type="text" class="form-control form-control-sm" name="Regnumber" style="text-transform:uppercase;" placeholder="Regnumber..." />
+                                <input type="text" class="form-control form-control" name="Regnumber"  placeholder="Regnumber..." />
                             </div>
                             <div class="input-group-append w-50">                            
                                 <select name="VehicleTypeId" asp-for="VehicleTypeId" class="form-control" asp-items="@await vehicleTypeSelect.GetVehicleTypesAsync()">
-                                    <option selected="selected" value="">Please select</option>
-                                   
+                                    <option selected="selected" value="">Please select type</option>                                   
                                 </select>   
                             </div>
                             <div class="input-group-append">
@@ -68,7 +67,7 @@
     </div>
 
     @*<partial name="OverviewPartial" model="@Model.Overview" />*@
-    <table class="table">
+    <table class="table table-hover">
         <thead>
             <tr>
                 <th> <a asp-action="OverviewSort" asp-route-sortingVehicle="@ViewData["RegistrationNumberSorting"]">@Html.DisplayNameFor(model => model.Overview.First().VehicleRegistrationNumber)</a> </th>
@@ -106,9 +105,9 @@
 
 
                 <td>
-                    <a asp-action="Details" asp-route-id="@item.VehicleId">Details</a> |
-                    <a asp-action="Change" asp-route-id="@item.VehicleId">Change</a> |
-                    <a asp-action="Delete" asp-route-id="@item.VehicleId">Delete</a>
+                    <a class="btn btn-primary" asp-action="Details" asp-route-id="@item.VehicleId">Details</a> 
+                    <a class="btn btn-primary" asp-action="Change" asp-route-id="@item.VehicleId">Change</a> 
+                    <a class="btn btn-primary" asp-action="Delete" asp-route-id="@item.VehicleId">Delete</a>
                 </td>
             </tr>
             }

@@ -21,9 +21,9 @@ namespace Garage3.Models.ViewModels
 
         public IEnumerable<SelectListItem> VehicleTypes { get; set; }
 
-        public VehicleType Types { get; set; }
+        //public VehicleType Types { get; set; }
 
-        public string Type { get; set; }
+        //public string Type { get; set; }
 
       
 

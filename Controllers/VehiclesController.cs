@@ -209,7 +209,7 @@ namespace Garage3.Controllers
             var list = (from f in db.Vehicle
                         join p in db.Owner on f.OwnerId equals p.OwnerId                       //owner db
                         join t in db.ParkingEvent on f.VehicleId equals t.VehicleId            //parkingevent db
-                        join ft in db.VehicleType on f.VehicleTypeId equals ft.VehicleTypeId //vehicletype db
+                        join ft in db.VehicleType on f.VehicleTypeId equals ft.VehicleTypeId   //vehicletype db
                        
                         select new OverviewViewModel
                         {
@@ -218,51 +218,41 @@ namespace Garage3.Controllers
                             VehicleRegistrationNumber = f.RegistrationNumber,
                             VehicleArrivalTime = t.TimeOfArrival,
                             VehicleParkDuration = t.TimeOfArrival - DateTime.Now,
-                            VehicleType = ft.Type
-
+                            VehicleType = ft.Type,
+                            VehicleTypeId = ft.VehicleTypeId
                         });
-            return list.AsEnumerable();
-        }
+            return list.AsEnumerable();         
+        } 
 
 
         //For vehicle Overview filtering regnumber, type
         public async Task<IActionResult> Filter(OverviewListViewModel viewModel)
-        {
-            var model = new OverviewListViewModel();
-            var vehicleAndOwner = GetOverviewViewModelAsEnumerable();
-
+        {        
+            var vehicleAndOwner = GetOverviewViewModelAsEnumerable();         
             var result =  vehicleAndOwner;
-          
-           
-            //type: empty
+
+            //type: empty 
             if (viewModel.VehicleTypeId == 0)
             {
-                if(viewModel.Regnumber == null) //type: empty, regnr : empty                
-                    result = vehicleAndOwner;                
-                else                            //type: empty, regnr: selected                
-                    result = vehicleAndOwner.Where(m => m.VehicleRegistrationNumber.StartsWith(viewModel.Regnumber.ToUpper()));                
+                result = viewModel.Regnumber == null ? 
+                    vehicleAndOwner : vehicleAndOwner.Where(m => m.VehicleRegistrationNumber.StartsWith(viewModel.Regnumber.ToUpper()));
             }
 
             //type: selected, regnr: empty 
-            if (viewModel.Regnumber == null && viewModel.VehicleTypeId != 0)   
-            {                
-                 var vehicleType = db.VehicleType.FindAsync(viewModel.VehicleTypeId).Result.Type;
-                 result = result.Where(r => r.VehicleType == vehicleType);
-             }            
+            if (viewModel.Regnumber == null && viewModel.VehicleTypeId != 0)
+                result = vehicleAndOwner.Where(m => m.VehicleTypeId == viewModel.VehicleTypeId);
+
 
             // tpe: selected, regnr: selected
-            else 
+            if (viewModel.VehicleTypeId != 0 && viewModel.Regnumber != null)
             {
-                if (viewModel.VehicleTypeId != 0 && viewModel.Regnumber != null)
-                {
-                    var vehicleType = db.VehicleType.FindAsync(viewModel.VehicleTypeId).Result.Type;
-                    result = vehicleAndOwner.Where(
-                        m => m.VehicleRegistrationNumber.StartsWith(viewModel.Regnumber.ToUpper())
-                        &&
-                        m.VehicleType == vehicleType);                   
-                }              
-            }
-    
+                result = vehicleAndOwner.Where(
+                                            m => m.VehicleRegistrationNumber.StartsWith(viewModel.Regnumber.ToUpper())
+                                            &&                                       
+                                            m.VehicleTypeId == viewModel.VehicleTypeId); 
+            }               
+
+            var model = new OverviewListViewModel();
             model.Overview = result.Select(v => new OverviewViewModel
             {
                 VehicleId = v.VehicleId,
@@ -271,16 +261,15 @@ namespace Garage3.Controllers
                 VehicleArrivalTime = v.VehicleArrivalTime,
                 VehicleParkDuration = v.VehicleArrivalTime - DateTime.Now,
                 VehicleType = v.VehicleType
-                //VehicleParked = false
-            }).AsEnumerable();
-
-            model.VehicleTypes = await GetVehicleTypesAsync();        
+                //VehicleParked = false   
+                });
+            
             return View("Overview", model);
         }
 
-       
 
-    [HttpGet, ActionName("OverviewSort")]
+
+        [HttpGet, ActionName("OverviewSort")]
         public async Task<IActionResult> OverviewSort(string sortingVehicle)
         {
             //string parkedStatusStr = sortingVehicle.Split(",")[1];

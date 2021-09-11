@@ -24,9 +24,8 @@ namespace Garage3.Models.ViewModels
         [Display(Name = "Name")]
         public string FullName { get; set; }
 
-        [Display(Name = "RegistrationNumber")]
-        public string RegistrationNumber { get; set; }
+        public bool IsParked { get; set; }
 
-        public IEnumerable<Vehicle> Vehicles { get; set; }
+        public IEnumerable<VehicleViewModel> Vehicles { get; set; }
     }
 }

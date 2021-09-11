@@ -129,7 +129,6 @@ namespace Garage3.Controllers
         private async Task<IEnumerable<SelectListItem>> GetVehicleTypesAsync()
         {
             return await db.Vehicle
-                        //.Where(w => w.IsParked == true)
                         .Select(t => t.VehicleType)
                         .Distinct()
                         .Select(g => new SelectListItem
@@ -213,17 +212,20 @@ namespace Garage3.Controllers
         {
             var model = new OverviewListViewModel();
             var vehicleAndOwner = GetOverviewViewModelAsEnumerable();
+            var vehicleType = db.VehicleType.FindAsync(viewModel.VehicleTypeId).Result.Type;
 
+           
             var result = string.IsNullOrWhiteSpace(viewModel.Regnumber) ?
                                vehicleAndOwner :
                                vehicleAndOwner.Where(m => m.VehicleRegistrationNumber.StartsWith(viewModel.Regnumber.ToUpper()));
 
-            var vehicleType = db.VehicleType.FindAsync(viewModel.VehicleTypeId).Result.Type;
+            //result = viewModel.Types == null ? result :
+            //result.Where(r => r.VehicleType == vehicleType);
+
+
             result = result.Where(r => r.VehicleType == vehicleType);
 
-            //var resultList = viewModel.Types == null ?
-            //result :
-            //result.Where(x => x.VehicleId == model.Types.VehicleTypeId);
+
 
             IQueryable<OverviewViewModel> vehicleAndOwnerQuerable = result.Select(v => new OverviewViewModel
             {
@@ -453,22 +455,28 @@ namespace Garage3.Controllers
             }
             return RedirectToAction("Details", new { id = vehicle.VehicleId });
         }
-        public async Task<IActionResult> UnPark(int? id)
+        public async Task<IActionResult> UnPark(int? vehicleid)
         {
-            var vehicle = await db.Vehicle.FirstOrDefaultAsync(x => x.VehicleId == id);
+            var vehicle = await db.Vehicle.FirstOrDefaultAsync(x => x.VehicleId == vehicleid);
             //vehicle.IsParked = false;
             var departureTime = DateTime.Now;
             var parkingEvent = await db.ParkingEvent
-                .Where(pe => pe.VehicleId == id)
-                .Include(pe => pe.ParkingPlace)
+                .Where(pe => pe.VehicleId == vehicleid)
                 .FirstOrDefaultAsync();
 
-            parkingEvent.ParkingPlace.IsOccupied = false;
+            var parkingPlace = await db.ParkingEvent
+                .Where(pe => pe.VehicleId == vehicleid)
+                .Include(pp => pp.ParkingPlace)
+                .Select(pp => pp.ParkingPlace)
+                .FirstOrDefaultAsync();
+
+            parkingPlace.IsOccupied = false;
             var arrivalTime = parkingEvent.TimeOfArrival;
+            db.Update(parkingPlace);
             db.Remove(parkingEvent);
             db.SaveChanges();
 
-            return RedirectToAction("UnparkResponse", new { id, departureTime, arrivalTime });
+            return RedirectToAction("UnparkResponse", new { vehicleid, departureTime, arrivalTime });
         }
 
 
@@ -592,14 +600,14 @@ namespace Garage3.Controllers
         {
             return db.Vehicle.Any(e => e.VehicleId == id);
         }
-        public async Task<IActionResult> UnParkResponse(int id, DateTime departureTime, DateTime arrivalTime)
+        public async Task<IActionResult> UnParkResponse(int vehicleId, DateTime departureTime, DateTime arrivalTime)
         {
             //    var v = db.Vehicle
             //.Select(v => v.Id);
             var model = await db.Vehicle
                 .Select(v => new UnParkResponseViewModel
                 {
-                    Id = v.VehicleId,
+                    VehicleId = v.VehicleId,
                     //VehicleType = v.VehicleType.Type,
                     VehicleRegistrationNumber = v.RegistrationNumber,
                     VehicleArrivalTime = arrivalTime,
@@ -607,7 +615,7 @@ namespace Garage3.Controllers
                     //VehicleParkDuration=v.
                     //VehicleParkPrice
                 })
-                .FirstOrDefaultAsync(v => v.Id == id);
+                .FirstOrDefaultAsync(v => v.VehicleId == vehicleId);
 
             return View("UnParkResponse", model);
             //ViewBag.id = id;
@@ -615,12 +623,12 @@ namespace Garage3.Controllers
             //return View(nameof(UnParkResponse));
         }
 
-        public async Task<IActionResult> Receipt(int Id, DateTime departureTime, DateTime arrivalTime)
+        public async Task<IActionResult> Receipt(int vehicleId, DateTime departureTime, DateTime arrivalTime)
         {
             var vehicle = await db.Vehicle
                 .Include(v => v.ParkingEvents)
                 .Include(v => v.Owner)
-                .FirstOrDefaultAsync(v => v.VehicleId == Id);
+                .FirstOrDefaultAsync(v => v.VehicleId == vehicleId);
 
             var model = new ReceiptViewModel
             {

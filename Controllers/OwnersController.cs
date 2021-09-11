@@ -16,9 +16,6 @@ namespace Garage3.Controllers
     public class OwnersController : Controller
     {
         private readonly Garage3Context db;
-
-
-
         public OwnersController(Garage3Context context)
         {
             db = context;
@@ -168,21 +165,47 @@ namespace Garage3.Controllers
         {
             try
             {
-                var vehicles = await db.Vehicle
+               
+                var vehicle = await db.Vehicle
                 .Where(v => v.OwnerId == id)
-                .Include(v => v.Owner)
-                .Select(m => new Vehicle
+                .Join(db.Owner, v => v.Owner.OwnerId, o => o.OwnerId, (v, o) => new { v, o })
+                .Select(m => new OwnerDetailsViewModel
                 {
-                    VehicleId = m.VehicleId,
-                    RegistrationNumber = m.RegistrationNumber,
-                    Brand = m.Brand,
-                    VehicleType = m.VehicleType,
-                    VehicleModel = m.VehicleModel,
-                }).ToListAsync();
+                    Id = id,
+                    SocialSecurityNumber = m.o.SocialSecurityNumber,
+                    FullName = m.o.FirstName + " " + m.o.LastName,
+                    VehicleId = m.v.VehicleId,
+                }).FirstOrDefaultAsync();
+
+                var parkingstatus = await db.ParkingEvent.Where(x => x.VehicleId == vehicle.VehicleId).Select(x => x.ParkingPlace.IsOccupied).FirstOrDefaultAsync();
+
+                var vehicles = await db.Vehicle
+                    .Where(v => v.OwnerId == id)
+                    .Include(v => v.Owner)
+                    .Select(m => new VehicleViewModel
+                    {
+                        VehicleId = m.VehicleId,
+                        RegistrationNumber = m.RegistrationNumber,
+                        Brand = m.Brand,
+                        VehicleType = m.VehicleType,
+                        VehicleModel = m.VehicleModel,
+                        IsParked = false
+                    }).ToListAsync();
+
+                //foreach (var item in vehicles)
+                //{
+                //    if(item.VehicleId == vehicle.VehicleId)
+                //    {
+                //        vehicles.Add(new VehicleViewModel { VehicleId = vehicle.VehicleId, IsParked = true });
+                //    }
+                //}
 
                 var model = new OwnerDetailsViewModel
                 {
                     Id = id,
+                    VehicleId = vehicle.VehicleId,
+                    FullName = vehicle.FullName,
+                    SocialSecurityNumber = vehicle.SocialSecurityNumber,
                     Vehicles = vehicles
                 };
                 if (vehicles == null)

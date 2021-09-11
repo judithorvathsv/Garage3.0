@@ -2,6 +2,7 @@
 
 @{
     ViewData["Title"] = "Member details";
+    Layout = "_Layout";
 }
 
 <h1>Member Details</h1>
@@ -45,11 +46,14 @@
                     <td> @Html.DisplayFor(modelItem => item.VehicleModel)</td>
                     <td> @Html.DisplayFor(modelItem => item.VehicleType.Type)  </td>
                     <td>
-                      
-                        @if(@item.IsParked == false){
-                        <a class="btn btn-primary" asp-controller="ParkingEvents" asp-action="Park" asp-route-id="@Model.FirstOrDefault().Id" asp-route-vehcleid="@item.VehicleId">Park</a>
-                        }else{
-                        <a class="btn btn-primary" asp-controller="ParkingEvents" asp-action="UnPark" asp-route-id="@Model.FirstOrDefault().Id" asp-route-vehcleid="@item.VehicleId">Unpark</a>
+
+                        @if (@item.IsParked == false)
+                        {
+                            @Html.ActionLink("Park", "Park", "ParkingEvents", new { id = @Model.Id, vehcleid = @item.VehicleId }, new { @class = "btn btn-primary" })
+                        }
+                        else
+                        {
+                            @Html.ActionLink("Unpark", "UnPark", "Vehicles", new { vehicleid = @item.VehicleId }, new { @class = "btn btn-primary" })
                         }
 
                     </td>
@@ -57,6 +61,7 @@
             }
         </tbody>
     </table>
+    <span class="text-danger"> @TempData["NoPlacesMessage"]</span>
 </div>
 <div>
     @*<a asp-action="Edit" asp-route-id="@Model.First().SocialSecurityNumber ">Edit</a> |*@

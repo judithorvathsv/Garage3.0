@@ -29,19 +29,19 @@
     <table class="table">
         <thead>
             <tr>
-                <th> @Html.DisplayNameFor(model => model.RegistrationNumber)</th>
+                @*<th> @Html.DisplayNameFor(model => model.RegistrationNumber)</th>
                 <th> @Html.DisplayNameFor(model => model.Brand)</th>
                 <th> @Html.DisplayNameFor(model => model.VehicleModel)</th>
-                <th> @Html.DisplayNameFor(model => model.VehicleType)</th>
+                <th> @Html.DisplayNameFor(model => model.VehicleType)</th>*@
             </tr>
         <thead>
         <tbody>
        
                 <tr>
-                    <td> @Html.DisplayFor(m => m.RegistrationNumber)  </td>
+                    @*<td> @Html.DisplayFor(m => m.RegistrationNumber)  </td>
                     <td> @Html.DisplayFor(m => m.Brand)  </td>
                     <td> @Html.DisplayFor(m => m.VehicleModel)</td>
-                    <td> @Html.DisplayFor(m => m.VehicleType)  </td>
+                    <td> @Html.DisplayFor(m => m.VehicleType)  </td>*@
                     <td>
 
                         @if (@Model.IsParked == false)

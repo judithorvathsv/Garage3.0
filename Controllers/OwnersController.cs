@@ -251,6 +251,7 @@ namespace Garage3.Controllers
         [ActionName("Overview")]
         public async Task<IActionResult> Overview()
         {
+            /*
             var listWithEmpty = (from p in db.Owner
                                  join f in db.Vehicle
                                  on p.OwnerId equals f.OwnerId
@@ -274,6 +275,31 @@ namespace Garage3.Controllers
                                  })
                              .ToList()
                              .OrderBy(x => x.FirstName.Substring(0, 3), StringComparer.Ordinal).ToList();
+            */
+            var listWithEmpty = (from p in db.Owner
+                                 join f in db.Vehicle
+                                 on p.OwnerId equals f.OwnerId
+                                 into j1 from j2 in j1.DefaultIfEmpty() //j1 and j2 only for outer join
+
+                                 group j2 by new
+                                 {
+                                     p.OwnerId,
+                                     p.SocialSecurityNumber,
+                                     p.FirstName,
+                                     p.LastName
+                                 } into gr
+
+                                 select new MemberDetailsViewModel
+                                 {
+                                     Id = gr.Key.OwnerId,
+                                     SocialSecurityNumber = gr.Key.SocialSecurityNumber,
+                                     FirstName = gr.Key.FirstName,
+                                     LastName = gr.Key.LastName,
+                                     FullName = gr.Key.FirstName + " " + gr.Key.LastName,
+                                     NumberOfVehicles = gr.Count(t => t.RegistrationNumber != null),
+                                 })
+                                .ToList()
+                                .OrderBy(x => x.FirstName.Substring(0, 3), StringComparer.Ordinal).ToList();
 
             return View(listWithEmpty);
 

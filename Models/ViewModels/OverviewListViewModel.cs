@@ -24,9 +24,9 @@ namespace Garage3.Models.ViewModels
 
       
 
-        public VehicleType Types { get; set; }
+        //public VehicleType Types { get; set; }
 
-        public string Type { get; set; }
+        //public string Type { get; set; }
 
       
 

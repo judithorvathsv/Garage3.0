@@ -61,8 +61,6 @@ namespace Garage3.Controllers
 
         public async Task<IActionResult> Park(int id, int vehcleid)
         {
-
-            //var member = await db.Owner.Where(o => o.OwnerId == id).Select(o => o).FirstOrDefaultAsync();
             var numberOfPlaces = await db.ParkingPlace.AsNoTracking().CountAsync();
             //Hämtar det sista inlagda värdet
             var parkingPlaceId = await db.ParkingPlace.AsNoTracking().OrderBy(pp => pp.ParkingPlaceId).Select(pp => pp.ParkingPlaceId).LastOrDefaultAsync();
@@ -73,7 +71,6 @@ namespace Garage3.Controllers
 
             if (parkingPlaceId <= GarageCaspacity)
             {
-
                 if (parkingPlace != null)
                 {
                     parkingplace.ParkingPlaceId = parkingPlace.ParkingPlaceId;
@@ -88,7 +85,6 @@ namespace Garage3.Controllers
 
                     db.ParkingEvent.Update(parkingevent);
                     await db.SaveChangesAsync();
-
                 }
                 else
                 {
@@ -108,29 +104,29 @@ namespace Garage3.Controllers
                     }
                     else
                     {
-                        TempData["NoPlacesMessage"] = "There are no places availible in this garage";
+                        TempData["NoPlacesMessage"] = "There are now no places availible in this garage";
                     }
-
                 }
             }
 
-            return RedirectToAction("MemberDetails", "Owners", new { Id = id });
+            return RedirectToAction("MemberDetails", "Owners", new { id = id, vehcleid = vehcleid });
 
         }
 
         //public async Task<IActionResult> UnPark(int id, int vehcleid)
         //{
-        //    var parkingplaceid = await db.ParkingEvent.Where(p => p.VehicleId == vehcleid).Select(p => p.ParkingPlaceId).FirstOrDefaultAsync();
-        //    var parkingVehicle = await db.Vehicle.Include(v => v.VehicleType).Where(v => v.VehicleId == vehcleid).FirstOrDefaultAsync();
+        //    var parkingplaceId = await db.ParkingEvent.Where(p => p.VehicleId == vehcleid).Select(p => p.ParkingPlaceId).FirstOrDefaultAsync();
+        //    var parkingVehicle = await db.Vehicle.Where(v => v.VehicleId == vehcleid).FirstOrDefaultAsync();
         //    var member = await db.Owner.Where(o => o.OwnerId == id).Select(o => o).FirstOrDefaultAsync();
 
-        //    var parkingplace = new ParkingPlace
+        //    var parkingPlace = new ParkingPlace
         //    {
-        //        ParkingPlaceId = parkingplaceid,
+        //        ParkingPlaceId = parkingplaceId,
         //        IsOccupied = false
         //    };
 
-        //    db.ParkingPlace.Update(parkingplace);
+        //    db.ParkingPlace.Update(parkingPlace);
+        //    db.ParkingPlace.Remove(parkingVehicle);
         //    await db.SaveChangesAsync();
 
 

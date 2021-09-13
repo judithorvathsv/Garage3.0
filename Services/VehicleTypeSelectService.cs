@@ -20,18 +20,15 @@ namespace Garage3.Services
 
         public async Task<IEnumerable<SelectListItem>> GetVehicleTypesAsync()
         {
-            var typesList = await db.VehicleType
+            var typesList = await db.Vehicle
+                   .Select(t => t.VehicleType)
+                     .Distinct()
                             .Select(type => new SelectListItem()
                             {
                                 Text = type.Type,
                                 Value = type.VehicleTypeId.ToString(),
                             }).ToListAsync();
 
-            typesList.Insert(0, new SelectListItem()
-            {
-                Text = "----Select----",
-                Value = string.Empty
-            });
 
             return typesList;
 

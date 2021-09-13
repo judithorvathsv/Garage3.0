@@ -1,4 +1,4 @@
-﻿@model Garage3.Models.Vehicle
+﻿@model Garage3.Models.ViewModels.DetailsViewModel
 
 @{
     ViewData["Title"] = "Details";
@@ -10,10 +10,10 @@
     @*<p class="text-danger">@TempData["ChangedVehicle"]</p>*@
 
     @*@if (Model.IsParked)
-    {
-        <h5>Your vehicle is Parked from @Model.TimeOfArrival.ToShortDateString() @Model.TimeOfArrival.ToShortTimeString()</h5>
-        <p>If all information is correct you are finished otherwise you can edit it.</p>
-    }*@
+        {
+            <h5>Your vehicle is Parked from @Model.TimeOfArrival.ToShortDateString() @Model.TimeOfArrival.ToShortTimeString()</h5>
+            <p>If all information is correct you are finished otherwise you can edit it.</p>
+        }*@
     <hr />
     <dl class="row">
         <dt class="col-sm-2">
@@ -28,12 +28,6 @@
         <dd class="col-sm-10">
             @Html.DisplayFor(model => model.RegistrationNumber)
         </dd>
-        @*<dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.Color)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.Color)
-        </dd>*@
         <dt class="col-sm-2">
             @Html.DisplayNameFor(model => model.Brand)
         </dt>
@@ -46,44 +40,16 @@
         <dd class="col-sm-10">
             @Html.DisplayFor(model => model.VehicleModel)
         </dd>
-        @*<dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.NumberOfWheels)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.NumberOfWheels)
-        </dd>
-        <dt class="col-sm-2">
-            @Html.DisplayNameFor(model => model.IsParked)
-        </dt>
-        <dd class="col-sm-10">
-            @Html.DisplayFor(model => model.IsParked)
-        </dd>*@
-
-        @*@if (Model.IsParked)
-        {
-            <dt class="col-sm-2">
-                @Html.DisplayNameFor(model => model.TimeOfArrival)
-            </dt>
-            <dd class="col-sm-10">
-                @Html.DisplayFor(model => model.TimeOfArrival)
-            </dd>
-        }*@
     </dl>
 </div>
 
-@*<p class="text-danger">@TempData["Message"]</p>*@
+<p class="text-success">@TempData["ChangedVehicle"]</p>
 
 
 <div class="form-group">
-    @*@if (Model.IsParked)
-    {
-        <a class="btn btn-primary" asp-action="Unpark" asp-route-id="@Model.Id">Unpark</a>
-    }
-    else
-    {
-        <a class="btn btn-primary" asp-action="ParkRegisteredVehicle" asp-route-id="@Model.Id">Park</a>
-    }*@
-    <a class="btn btn-secondary" asp-action="Change" asp-route-id="@Model.VehicleId">Change</a>
-
+    <a class="btn btn-secondary" asp-action="Change" asp-route-id="@Model.Id">Change</a>
+</div>
+<div class="p-1">
+    <a asp-controller="Vehicles" asp-action="Overview">Back to Overview</a>
 </div>
 

@@ -58,7 +58,16 @@ namespace Garage3.Controllers
             }
 
             var vehicle = await db.Vehicle
-                .FirstOrDefaultAsync(m => m.VehicleId == id);
+                .Include(t => t.VehicleType)
+                .Select(v => new DetailsViewModel
+                { 
+                    Id = v.VehicleId,
+                    VehicleType = v.VehicleType.Type,
+                    RegistrationNumber = v.RegistrationNumber,
+                    Brand = v.Brand,
+                    VehicleModel = v.VehicleModel,
+                })
+                .FirstOrDefaultAsync(m => m.Id == id);
             if (vehicle == null)
             {
                 return NotFound();
@@ -83,25 +92,8 @@ namespace Garage3.Controllers
              var vehicles = GetOverviewViewModelAsEnumerable(allVehicles);
             // parkedStatus = ParkingStatus(parkedStatusStr, model, ref vehicles);
 
-             //if (parkedStatus == 3)
-             //{
-             //    model.AllStatus = true;
-             //    ViewData["ParkedStatus"] = "3";
-             //}
-             //else if (parkedStatus == 2)
-             //{
-             //    model.UnparkedStatus = true;
-             //    ViewData["ParkedStatus"] = "2";
-             //    vehicles = vehicles.Where(u => u.VehicleParked.Equals(false));
-             //}
-             //else
-             //{
-             //    model.ParkedStatus = true;
-             //    ViewData["ParkedStatus"] = "1";
-             //    vehicles = vehicles.Where(u => u.VehicleParked.Equals(true));
-             //}
-             model.VehicleTypesSelectList = await GetAllVehicleTypesAsync();
-             model.Overview = vehicles;
+            model.VehicleTypesSelectList = await GetAllVehicleTypesAsync();
+            model.Overview = vehicles;
 
              return View("Overview", model);
          }
@@ -147,7 +139,6 @@ namespace Garage3.Controllers
         private async Task<IEnumerable<SelectListItem>> GetVehicleTypesAsync()
         {
             return await db.Vehicle
-                        //.Where(w => w.IsParked == true)
                         .Select(t => t.VehicleType)
                         .Distinct()
                         .Select(g => new SelectListItem
@@ -210,8 +201,8 @@ namespace Garage3.Controllers
             var list = (from f in db.Vehicle
                         join p in db.Owner on f.OwnerId equals p.OwnerId                       //owner db
                         join t in db.ParkingEvent on f.VehicleId equals t.VehicleId            //parkingevent db
-                        join ft in db.VehicleType on f.VehicleTypeId equals ft.VehicleTypeId //vehicletype db
-
+                        join ft in db.VehicleType on f.VehicleTypeId equals ft.VehicleTypeId   //vehicletype db
+                       
                         select new OverviewViewModel
                         {
                             VehicleId = f.VehicleId,
@@ -219,66 +210,52 @@ namespace Garage3.Controllers
                             VehicleRegistrationNumber = f.RegistrationNumber,
                             VehicleArrivalTime = t.TimeOfArrival,
                             VehicleParkDuration = t.TimeOfArrival - DateTime.Now,
-                            VehicleType = ft.Type
-
+                            VehicleType = ft.Type,
+                            VehicleTypeId = ft.VehicleTypeId
                         });
-            return list.AsEnumerable();
-        }
+            return list.AsEnumerable();         
+        } 
 
 
         //For vehicle Overview filtering regnumber, type
         public async Task<IActionResult> Filter(OverviewListViewModel viewModel)
-        {
-            var model = new OverviewListViewModel();
-            var vehicleAndOwner = GetOverviewViewModelAsEnumerable();
+        {        
+            var vehicleAndOwner = GetOverviewViewModelAsEnumerable();         
+            var result =  vehicleAndOwner;
 
-            var result = string.IsNullOrWhiteSpace(viewModel.Regnumber) ?
-                               vehicleAndOwner :
-                               vehicleAndOwner.Where(m => m.VehicleRegistrationNumber.StartsWith(viewModel.Regnumber.ToUpper()));
-
-
-
-
-
-            result = viewModel.Types == null ?
-            result :
-            result.Where(x => x.VehicleId == model.Types.VehicleTypeId);
-
-            //result= (from x in vehicleAndOwner select new SelectListItem
-            //{ Text = x.ToString(), Value = x.ToString()  }
-            //  ).Distinct().ToList();
-
-            //result.Where(x=>x.VehicleId==viewModel.VehicleTypeId) ;
-
-
-            //result.Where(x => x.VehicleId == model.Types.VehicleTypeId);
-            /*
-            result.Where(v => v.VehicleType == viewModel.VehicleTypes.Select(g => new SelectListItem()
-              {
-                  Text = g.ToString(),
-                  Value = g.ToString()
-              }).ToList(); 
-            */
-            //result.Where(v => v.VehicleTypeId == viewModel.VehicleTypes.Select(v=>v.Text))  );
-            //result.Where(v => v.VehicleType == viewModel.Types);
-            //result.GetVehicleTypesAsync();
-
-            IQueryable<OverviewViewModel> vehicleAndOwnerQuerable = result.Select(v => new OverviewViewModel
+            //type: empty 
+            if (viewModel.VehicleTypeId == 0)
             {
+                result = viewModel.Regnumber == null ? 
+                    vehicleAndOwner : vehicleAndOwner.Where(m => m.VehicleRegistrationNumber.StartsWith(viewModel.Regnumber.ToUpper()));
+            }
 
+            //type: selected, regnr: empty 
+            if (viewModel.Regnumber == null && viewModel.VehicleTypeId != 0)
+                result = vehicleAndOwner.Where(m => m.VehicleTypeId == viewModel.VehicleTypeId);
+
+
+            // tpe: selected, regnr: selected
+            if (viewModel.VehicleTypeId != 0 && viewModel.Regnumber != null)
+            {
+                result = vehicleAndOwner.Where(
+                                            m => m.VehicleRegistrationNumber.StartsWith(viewModel.Regnumber.ToUpper())
+                                            &&                                       
+                                            m.VehicleTypeId == viewModel.VehicleTypeId); 
+            }               
+
+            var model = new OverviewListViewModel();
+            model.Overview = result.Select(v => new OverviewViewModel
+            {
                 VehicleId = v.VehicleId,
                 FullName = v.FullName,
                 VehicleRegistrationNumber = v.VehicleRegistrationNumber,
                 VehicleArrivalTime = v.VehicleArrivalTime,
                 VehicleParkDuration = v.VehicleArrivalTime - DateTime.Now,
                 VehicleType = v.VehicleType
-                //VehicleParked = false
-
-            }).AsQueryable();
-
-            model.Overview = vehicleAndOwnerQuerable.AsEnumerable();
-            //model.VehicleTypes = await GetVehicleTypesAsync();
-
+                //VehicleParked = false   
+                });
+            
             return View("Overview", model);
         }
 
@@ -484,22 +461,28 @@ namespace Garage3.Controllers
             }
             return RedirectToAction("Details", new { id = vehicle.VehicleId });
         }
-        public async Task<IActionResult> UnPark(int? id)
+        public async Task<IActionResult> UnPark(int? vehicleid)
         {
-            var vehicle = await db.Vehicle.FirstOrDefaultAsync(x => x.VehicleId == id);
+            var vehicle = await db.Vehicle.FirstOrDefaultAsync(x => x.VehicleId == vehicleid);
             //vehicle.IsParked = false;
             var departureTime = DateTime.Now;
             var parkingEvent = await db.ParkingEvent
-                .Where(pe => pe.VehicleId == id)
-                .Include(pe => pe.ParkingPlace)
+                .Where(pe => pe.VehicleId == vehicleid)
                 .FirstOrDefaultAsync();
 
-            parkingEvent.ParkingPlace.IsOccupied = false;
+            var parkingPlace = await db.ParkingEvent
+                .Where(pe => pe.VehicleId == vehicleid)
+                .Include(pp => pp.ParkingPlace)
+                .Select(pp => pp.ParkingPlace)
+                .FirstOrDefaultAsync();
+
+            parkingPlace.IsOccupied = false;
             var arrivalTime = parkingEvent.TimeOfArrival;
+            db.Update(parkingPlace);
             db.Remove(parkingEvent);
             db.SaveChanges();
 
-            return RedirectToAction("UnparkResponse", new { id, departureTime, arrivalTime });
+            return RedirectToAction("UnparkResponse", new { vehicleid, departureTime, arrivalTime });
         }
 
 
@@ -511,22 +494,31 @@ namespace Garage3.Controllers
             }
 
             var vehicle = await db.Vehicle.FindAsync(Id);
+            var model = new ChangeVehicleViewModel
+            {
+                RegistrationNumber = vehicle.RegistrationNumber,
+                VehicleTypes = await GetAllVehicleTypesAsync(),
+                VehicleTypeId = vehicle.VehicleTypeId,
+                Id = vehicle.VehicleId,
+                Brand = vehicle.Brand,
+                VehicleModel = vehicle.VehicleModel,
+                OwnerId = vehicle.OwnerId
+
+            };
 
             if (vehicle == null)
             {
                 return NotFound();
             }
-            return View(vehicle);
+            return View(model);
         }
 
         public bool Equals(Vehicle b1, Vehicle b2)
         {
             if (b1.RegistrationNumber == b2.RegistrationNumber
-                //  &&                 b1.Color == b2.Color 
                 && b1.Brand == b2.Brand
-                && b1.VehicleModel == b2.VehicleModel
-                //&& b1.NumberOfWheels == b2.NumberOfWheels 
-                && b1.VehicleType == b2.VehicleType)
+                && b1.VehicleModel == b2.VehicleModel 
+                && b1.VehicleTypeId == b2.VehicleTypeId)
                 return true;
             else
                 return false;
@@ -535,21 +527,31 @@ namespace Garage3.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Change(int Id, Vehicle vehicle)
+        public async Task<IActionResult> Change(int Id, ChangeVehicleViewModel vehicle)
         {
             //från databasen
             var v1 = await db.Vehicle.AsNoTracking().FirstOrDefaultAsync(v => v.VehicleId == Id);
 
-            if (!Equals(v1, vehicle))
+            var vehicleobject = new Vehicle
+            {
+                VehicleId = v1.VehicleId,
+                RegistrationNumber = vehicle.RegistrationNumber,
+                Brand = vehicle.Brand,
+                VehicleModel = vehicle.VehicleModel,
+                VehicleTypeId = vehicle.VehicleTypeId,
+                OwnerId = vehicle.OwnerId
+            };
+
+            if (!Equals(v1, vehicleobject))
             {
 
-                if (Id != vehicle.VehicleId)
+                if (Id != vehicleobject.VehicleId)
                 {
                     return NotFound();
                 }
 
                 //string str = vehicle.Color;
-                vehicle.RegistrationNumber = v1.RegistrationNumber;
+                vehicleobject.RegistrationNumber = v1.RegistrationNumber;
                 //vehicle.Color = FirstLetterToUpper(str);
                 //vehicle.TimeOfArrival = v1.TimeOfArrival;
 
@@ -557,14 +559,14 @@ namespace Garage3.Controllers
                 {
                     try
                     {
-                        db.Update(vehicle);
+                        db.Update(vehicleobject);
                         await db.SaveChangesAsync();
                         TempData["ChangedVehicle"] = "The vehicle is changed!";
-                        return RedirectToAction("Details", new { vehicle.VehicleId });
+                        return RedirectToAction("Details", new { id = vehicleobject.VehicleId });
                     }
                     catch (DbUpdateConcurrencyException)
                     {
-                        if (!VehicleExists(vehicle.VehicleId))
+                        if (!VehicleExists(vehicleobject.VehicleId))
                         {
                             return NotFound();
                         }
@@ -576,7 +578,7 @@ namespace Garage3.Controllers
                 }
             }
             //return View(vehicle);
-            return RedirectToAction("Details", new { vehicle.VehicleId });
+            return RedirectToAction("Details", new { id= vehicleobject.VehicleId });
         }
 
         private string FirstLetterToUpper(string str)
@@ -623,14 +625,14 @@ namespace Garage3.Controllers
         {
             return db.Vehicle.Any(e => e.VehicleId == id);
         }
-        public async Task<IActionResult> UnParkResponse(int id, DateTime departureTime, DateTime arrivalTime)
+        public async Task<IActionResult> UnParkResponse(int vehicleId, DateTime departureTime, DateTime arrivalTime)
         {
             //    var v = db.Vehicle
             //.Select(v => v.Id);
             var model = await db.Vehicle
                 .Select(v => new UnParkResponseViewModel
                 {
-                    Id = v.VehicleId,
+                    VehicleId = v.VehicleId,
                     //VehicleType = v.VehicleType.Type,
                     VehicleRegistrationNumber = v.RegistrationNumber,
                     VehicleArrivalTime = arrivalTime,
@@ -638,7 +640,7 @@ namespace Garage3.Controllers
                     //VehicleParkDuration=v.
                     //VehicleParkPrice
                 })
-                .FirstOrDefaultAsync(v => v.Id == id);
+                .FirstOrDefaultAsync(v => v.VehicleId == vehicleId);
 
             return View("UnParkResponse", model);
             //ViewBag.id = id;
@@ -646,12 +648,12 @@ namespace Garage3.Controllers
             //return View(nameof(UnParkResponse));
         }
 
-        public async Task<IActionResult> Receipt(int Id, DateTime departureTime, DateTime arrivalTime)
+        public async Task<IActionResult> Receipt(int vehicleId, DateTime departureTime, DateTime arrivalTime)
         {
             var vehicle = await db.Vehicle
                 .Include(v => v.ParkingEvents)
                 .Include(v => v.Owner)
-                .FirstOrDefaultAsync(v => v.VehicleId == Id);
+                .FirstOrDefaultAsync(v => v.VehicleId == vehicleId);
 
             var model = new ReceiptViewModel
             {

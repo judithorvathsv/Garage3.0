@@ -10,20 +10,23 @@ namespace Garage3.Models.ViewModels
 {
     public class OverviewListViewModel
     {
+        //SelectListBox
+        public IEnumerable<SelectListItem> VehicleTypesSelectList { get; set; }
+        public IEnumerable<SelectListItem> VehicleTypes { get; set; }
 
         public IEnumerable<OverviewViewModel> Overview { get; set; }
 
-        //SelectListBox
+      
         public string Regnumber { get; set; }
 
 
         public int VehicleTypeId { get; set; }
 
-        public IEnumerable<SelectListItem> VehicleTypes { get; set; }
+      
 
-        public VehicleType Types { get; set; }
+        //public VehicleType Types { get; set; }
 
-        public string Type { get; set; }
+        //public string Type { get; set; }
 
       
 

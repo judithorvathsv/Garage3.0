@@ -12,7 +12,6 @@ namespace Garage3.Models
         public int ParkingPlaceId { get; set; }
         public int VehicleId { get; set; }
 
-
         // NAV
         public ParkingPlace ParkingPlace { get; set; }
         public Vehicle Vehicle { get; set; }

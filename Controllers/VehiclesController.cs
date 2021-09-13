@@ -311,10 +311,10 @@ namespace Garage3.Controllers
                     vehicleAndMember = GetOverviewViewModelAsEnumerable().OrderByDescending(x => x.VehicleArrivalTime);
                     break;
                 case "DurationParkedSortingAscending":
-                    vehicleAndMember = GetOverviewViewModelAsEnumerable().OrderBy(x => x.VehicleParkDuration.Days).ThenBy(x=>x.VehicleParkDuration.Hours).ThenBy(x => x.VehicleParkDuration.Seconds);
+                    vehicleAndMember = GetOverviewViewModelAsEnumerable().OrderBy(x => x.VehicleParkDuration.Days).ThenBy(x=>x.VehicleParkDuration.Hours).ThenBy(x => x.VehicleParkDuration.Minutes).ThenBy(x => x.VehicleParkDuration.Seconds);
                     break;
                 case "DurationParkedSortingDescending":
-                    vehicleAndMember = GetOverviewViewModelAsEnumerable().OrderByDescending(x => x.VehicleParkDuration.Days).ThenByDescending(x => x.VehicleParkDuration.Hours).ThenByDescending(x => x.VehicleParkDuration.Seconds);
+                    vehicleAndMember = GetOverviewViewModelAsEnumerable().OrderByDescending(x => x.VehicleParkDuration.Days).ThenByDescending(x => x.VehicleParkDuration.Hours).ThenByDescending(x => x.VehicleParkDuration.Minutes).ThenByDescending(x => x.VehicleParkDuration.Seconds);
                     break;
                 default:
                     vehicleAndMember = GetOverviewViewModelAsEnumerable().OrderBy(x => x.VehicleType);

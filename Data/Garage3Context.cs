@@ -40,7 +40,7 @@ namespace Garage3.Data
             modelBuilder.Entity<ParkingEvent>().HasKey(x => new { x.ParkingPlaceId, x.VehicleId });
 
 
-            /*
+           /*
             var owners = modelBuilder.Entity<Owner>().HasData(
   new Owner { OwnerId = 1, SocialSecurityNumber = "600102-1478", FirstName = "Isaac", LastName = "Newton" },
   new Owner { OwnerId = 2, SocialSecurityNumber = "610102-1234", FirstName = "Albert", LastName = "Einstein" },

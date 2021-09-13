@@ -9,11 +9,13 @@ namespace Garage3.Models.ViewModels
 {
     public class OverviewViewModel
     {
-        // public bool VehicleParked { get; set; }       
+        // public bool VehicleParked { get; set; }
+
+        public int Id { get; set; }
 
         public int VehicleTypeId { get; set; }
 
-        [Display(Name = "Owner")]           
+        [Display(Name = "Owner Name")]           
         public string FullName { get; set; }
 
 

@@ -24,7 +24,7 @@ namespace Garage3.Data
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             base.OnConfiguring(optionsBuilder);
-            optionsBuilder.LogTo(Console.WriteLine, LogLevel.Information);
+            optionsBuilder.LogTo(Console.WriteLine, new[] { DbLoggerCategory.Database.Command.Name }, LogLevel.Information);
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -61,16 +61,16 @@ namespace Garage3.Data
               );
 
             var vehicleTypes = modelBuilder.Entity<VehicleType>().HasData(
-  new VehicleType { VehicleTypeId = 1, Type = "Car", Size = 3, },
-  new VehicleType { VehicleTypeId = 2, Type = "Truck", Size = 6, },
-  new VehicleType { VehicleTypeId = 3, Type = "Bus", Size = 6, },
+  new VehicleType { VehicleTypeId = 1, Type = "Car", Size = 1, },
+  new VehicleType { VehicleTypeId = 2, Type = "Truck", Size = 2, },
+  new VehicleType { VehicleTypeId = 3, Type = "Bus", Size = 2, },
   new VehicleType { VehicleTypeId = 4, Type = "Motorcycle", Size = 1, },
-  new VehicleType { VehicleTypeId = 5, Type = "Van", Size = 6, },
-  new VehicleType { VehicleTypeId = 6, Type = "Boat", Size = 9, },
+  new VehicleType { VehicleTypeId = 5, Type = "Van", Size = 2, },
+  new VehicleType { VehicleTypeId = 6, Type = "Boat", Size = 3, },
   new VehicleType { VehicleTypeId = 7, Type = "Canoe", Size = 1, },
   new VehicleType { VehicleTypeId = 8, Type = "Kayak", Size = 1, },
-  new VehicleType { VehicleTypeId = 9, Type = "Airplane", Size = 9, },
-  new VehicleType { VehicleTypeId = 10, Type = "Helicopter", Size = 9, }
+  new VehicleType { VehicleTypeId = 9, Type = "Airplane", Size = 3, },
+  new VehicleType { VehicleTypeId = 10, Type = "Helicopter", Size = 3, }
   );
 
             var vehicles = modelBuilder.Entity<Vehicle>().HasData(

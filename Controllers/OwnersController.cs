@@ -10,20 +10,21 @@ using Garage3.Models;
 using Garage3.Models.ViewModels;
 using AutoMapper;
 using Bogus;
+using Microsoft.Extensions.Configuration;
 
 namespace Garage3.Controllers
 {
     public class OwnersController : Controller
     {
         private readonly Garage3Context db;
-
-
-
-        public OwnersController(Garage3Context context)
+        private IConfiguration config;
+        private const int GarageCapacity = 20;
+        public OwnersController(Garage3Context context, IConfiguration config)
         {
             db = context;
-
+            this.config = config;
         }
+
 
         // GET: Owners
         public async Task<IActionResult> Index()
@@ -61,10 +62,6 @@ namespace Garage3.Controllers
         {
             if (ModelState.IsValid)
             {
-                bool memberIsRegistered = await db.Owner.AnyAsync(v => v.SocialSecurityNumber == model.SocialSecurityNumber);
-                if (!memberIsRegistered)
-                {
-
                     var member = new Owner
                     {
                         SocialSecurityNumber = model.SocialSecurityNumber,
@@ -75,12 +72,6 @@ namespace Garage3.Controllers
                     await db.SaveChangesAsync();
                     return RedirectToAction("Register", "Vehicles", new { id = member.OwnerId });
                 }
-                else
-                {
-                    var existingMember = await db.Owner.FirstOrDefaultAsync(v => v.SocialSecurityNumber.Contains(model.SocialSecurityNumber));
-                    TempData["SSNMessage"] = "A member with this social security number already exists!";
-                }
-            }
             return View(model);
         }
 
@@ -164,38 +155,117 @@ namespace Garage3.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        public async Task<IActionResult> MemberDetails(int id)
+        public async Task<IActionResult> MemberDetails(int id, int vehcleid)
         {
+            List<VehicleViewModel> _parkingStatus = new List<VehicleViewModel>();
             try
             {
-                var vehicles = await db.Vehicle
-                .Where(v => v.OwnerId == id)
-                .Include(v => v.Owner)
-                .Select(m => new Vehicle
-                {
-                    VehicleId = m.VehicleId,
-                    RegistrationNumber = m.RegistrationNumber,
-                    Brand = m.Brand,
-                    VehicleType = m.VehicleType,
-                    VehicleModel = m.VehicleModel,
-                }).ToListAsync();
+                var owner = await db.Owner
+                   .Where(v => v.OwnerId == id)
+                   .Select(m => new OwnerDetailsViewModel
+                    {
+                        Id = id,
+                        SocialSecurityNumber = m.SocialSecurityNumber,
+                        FullName = m.FirstName + " " + m.LastName,
+                    }).FirstOrDefaultAsync();
 
-                var model = new OwnerDetailsViewModel
+                var vehicle = await db.Vehicle
+                .Where(v => v.OwnerId == id)
+                .Join(db.Owner, v => v.Owner.OwnerId, o => o.OwnerId, (v, o) => new { v, o })
+                .Select(m => new OwnerDetailsViewModel
                 {
                     Id = id,
-                    Vehicles = vehicles
-                };
-                if (vehicles == null)
+                    SocialSecurityNumber = m.o.SocialSecurityNumber,
+                    FullName = m.o.FirstName + " " + m.o.LastName,
+                    VehicleId = m.v.VehicleId,
+                }).FirstOrDefaultAsync();
+
+                var vehicles = await db.Vehicle
+                    .Where(v => v.OwnerId == id)
+                    .Select(m => new VehicleViewModel
+                    {
+                        VehicleId = m.VehicleId,
+                        RegistrationNumber = m.RegistrationNumber,
+                        Brand = m.Brand,
+                        VehicleType = m.VehicleType,
+                        VehicleModel = m.VehicleModel,
+                        IsParked = false
+                    }).ToListAsync();
+
+                _parkingStatus = await ParkingStatus(vehicles);
+
+                if(_parkingStatus.Count > 0)
                 {
-                    return NotFound();
+                    var model = new OwnerDetailsViewModel
+                    {
+                        Id = id,
+                        VehicleId = vehicle.VehicleId,
+                        FullName = vehicle.FullName,
+                        SocialSecurityNumber = vehicle.SocialSecurityNumber,
+                        Vehicles = _parkingStatus
+                    };
+                    var amount = FreeParkingPlaces();
+                    TempData["AvailiblePlacesMessage"] = $"There are {amount.ToString()} places left in the garage.";
+                    return View(model);
                 }
-                return View(model);
+                else
+                {
+                    var model = new OwnerDetailsViewModel
+                    {
+                        Id = id,
+                        FullName = owner.FullName,
+                        SocialSecurityNumber = owner.SocialSecurityNumber
+                    };
+                    var amount = FreeParkingPlaces();
+                    TempData["AvailiblePlacesMessage"] = $"There are {amount.ToString()} places left in the garage.";
+                    return View(model);
+                }
+            
             }
             catch (Exception)
             {
                 throw;
+
             }
         }
+
+        private async Task<List<VehicleViewModel>> ParkingStatus(List<VehicleViewModel> vehicles)
+        {
+            var _status = new List<VehicleViewModel>();
+
+            foreach (var vehi in vehicles)
+            {
+                var status = await db.ParkingEvent
+               .Where(x => x.VehicleId == vehi.VehicleId)
+               .Include(p => p.ParkingPlace)
+               .FirstOrDefaultAsync(x => x.ParkingPlace.IsOccupied);
+
+                if (status != null)
+                {
+                    _status.Add(new VehicleViewModel { VehicleId = vehi.VehicleId, RegistrationNumber = vehi.RegistrationNumber, Brand = vehi.Brand, VehicleModel = vehi.VehicleModel, VehicleType = vehi.VehicleType, IsParked = status.ParkingPlace.IsOccupied });
+                }
+                else
+                {
+                    _status.Add(new VehicleViewModel { VehicleId = vehi.VehicleId, RegistrationNumber = vehi.RegistrationNumber, Brand = vehi.Brand, VehicleModel = vehi.VehicleModel, VehicleType = vehi.VehicleType, IsParked = vehi.IsParked });
+                }
+
+            }
+            return _status;
+        }
+
+        public int FreeParkingPlaces()
+        {
+            var freeplaces =  db.ParkingPlace
+                .Where(p => p.IsOccupied == true)
+                .ToList();
+
+
+            //var Capacity = new ConfigurationBuilder().AddJsonFile("launchSettings.json").Build().GetSection("Capacity")["maxCapacity"];
+            int availibleplaces = GarageCapacity- freeplaces.Count;
+
+            return availibleplaces;
+        }
+
 
         private bool OwnerExists(string id)
         {
@@ -258,6 +328,15 @@ namespace Garage3.Controllers
 
             return View(listWithEmpty);
 
+        }
+
+        public async Task<IActionResult> CheckUnique(string socialsecuritynumber)
+        {
+            bool ssnExists = await db.Owner.AnyAsync(o => o.SocialSecurityNumber == socialsecuritynumber);
+
+            if (ssnExists) return Json("A user with this social security number aldready exists.");
+            
+            return Json(true);
         }
     }
 }

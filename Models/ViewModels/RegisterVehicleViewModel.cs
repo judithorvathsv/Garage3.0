@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc.Rendering;
+﻿using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
@@ -11,13 +12,13 @@ namespace Garage3.Models.ViewModels
     {
         [Required]
         public int Id {  get; set; }
-        [Required]
+
+        [Required][Remote(action: "CheckUnique", controller: "Vehicles")]
         public string RegistrationNumber {  get; set; }
         public string Brand {  get; set; }
         public string VehicleModel {  get; set; }
-
         public int VehicleTypeId {  get; set; }
-        public IEnumerable<SelectListItem> VehicleTypes { get; set; }
         public string FullName { get; set; }
+        public IEnumerable<SelectListItem> VehicleTypes { get; set; }
     }
 }

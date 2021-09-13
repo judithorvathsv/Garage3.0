@@ -2,6 +2,7 @@
 
 @{
     ViewData["Title"] = "Member details";
+    Layout = "_Layout";
 }
 
 <h1>Member Details</h1>
@@ -37,25 +38,37 @@
             </tr>
         <thead>
         <tbody>
-            @foreach (var item in Model.Vehicles)
+            @if (Model.Vehicles != null)
             {
-                <tr>
-                    <td> @Html.DisplayFor(modelItem => item.RegistrationNumber)  </td>
-                    <td> @Html.DisplayFor(modelItem => item.Brand)  </td>
-                    <td> @Html.DisplayFor(modelItem => item.VehicleModel)</td>
-                    <td> @Html.DisplayFor(modelItem => item.VehicleType.Type)  </td>
-                    <td>
+                @foreach (var item in Model.Vehicles)
+                {
+                    <tr>
+                        <td> @Html.DisplayFor(modelItem => item.RegistrationNumber)  </td>
+                        <td> @Html.DisplayFor(modelItem => item.Brand)  </td>
+                        <td> @Html.DisplayFor(modelItem => item.VehicleModel)</td>
+                        <td> @Html.DisplayFor(modelItem => item.VehicleType.Type)  </td>
+                        <td>
 
-                        <a class="btn btn-primary" asp-controller="ParkingEvents" asp-action="Park" asp-route-id="@item.VehicleId">Park</a>
-                        <a class="btn btn-primary" asp-controller="Vehicles" asp-action="Unpark" asp-route-id="@item.VehicleId">Unpark</a>
-                    </td>
-                </tr>
+                            @if (@item.IsParked == false)
+                            {
+                                @Html.ActionLink("Park", "Park", "ParkingEvents", new { id = @Model.Id, vehcleid = @item.VehicleId }, new { @class = "btn btn-primary" })
+                            }
+                            else
+                            {
+                                @Html.ActionLink("Unpark", "UnPark", "Vehicles", new { vehicleid = @item.VehicleId }, new { @class = "btn btn-primary" })
+                            }
+
+                        </td>
+                    </tr>
+                }
             }
+
         </tbody>
     </table>
+    <span class="text-danger"> @TempData["NoPlacesMessage"]</span>
+    <span class="text-black-50"> @TempData["AvailiblePlacesMessage"]</span>
 </div>
 <div>
-    @*<a asp-action="Edit" asp-route-id="@Model.First().SocialSecurityNumber ">Edit</a> |*@
     <div class="row">
         <div class="col">
             <a asp-action="Overview">Back to Overview</a>

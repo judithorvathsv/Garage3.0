@@ -20,7 +20,7 @@ namespace Garage3
         private IConfiguration configuration;
         public Startup(IConfiguration configuration)
         {
-            configuration = configuration;
+            this.configuration = configuration;
             var builder = new ConfigurationBuilder()
                 .AddJsonFile(Path.Combine(Directory.GetCurrentDirectory(), "Properties", "launchSettings.json"))
                 .AddEnvironmentVariables();

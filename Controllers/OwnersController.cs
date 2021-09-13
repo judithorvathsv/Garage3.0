@@ -158,7 +158,7 @@ namespace Garage3.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        public async Task<IActionResult> MemberDetails(int id, int vehcleid)
+        public async Task<IActionResult> MemberDetails(int id, int vehicleid)
         {
             List<VehicleViewModel> _parkingStatus = new List<VehicleViewModel>();
             try

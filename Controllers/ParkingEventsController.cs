@@ -14,14 +14,13 @@ namespace Garage3.Controllers
     public class ParkingEventsController : Controller
     {
         private readonly Garage3Context db;
-        private const int GarageCaspacity = 20;
+        private const int GarageCapacity = 20;
 
         public Garage3Context Context => db;
 
         public ParkingEventsController(Garage3Context context)
         {
             db = context;
-   
         }
 
         // POST: ParkingEvents/Create
@@ -30,17 +29,17 @@ namespace Garage3.Controllers
         //[HttpPost]
         //[ValidateAntiForgeryToken]
 
-        public async Task<IActionResult> Park(int id, int vehcleid)
+        public async Task<IActionResult> Park(int id, int vehicleid)
         {
             var numberOfPlaces = await db.ParkingPlace.AsNoTracking().CountAsync();
             //Hämtar det sista inlagda värdet
             var parkingPlaceId = await db.ParkingPlace.AsNoTracking().OrderBy(pp => pp.ParkingPlaceId).Select(pp => pp.ParkingPlaceId).LastOrDefaultAsync();
-            var parkingVehicle = await db.Vehicle.Include(v => v.VehicleType).Where(v => v.VehicleId == vehcleid).FirstOrDefaultAsync();
+            var parkingVehicle = await db.Vehicle.Include(v => v.VehicleType).Where(v => v.VehicleId == vehicleid).FirstOrDefaultAsync();
             var parkingPlace = await db.ParkingPlace.AsNoTracking().Where(pp => pp.IsOccupied == false).FirstOrDefaultAsync();
             var parkingplace = new ParkingPlace();
 
 
-            if (parkingPlaceId <= GarageCaspacity)
+            if (parkingPlaceId <= GarageCapacity)
             {
                 if (parkingPlace != null)
                 {
@@ -59,7 +58,7 @@ namespace Garage3.Controllers
                 }
                 else
                 {
-                    if (numberOfPlaces < GarageCaspacity)
+                    if (numberOfPlaces < GarageCapacity)
                     {
                         parkingplace.ParkingPlaceId = parkingPlaceId + 1;
                         parkingplace.IsOccupied = true;
@@ -80,7 +79,7 @@ namespace Garage3.Controllers
                 }
             }
 
-            return RedirectToAction("MemberDetails", "Owners", new { id = id, vehcleid = vehcleid });
+            return RedirectToAction("MemberDetails", "Owners", new { id = id, vehcleid = vehicleid });
 
         }
 

@@ -115,14 +115,14 @@ namespace Garage3.Controllers
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!OwnerExists(owner.OwnerId))
-                    {
-                        return NotFound();
-                    }
-                    else
-                    {
-                        throw;
-                    }
+                    //if (!OwnerExists(owner.OwnerId))
+                    //{
+                    //    return NotFound();
+                    //}
+                    //else
+                    //{
+                    //    throw;
+                    //}
                 }
                 return RedirectToAction(nameof(Index));
             }
@@ -270,10 +270,10 @@ namespace Garage3.Controllers
         }
 
 
-        private bool OwnerExists(string id)
-        {
-            return db.Owner.Any(e => e.OwnerId == id);
-        }
+        //private bool OwnerExists(string id)
+        //{
+        //    return db.Owner.Any(e => e.OwnerId == id);
+        //}
 
 
         [ActionName("Overview")]

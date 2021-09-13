@@ -73,7 +73,7 @@ namespace Garage3.Controllers
                 return NotFound();
             }
 
-            return View(model);
+            return View(vehicle);
         }
 
 
@@ -404,7 +404,7 @@ namespace Garage3.Controllers
                     Id = id,
                     FullName = $"{owner.FirstName} {owner.LastName}"
                 };
-                model.OwnerId = id;
+                model.Id = id;
                 return View(model);
             }
         }

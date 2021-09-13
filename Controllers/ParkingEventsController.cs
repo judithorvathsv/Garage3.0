@@ -15,14 +15,12 @@ namespace Garage3.Controllers
     {
         private readonly Garage3Context db;
         private const int GarageCaspacity = 20;
-        private readonly IUrlHelper urlHelper;
 
         public Garage3Context Context => db;
 
-        public ParkingEventsController(Garage3Context context, IUrlHelper urlHelper)
+        public ParkingEventsController(Garage3Context context)
         {
             db = context;
-            this.urlHelper = urlHelper;
    
         }
 

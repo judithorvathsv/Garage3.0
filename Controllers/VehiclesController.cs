@@ -129,8 +129,8 @@ namespace Garage3.Controllers
                                      VehicleRegistrationNumber = f.RegistrationNumber,                
                                      VehicleArrivalTime = t.TimeOfArrival,
                                      VehicleParkDuration = t.TimeOfArrival - DateTime.Now,
-                                     VehicleType = ft.Type 
-                                     
+                                     VehicleType = ft.Type,
+                                     Id = p.OwnerId                                     
 
                                  }).Distinct();
 
@@ -219,7 +219,9 @@ namespace Garage3.Controllers
                             VehicleArrivalTime = t.TimeOfArrival,
                             VehicleParkDuration = t.TimeOfArrival - DateTime.Now,
                             VehicleType = ft.Type,
-                            VehicleTypeId = ft.VehicleTypeId
+                            VehicleTypeId = ft.VehicleTypeId,                           
+                            Id = p.OwnerId
+
                         });
             return list.AsEnumerable();         
         } 
@@ -260,9 +262,9 @@ namespace Garage3.Controllers
                 VehicleRegistrationNumber = v.VehicleRegistrationNumber,
                 VehicleArrivalTime = v.VehicleArrivalTime,
                 VehicleParkDuration = v.VehicleArrivalTime - DateTime.Now,
-                VehicleType = v.VehicleType
+                VehicleType = v.VehicleType,              
                 //VehicleParked = false   
-                });
+            });
             
             return View("Overview", model);
         }

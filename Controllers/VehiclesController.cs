@@ -58,7 +58,16 @@ namespace Garage3.Controllers
             }
 
             var vehicle = await db.Vehicle
-                .FirstOrDefaultAsync(m => m.VehicleId == id);
+                .Include(t => t.VehicleType)
+                .Select(v => new DetailsViewModel
+                { 
+                    Id = v.VehicleId,
+                    VehicleType = v.VehicleType.Type,
+                    RegistrationNumber = v.RegistrationNumber,
+                    Brand = v.Brand,
+                    VehicleModel = v.VehicleModel,
+                })
+                .FirstOrDefaultAsync(m => m.Id == id);
             if (vehicle == null)
             {
                 return NotFound();
@@ -493,22 +502,31 @@ namespace Garage3.Controllers
             }
 
             var vehicle = await db.Vehicle.FindAsync(Id);
+            var model = new ChangeVehicleViewModel
+            {
+                RegistrationNumber = vehicle.RegistrationNumber,
+                VehicleTypes = await GetAllVehicleTypesAsync(),
+                VehicleTypeId = vehicle.VehicleTypeId,
+                Id = vehicle.VehicleId,
+                Brand = vehicle.Brand,
+                VehicleModel = vehicle.VehicleModel,
+                OwnerId = vehicle.OwnerId
+
+            };
 
             if (vehicle == null)
             {
                 return NotFound();
             }
-            return View(vehicle);
+            return View(model);
         }
 
         public bool Equals(Vehicle b1, Vehicle b2)
         {
             if (b1.RegistrationNumber == b2.RegistrationNumber
-                //  &&                 b1.Color == b2.Color 
                 && b1.Brand == b2.Brand
-                && b1.VehicleModel == b2.VehicleModel
-                //&& b1.NumberOfWheels == b2.NumberOfWheels 
-                && b1.VehicleType == b2.VehicleType)
+                && b1.VehicleModel == b2.VehicleModel 
+                && b1.VehicleTypeId == b2.VehicleTypeId)
                 return true;
             else
                 return false;
@@ -517,21 +535,31 @@ namespace Garage3.Controllers
 
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Change(int Id, Vehicle vehicle)
+        public async Task<IActionResult> Change(int Id, ChangeVehicleViewModel vehicle)
         {
             //från databasen
             var v1 = await db.Vehicle.AsNoTracking().FirstOrDefaultAsync(v => v.VehicleId == Id);
 
-            if (!Equals(v1, vehicle))
+            var vehicleobject = new Vehicle
+            {
+                VehicleId = v1.VehicleId,
+                RegistrationNumber = vehicle.RegistrationNumber,
+                Brand = vehicle.Brand,
+                VehicleModel = vehicle.VehicleModel,
+                VehicleTypeId = vehicle.VehicleTypeId,
+                OwnerId = vehicle.OwnerId
+            };
+
+            if (!Equals(v1, vehicleobject))
             {
 
-                if (Id != vehicle.VehicleId)
+                if (Id != vehicleobject.VehicleId)
                 {
                     return NotFound();
                 }
 
                 //string str = vehicle.Color;
-                vehicle.RegistrationNumber = v1.RegistrationNumber;
+                vehicleobject.RegistrationNumber = v1.RegistrationNumber;
                 //vehicle.Color = FirstLetterToUpper(str);
                 //vehicle.TimeOfArrival = v1.TimeOfArrival;
 
@@ -539,14 +567,14 @@ namespace Garage3.Controllers
                 {
                     try
                     {
-                        db.Update(vehicle);
+                        db.Update(vehicleobject);
                         await db.SaveChangesAsync();
                         TempData["ChangedVehicle"] = "The vehicle is changed!";
-                        return RedirectToAction("Details", new { vehicle.VehicleId });
+                        return RedirectToAction("Details", new { id = vehicleobject.VehicleId });
                     }
                     catch (DbUpdateConcurrencyException)
                     {
-                        if (!VehicleExists(vehicle.VehicleId))
+                        if (!VehicleExists(vehicleobject.VehicleId))
                         {
                             return NotFound();
                         }
@@ -558,7 +586,7 @@ namespace Garage3.Controllers
                 }
             }
             //return View(vehicle);
-            return RedirectToAction("Details", new { vehicle.VehicleId });
+            return RedirectToAction("Details", new { id= vehicleobject.VehicleId });
         }
 
         private string FirstLetterToUpper(string str)

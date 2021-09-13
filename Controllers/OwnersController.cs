@@ -10,17 +10,21 @@ using Garage3.Models;
 using Garage3.Models.ViewModels;
 using AutoMapper;
 using Bogus;
+using Microsoft.Extensions.Configuration;
 
 namespace Garage3.Controllers
 {
     public class OwnersController : Controller
     {
         private readonly Garage3Context db;
-        public OwnersController(Garage3Context context)
+        private IConfiguration config;
+        private const int GarageCapacity = 20;
+        public OwnersController(Garage3Context context, IConfiguration config)
         {
             db = context;
-
+            this.config = config;
         }
+
 
         // GET: Owners
         public async Task<IActionResult> Index()
@@ -166,6 +170,15 @@ namespace Garage3.Controllers
             List<VehicleViewModel> _parkingStatus = new List<VehicleViewModel>();
             try
             {
+                var owner = await db.Owner
+                   .Where(v => v.OwnerId == id)
+                   .Select(m => new OwnerDetailsViewModel
+                    {
+                        Id = id,
+                        SocialSecurityNumber = m.SocialSecurityNumber,
+                        FullName = m.FirstName + " " + m.LastName,
+                    }).FirstOrDefaultAsync();
+
                 var vehicle = await db.Vehicle
                 .Where(v => v.OwnerId == id)
                 .Join(db.Owner, v => v.Owner.OwnerId, o => o.OwnerId, (v, o) => new { v, o })
@@ -191,29 +204,39 @@ namespace Garage3.Controllers
 
                 _parkingStatus = await ParkingStatus(vehicles);
 
-                var model = new OwnerDetailsViewModel
+                if(_parkingStatus.Count > 0)
                 {
-                    Id = id,
-                    VehicleId = vehicle.VehicleId,
-                    FullName = vehicle.FullName,
-                    SocialSecurityNumber = vehicle.SocialSecurityNumber,
-                    Vehicles = _parkingStatus
-                };
-
-                if (_parkingStatus == null)
-                {
-                    return NotFound();
+                    var model = new OwnerDetailsViewModel
+                    {
+                        Id = id,
+                        VehicleId = vehicle.VehicleId,
+                        FullName = vehicle.FullName,
+                        SocialSecurityNumber = vehicle.SocialSecurityNumber,
+                        Vehicles = _parkingStatus
+                    };
+                    var amount = FreeParkingPlaces();
+                    TempData["AvailiblePlacesMessage"] = $"There are {amount.ToString()} places left in the garage.";
+                    return View(model);
                 }
-                return View(model);
-
-
+                else
+                {
+                    var model = new OwnerDetailsViewModel
+                    {
+                        Id = id,
+                        FullName = owner.FullName,
+                        SocialSecurityNumber = owner.SocialSecurityNumber
+                    };
+                    var amount = FreeParkingPlaces();
+                    TempData["AvailiblePlacesMessage"] = $"There are {amount.ToString()} places left in the garage.";
+                    return View(model);
+                }
+            
             }
             catch (Exception)
             {
                 throw;
 
             }
-
         }
 
         private async Task<List<VehicleViewModel>> ParkingStatus(List<VehicleViewModel> vehicles)
@@ -236,9 +259,21 @@ namespace Garage3.Controllers
                     _status.Add(new VehicleViewModel { VehicleId = vehi.VehicleId, RegistrationNumber = vehi.RegistrationNumber, Brand = vehi.Brand, VehicleModel = vehi.VehicleModel, VehicleType = vehi.VehicleType, IsParked = vehi.IsParked });
                 }
 
-
             }
             return _status;
+        }
+
+        public int FreeParkingPlaces()
+        {
+            var freeplaces =  db.ParkingPlace
+                .Where(p => p.IsOccupied == true)
+                .ToList();
+
+
+            //var Capacity = new ConfigurationBuilder().AddJsonFile("launchSettings.json").Build().GetSection("Capacity")["maxCapacity"];
+            int availibleplaces = GarageCapacity- freeplaces.Count;
+
+            return availibleplaces;
         }
 
 

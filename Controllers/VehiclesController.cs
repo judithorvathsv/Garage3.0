@@ -73,7 +73,7 @@ namespace Garage3.Controllers
                 return NotFound();
             }
 
-            return View(vehicle);
+            return View(model);
         }
 
 
@@ -153,7 +153,7 @@ namespace Garage3.Controllers
             return await db.VehicleType.Select(vt => new SelectListItem
             {
                 Text = vt.Type,
-                Value = vt.VehicleTypeId.ToString()
+                Value = vt.VehicleTypeId.ToString(),
             }).ToListAsync();
         }
 
@@ -404,6 +404,7 @@ namespace Garage3.Controllers
                     Id = id,
                     FullName = $"{owner.FirstName} {owner.LastName}"
                 };
+                model.OwnerId = id;
                 return View(model);
             }
         }

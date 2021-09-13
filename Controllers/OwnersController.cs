@@ -16,6 +16,7 @@ namespace Garage3.Controllers
 {
     public class OwnersController : Controller
     {
+
         private readonly Garage3Context db;
         private IConfiguration config;
         private const int GarageCapacity = 20;
@@ -34,15 +35,15 @@ namespace Garage3.Controllers
         }
 
         // GET: Owners/Details/5
-        public async Task<IActionResult> Details(string id)
+        public async Task<IActionResult> Details(int id)
         {
-            if (id == null)
+            if (id == 0)
             {
                 return NotFound();
             }
 
             var owner = await db.Owner
-                .FirstOrDefaultAsync(m => m.SocialSecurityNumber == id);
+                .FirstOrDefaultAsync(m => m.OwnerId == id);
             if (owner == null)
             {
                 return NotFound();
@@ -76,9 +77,9 @@ namespace Garage3.Controllers
         }
 
         // GET: Owners/Edit/5
-        public async Task<IActionResult> Edit(string id)
+        public async Task<IActionResult> Edit(int id)
         {
-            if (id == null)
+            if (id == 0)
             {
                 return NotFound();
             }
@@ -96,9 +97,11 @@ namespace Garage3.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(string id, [Bind("SocialSecurityNumber,FirstName,LastName")] Owner owner)
+        //public async Task<IActionResult> Edit(int id, [Bind("OwnerId,SocialSecurityNumber,FirstName,LastName")] Owner owner)
+        public async Task<IActionResult> Edit(int id, Owner owner)
         {
-            if (id != owner.SocialSecurityNumber)
+           // id = owner.SocialSecurityNumber;
+            if (id != owner.OwnerId)
             {
                 return NotFound();
             }
@@ -112,7 +115,7 @@ namespace Garage3.Controllers
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    if (!OwnerExists(owner.SocialSecurityNumber))
+                    if (!OwnerExists(owner.OwnerId))
                     {
                         return NotFound();
                     }
@@ -127,15 +130,15 @@ namespace Garage3.Controllers
         }
 
         // GET: Owners/Delete/5
-        public async Task<IActionResult> Delete(string id)
+        public async Task<IActionResult> Delete(int id)
         {
-            if (id == null)
+            if (id == 0)
             {
                 return NotFound();
             }
 
             var owner = await db.Owner
-                .FirstOrDefaultAsync(m => m.SocialSecurityNumber == id);
+                .FirstOrDefaultAsync(m => m.OwnerId == id);
             if (owner == null)
             {
                 return NotFound();
@@ -147,7 +150,7 @@ namespace Garage3.Controllers
         // POST: Owners/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> DeleteConfirmed(string id)
+        public async Task<IActionResult> DeleteConfirmed(int id)
         {
             var owner = await db.Owner.FindAsync(id);
             db.Owner.Remove(owner);
@@ -269,7 +272,7 @@ namespace Garage3.Controllers
 
         private bool OwnerExists(string id)
         {
-            return db.Owner.Any(e => e.SocialSecurityNumber == id);
+            return db.Owner.Any(e => e.OwnerId == id);
         }
 
 

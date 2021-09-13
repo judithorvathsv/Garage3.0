@@ -51,7 +51,7 @@
 
                             @if (@item.IsParked == false)
                             {
-                                @Html.ActionLink("Park", "Park", "ParkingEvents", new { id = @Model.Id, vehcleid = @item.VehicleId }, new { @class = "btn btn-primary" })
+                                @Html.ActionLink("Park", "Park", "ParkingEvents", new { id = @Model.Id, vehicleid = @item.VehicleId }, new { @class = "btn btn-primary" })
                             }
                             else
                             {

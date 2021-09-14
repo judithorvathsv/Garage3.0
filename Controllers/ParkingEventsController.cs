@@ -23,12 +23,6 @@ namespace Garage3.Controllers
             db = context;
         }
 
-        // POST: ParkingEvents/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
-        //[HttpPost]
-        //[ValidateAntiForgeryToken]
-
         public async Task<IActionResult> Park(int id, int vehicleid)
         {
             var numberOfPlaces = await db.ParkingPlace.AsNoTracking().CountAsync();
@@ -82,43 +76,5 @@ namespace Garage3.Controllers
             return RedirectToAction("MemberDetails", "Owners", new { id = id, vehcleid = vehicleid });
 
         }
-
-        //public async Task<int> FreeParkingPlaces()
-        //{
-        //    var freeplaces = db.ParkingPlace
-        //        .Where(p => p.IsOccupied == true)
-        //        .CountAsync();
-        //    int availibleplaces = GarageCaspacity - await freeplaces;
-
-        //    return availibleplaces;
-        //}
-
-    //public async Task<IActionResult> UnPark(int id, int vehcleid)
-    //{
-    //    var parkingplaceId = await db.ParkingEvent.Where(p => p.VehicleId == vehcleid).Select(p => p.ParkingPlaceId).FirstOrDefaultAsync();
-    //    var parkingVehicle = await db.Vehicle.Where(v => v.VehicleId == vehcleid).FirstOrDefaultAsync();
-    //    var member = await db.Owner.Where(o => o.OwnerId == id).Select(o => o).FirstOrDefaultAsync();
-
-    //    var parkingPlace = new ParkingPlace
-    //    {
-    //        ParkingPlaceId = parkingplaceId,
-    //        IsOccupied = false
-    //    };
-
-    //    db.ParkingPlace.Update(parkingPlace);
-    //    db.ParkingPlace.Remove(parkingVehicle);
-    //    await db.SaveChangesAsync();
-
-
-    //    var model = new OwnerDetailsViewModel
-    //    {
-    //        Id = id,
-    //        FullName = member.FirstName + " " + member.LastName,
-    //        SocialSecurityNumber = member.SocialSecurityNumber,
-    //        VehicleId = parkingVehicle.VehicleId
-    //    };
-
-    //    return View("Details", model);
-    //}
-}
+    }
 }

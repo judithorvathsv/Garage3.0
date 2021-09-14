@@ -47,8 +47,6 @@ namespace Garage3.Controllers
         }
 
 
-
-
         // GET: Vehicles/Details/5
         public async Task<IActionResult> Details(int? id)
         {
@@ -76,65 +74,13 @@ namespace Garage3.Controllers
             return View(vehicle);
         }
 
-
-
-
-        /*
-         public async Task<IActionResult> Overview()
-         {
-             var model = new OverviewListViewModel();
-             model.VehicleTypesSelectList = await GetAllVehicleTypesAsync();
-
-             var allVehicles = db.Vehicle;
-
-             //IQueryable<OverviewViewModel> vehicles = GetOverviewViewModel(allVehicles);
-            // string parkedStatusStr = parkedStatus.ToString();
-             var vehicles = GetOverviewViewModelAsEnumerable(allVehicles);
-            // parkedStatus = ParkingStatus(parkedStatusStr, model, ref vehicles);
-
-            model.VehicleTypesSelectList = await GetAllVehicleTypesAsync();
-            model.Overview = vehicles;
-
-             return View("Overview", model);
-         }
-         */
-
-
-
-
-
-
-        public async Task<IActionResult> Overview()
+        public IActionResult Overview()
         {
             var model = new OverviewListViewModel();
+            model.Overview = GetOverviewViewModelAsEnumerable();
 
-            var listWithEmpty = (from f in db.Vehicle
-                                 join p in db.Owner on f.OwnerId equals p.OwnerId
-                                 join t in db.ParkingEvent on f.VehicleId equals t.VehicleId
-                                 join ft in db.VehicleType on f.VehicleTypeId equals ft.VehicleTypeId
-                                 into l
-                                 from ft in l.DefaultIfEmpty()
-
-                                 select new OverviewViewModel
-                                 {
-                                     VehicleId = f.VehicleId,
-                                     FullName = p.FirstName + " " + p.LastName,
-                                     VehicleRegistrationNumber = f.RegistrationNumber,
-                                     VehicleArrivalTime = t.TimeOfArrival,
-                                     VehicleParkDuration = t.TimeOfArrival - DateTime.Now,
-                                     VehicleType = ft.Type,
-                                     Id = p.OwnerId                                     
-
-                                 }).Distinct();
-
-            model.Overview = listWithEmpty;
             return View(nameof(Overview), model);
         }
-
-
-
-
-
 
         private async Task<IEnumerable<SelectListItem>> GetVehicleTypesAsync()
         {
@@ -156,44 +102,6 @@ namespace Garage3.Controllers
                 Value = vt.VehicleTypeId.ToString(),
             }).ToListAsync();
         }
-
-
-        /*
-        public async Task<IActionResult> Filter(OverviewListViewModel viewModel)
-        {
-            //var filtermodel = new OverviewListViewModel();
-            var model = new OverviewListViewModel();
-            var vehicles = await db.Vehicle.ToListAsync();
-
-            var result = string.IsNullOrWhiteSpace(viewModel.Regnumber) ?
-                           vehicles :
-                           vehicles.Where(m => m.RegistrationNumber.StartsWith(viewModel.Regnumber.ToUpper()));
-
-            //  result = viewModel.Types == null ?
-            //  result :
-            //   result.Where(v => v.VehicleType == viewModel.Types);
-
-            IQueryable<OverviewViewModel> vehi = result.Select(v => new OverviewViewModel
-            {
-                VehicleId = v.VehicleId,
-               //VehicleType = v.VehicleType,
-                VehicleRegistrationNumber = v.RegistrationNumber,
-                //VehicleArrivalTime = v.TimeOfArrival,
-                //VehicleParkDuration = DateTime.Now - v.TimeOfArrival,
-                //VehicleParked = false
-
-            }).AsQueryable();
-
-            model.Overview = vehi.AsEnumerable();
-
-            model.VehicleTypesSelectList = await GetVehicleTypesAsync();
-
-            return View("Overview", model);
-        }
-        */
-
-
-
 
         //For vehicle Overview sorting
         private IEnumerable<OverviewViewModel> GetOverviewViewModelAsEnumerable()
@@ -255,20 +163,14 @@ namespace Garage3.Controllers
                 VehicleArrivalTime = v.VehicleArrivalTime,
                 VehicleParkDuration = v.VehicleArrivalTime - DateTime.Now,
                 VehicleType = v.VehicleType,              
-                //VehicleParked = false   
             });
             
             return View("Overview", model);
         }
 
-
-
         [HttpGet, ActionName("OverviewSort")]
         public async Task<IActionResult> OverviewSort(string sortingVehicle)
         {
-            //string parkedStatusStr = sortingVehicle.Split(",")[1];
-            //sortingVehicle = sortingVehicle.Split(",")[0];
-
             ViewData["VehicleTypeSorting"] = string.IsNullOrEmpty(sortingVehicle) ? "VehicleTypeSortingDescending" : "";
             ViewData["RegistrationNumberSorting"] = sortingVehicle == "RegistrationNumberSortingAscending" ? "RegistrationNumberSortingDescending" : "RegistrationNumberSortingAscending";
             ViewData["OwnerSorting"] = sortingVehicle == "OwnerSortingAscending" ? "OwnerSortingDescending" : "OwnerSortingAscending";
@@ -276,11 +178,6 @@ namespace Garage3.Controllers
             ViewData["DurationParkedSorting"] = sortingVehicle == "DurationParkedSortingAscending" ? "DurationParkedSortingDescending" : "DurationParkedSortingAscending";
 
             var model = new OverviewListViewModel();
-            //var allVehicles = db.Vehicle;
-            //var vehicles = GetOverviewViewModelAsEnumerable(allVehicles);
-
-            //int parkedStatus = 0;
-            //parkedStatus = ParkingStatus(parkedStatusStr, model, ref vehicles);
 
             var vehicleAndMember = GetOverviewViewModelAsEnumerable();
 
@@ -325,72 +222,6 @@ namespace Garage3.Controllers
             return PartialView(nameof(Overview), model);
         }
 
-
-
-
-
-        /*
-        private int ParkingStatus(string parkedStatusStr, OverviewListViewModel model, ref IEnumerable<OverviewViewModel> vehicles)
-        {
-            int parkedStatus;
-            if (int.TryParse(parkedStatusStr, out parkedStatus))
-            {
-                if (parkedStatus == 3)
-                {
-                    model.AllStatus = true;
-                    ViewData["ParkedStatus"] = "3";
-                }
-                else if (parkedStatus == 2)
-                {
-                    model.UnparkedStatus = true;
-                    ViewData["ParkedStatus"] = "2";
-                    vehicles = vehicles.Where(u => u.VehicleParked.Equals(false));
-                }
-                else
-                {
-                    model.ParkedStatus = true;
-                    ViewData["ParkedStatus"] = "1";
-                    vehicles = vehicles.Where(u => u.VehicleParked.Equals(true));
-                }
-            };
-            return parkedStatus;
-        }
-        */
-
-
-
-        /*
-        private IQueryable<OverviewViewModel> GetOverviewViewModel(IQueryable<Vehicle> allVehicles)
-        {
-            return allVehicles.Select(v => new OverviewViewModel
-            {
-                // VehicleParked = v.IsParked,
-                VehicleId = v.VehicleId,
-                // VehicleType = v.VehicleType,
-                VehicleRegistrationNumber = v.RegistrationNumber,
-                //VehicleArrivalTime = v.TimeOfArrival,
-                //VehicleParkDuration = DateTime.Now - v.TimeOfArrival
-
-            });
-        }
-        */
-
-        /*
-        private IEnumerable<OverviewViewModel> GetOverviewViewModelAsEnumerable(IQueryable<Vehicle> allVehicles)
-        {
-            return allVehicles.Select(v => new OverviewViewModel
-            {
-                //VehicleParked = v.IsParked,
-                VehicleId = v.VehicleId,
-                // VehicleType = v.VehicleType,
-                VehicleRegistrationNumber = v.RegistrationNumber,
-                //VehicleArrivalTime = v.TimeOfArrival,
-                //VehicleParkDuration = DateTime.Now - v.TimeOfArrival
-
-            }).AsEnumerable();
-        }
-        */
-
         [HttpGet]
         public async Task<IActionResult> Register(int id)
         {
@@ -404,7 +235,6 @@ namespace Garage3.Controllers
                     Id = id,
                     FullName = $"{owner.FirstName} {owner.LastName}"
                 };
-                model.Id = id;
                 return View(model);
             }
         }
@@ -442,8 +272,6 @@ namespace Garage3.Controllers
         public async Task<IActionResult> ParkRegisteredVehicle(int? id)
         {
             var vehicle = await db.Vehicle.FirstOrDefaultAsync(x => x.VehicleId == id);
-            //vehicle.IsParked = true;
-            //vehicle.TimeOfArrival = DateTime.Now;
 
             try
             {
@@ -467,7 +295,6 @@ namespace Garage3.Controllers
         public async Task<IActionResult> UnPark(int? vehicleid)
         {
             var vehicle = await db.Vehicle.FirstOrDefaultAsync(x => x.VehicleId == vehicleid);
-            //vehicle.IsParked = false;
             var departureTime = DateTime.Now;
             var parkingEvent = await db.ParkingEvent
                 .Where(pe => pe.VehicleId == vehicleid)
@@ -553,10 +380,7 @@ namespace Garage3.Controllers
                     return NotFound();
                 }
 
-                //string str = vehicle.Color;
                 vehicleobject.RegistrationNumber = v1.RegistrationNumber;
-                //vehicle.Color = FirstLetterToUpper(str);
-                //vehicle.TimeOfArrival = v1.TimeOfArrival;
 
                 if (ModelState.IsValid)
                 {
@@ -580,7 +404,6 @@ namespace Garage3.Controllers
                     }
                 }
             }
-            //return View(vehicle);
             return RedirectToAction("Details", new { id= vehicleobject.VehicleId });
         }
 
@@ -630,25 +453,17 @@ namespace Garage3.Controllers
         }
         public async Task<IActionResult> UnParkResponse(int vehicleId, DateTime departureTime, DateTime arrivalTime)
         {
-            //    var v = db.Vehicle
-            //.Select(v => v.Id);
             var model = await db.Vehicle
                 .Select(v => new UnParkResponseViewModel
                 {
                     VehicleId = v.VehicleId,
-                    //VehicleType = v.VehicleType.Type,
                     VehicleRegistrationNumber = v.RegistrationNumber,
                     VehicleArrivalTime = arrivalTime,
                     VehicleDepartureTime = departureTime,
-                    //VehicleParkDuration=v.
-                    //VehicleParkPrice
                 })
                 .FirstOrDefaultAsync(v => v.VehicleId == vehicleId);
 
             return View("UnParkResponse", model);
-            //ViewBag.id = id;
-            //ViewBag.departureTime = departureTime;
-            //return View(nameof(UnParkResponse));
         }
 
         public async Task<IActionResult> Receipt(int vehicleId, DateTime departureTime, DateTime arrivalTime)
@@ -661,7 +476,7 @@ namespace Garage3.Controllers
             var model = new ReceiptViewModel
             {
                 VehicleRegistrationNumber = vehicle.RegistrationNumber,
-                VehicleArrivalTime = vehicle.ParkingEvents.Select(pe => pe.TimeOfArrival).FirstOrDefault(),
+                VehicleArrivalTime = arrivalTime,
                 VehicleDepartureTime = departureTime,
                 VehicleParkDuration = arrivalTime - departureTime,
                 VehicleParkPrice = (departureTime - arrivalTime).TotalHours * 100,
@@ -673,20 +488,6 @@ namespace Garage3.Controllers
             return View(model);
         }
 
-
-
-        //private OverviewViewModel OverviewViewModelBuilder(Vehicle vehicle)
-        //{
-        //    return new OverviewViewModel
-        //    {
-        //        //VehicleParked = vehicle.IsParked,
-        //        VehicleId = vehicle.VehicleId,
-        //        //VehicleType = vehicle.VehicleType,
-        //        VehicleRegistrationNumber = vehicle.RegistrationNumber,
-        //        //VehicleArrivalTime = vehicle.TimeOfArrival,
-        //        //VehicleParkDuration = DateTime.Now - vehicle.TimeOfArrival
-        //    };
-        //}
 
 
         //public async Task<IActionResult> Statistics()

@@ -14,7 +14,6 @@ namespace Garage3.Models.ViewModels
             public int OwnerId { get; set; }
             public string Brand { get; set; }
             public string VehicleModel { get; set; }
-
             public int VehicleTypeId { get; set; }
             public IEnumerable<SelectListItem> VehicleTypes { get; set; }
         

@@ -11,7 +11,6 @@ namespace Garage3.Models.ViewModels
         public string RegistrationNumber { get; set; }
         public string Brand { get; set; }
         public string VehicleModel { get; set; }
-
         public string VehicleType { get; set; }
     }
 }

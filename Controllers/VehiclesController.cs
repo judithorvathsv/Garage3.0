@@ -131,11 +131,6 @@ namespace Garage3.Controllers
             return View(nameof(Overview), model);
         }
 
-
-
-
-
-
         private async Task<IEnumerable<SelectListItem>> GetVehicleTypesAsync()
         {
             return await db.Vehicle
@@ -661,7 +656,7 @@ namespace Garage3.Controllers
             var model = new ReceiptViewModel
             {
                 VehicleRegistrationNumber = vehicle.RegistrationNumber,
-                VehicleArrivalTime = vehicle.ParkingEvents.Select(pe => pe.TimeOfArrival).FirstOrDefault(),
+                VehicleArrivalTime = arrivalTime,
                 VehicleDepartureTime = departureTime,
                 VehicleParkDuration = arrivalTime - departureTime,
                 VehicleParkPrice = (departureTime - arrivalTime).TotalHours * 100,

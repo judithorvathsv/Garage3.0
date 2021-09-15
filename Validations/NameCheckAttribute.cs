@@ -14,8 +14,6 @@ namespace Garage3.Validations
         public NameCheckAttribute()
         {
             ErrorMessage = "First and last name can't be the same.";
-            ErrorMessageResourceName = "Name";
-            ErrorMessageResourceType = typeof(ValidationMessages);
         }
         protected override ValidationResult IsValid(object value, ValidationContext validationContext)
         {

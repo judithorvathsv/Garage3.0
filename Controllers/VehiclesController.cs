@@ -128,7 +128,7 @@ namespace Garage3.Controllers
 
 
         //For vehicle Overview filtering regnumber, type
-        public async Task<IActionResult> Filter(OverviewListViewModel viewModel)
+        public IActionResult Filter(OverviewListViewModel viewModel)
         {        
             var vehicleAndOwner = GetOverviewViewModelAsEnumerable();         
             var result =  vehicleAndOwner;
@@ -169,7 +169,7 @@ namespace Garage3.Controllers
         }
 
         [HttpGet, ActionName("OverviewSort")]
-        public async Task<IActionResult> OverviewSort(string sortingVehicle)
+        public IActionResult OverviewSort(string sortingVehicle)
         {
             ViewData["VehicleTypeSorting"] = string.IsNullOrEmpty(sortingVehicle) ? "VehicleTypeSortingDescending" : "";
             ViewData["RegistrationNumberSorting"] = sortingVehicle == "RegistrationNumberSortingAscending" ? "RegistrationNumberSortingDescending" : "RegistrationNumberSortingAscending";
@@ -184,37 +184,37 @@ namespace Garage3.Controllers
             switch (sortingVehicle)
             {
                 case "VehicleTypeSortingAscending":
-                    vehicleAndMember = GetOverviewViewModelAsEnumerable().OrderBy(x => x.VehicleType);
+                    vehicleAndMember = vehicleAndMember.OrderBy(x => x.VehicleType);
                     break;
                 case "VehicleTypeSortingDescending":
-                    vehicleAndMember = GetOverviewViewModelAsEnumerable().OrderByDescending(x => x.VehicleType);
+                    vehicleAndMember = vehicleAndMember.OrderByDescending(x => x.VehicleType);
                     break;
                 case "OwnerSortingAscending":
-                    vehicleAndMember = GetOverviewViewModelAsEnumerable().OrderBy(x => x.FullName);
+                    vehicleAndMember = vehicleAndMember.OrderBy(x => x.FullName);
                     break;
                 case "OwnerSortingDescending":
-                    vehicleAndMember = GetOverviewViewModelAsEnumerable().OrderByDescending(x => x.FullName);
+                    vehicleAndMember = vehicleAndMember.OrderByDescending(x => x.FullName);
                     break;
                 case "RegistrationNumberSortingAscending":
-                    vehicleAndMember = GetOverviewViewModelAsEnumerable().OrderBy(x => x.VehicleRegistrationNumber);
+                    vehicleAndMember = vehicleAndMember.OrderBy(x => x.VehicleRegistrationNumber);
                     break;
                 case "RegistrationNumberSortingDescending":
-                    vehicleAndMember = GetOverviewViewModelAsEnumerable().OrderByDescending(x => x.VehicleRegistrationNumber);
+                    vehicleAndMember = vehicleAndMember.OrderByDescending(x => x.VehicleRegistrationNumber);
                     break;
                 case "ArrivalTimeSortingAscending":
-                    vehicleAndMember = GetOverviewViewModelAsEnumerable().OrderBy(x => x.VehicleArrivalTime);
+                    vehicleAndMember = vehicleAndMember.OrderBy(x => x.VehicleArrivalTime);
                     break;
                 case "ArrivalTimeSortingDescending":
-                    vehicleAndMember = GetOverviewViewModelAsEnumerable().OrderByDescending(x => x.VehicleArrivalTime);
+                    vehicleAndMember = vehicleAndMember.OrderByDescending(x => x.VehicleArrivalTime);
                     break;
                 case "DurationParkedSortingAscending":
-                    vehicleAndMember = GetOverviewViewModelAsEnumerable().OrderBy(x => x.VehicleParkDuration.Days).ThenBy(x=>x.VehicleParkDuration.Hours).ThenBy(x => x.VehicleParkDuration.Minutes).ThenBy(x => x.VehicleParkDuration.Seconds);
+                    vehicleAndMember = vehicleAndMember.OrderBy(x => x.VehicleParkDuration.Days).ThenBy(x=>x.VehicleParkDuration.Hours).ThenBy(x => x.VehicleParkDuration.Minutes).ThenBy(x => x.VehicleParkDuration.Seconds);
                     break;
                 case "DurationParkedSortingDescending":
-                    vehicleAndMember = GetOverviewViewModelAsEnumerable().OrderByDescending(x => x.VehicleParkDuration.Days).ThenByDescending(x => x.VehicleParkDuration.Hours).ThenByDescending(x => x.VehicleParkDuration.Minutes).ThenByDescending(x => x.VehicleParkDuration.Seconds);
+                    vehicleAndMember = vehicleAndMember.OrderByDescending(x => x.VehicleParkDuration.Days).ThenByDescending(x => x.VehicleParkDuration.Hours).ThenByDescending(x => x.VehicleParkDuration.Minutes).ThenByDescending(x => x.VehicleParkDuration.Seconds);
                     break;
                 default:
-                    vehicleAndMember = GetOverviewViewModelAsEnumerable().OrderBy(x => x.VehicleType);
+                    vehicleAndMember = vehicleAndMember.OrderBy(x => x.VehicleType);
                     break;
             }
 
@@ -407,16 +407,6 @@ namespace Garage3.Controllers
             return RedirectToAction("Details", new { id= vehicleobject.VehicleId });
         }
 
-        private string FirstLetterToUpper(string str)
-        {
-            if (str == null)
-                return null;
-
-            if (str.Length > 1)
-                return char.ToUpper(str[0]) + str.Substring(1);
-
-            return str.ToUpper();
-        }
 
         // GET: Vehicles/Delete/5
         public async Task<IActionResult> Delete(int? id)

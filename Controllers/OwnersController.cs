@@ -92,15 +92,10 @@ namespace Garage3.Controllers
             return View(owner);
         }
 
-        // POST: Owners/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        //public async Task<IActionResult> Edit(int id, [Bind("OwnerId,SocialSecurityNumber,FirstName,LastName")] Owner owner)
         public async Task<IActionResult> Edit(int id, Owner owner)
         {
-           // id = owner.SocialSecurityNumber;
             if (id != owner.OwnerId)
             {
                 return NotFound();
@@ -115,14 +110,7 @@ namespace Garage3.Controllers
                 }
                 catch (DbUpdateConcurrencyException)
                 {
-                    //if (!OwnerExists(owner.OwnerId))
-                    //{
-                    //    return NotFound();
-                    //}
-                    //else
-                    //{
-                    //    throw;
-                    //}
+
                 }
                 return RedirectToAction(nameof(Index));
             }
@@ -158,9 +146,9 @@ namespace Garage3.Controllers
             return RedirectToAction(nameof(Index));
         }
 
-        public async Task<IActionResult> MemberDetails(int id, int vehicleid)
+        public async Task<IActionResult> MemberDetails(int id)
         {
-            List<VehicleViewModel> _parkingStatus = new List<VehicleViewModel>();
+            List<VehicleViewModel> _parkingStatus = new();
             try
             {
                 var owner = await db.Owner
@@ -208,7 +196,7 @@ namespace Garage3.Controllers
                         Vehicles = _parkingStatus
                     };
                     var amount = FreeParkingPlaces();
-                    TempData["AvailiblePlacesMessage"] = $"There are {amount.ToString()} places left in the garage.";
+                    TempData["AvailiblePlacesMessage"] = $"There are {amount} places left in the garage.";
                     return View(model);
                 }
                 else
@@ -220,7 +208,7 @@ namespace Garage3.Controllers
                         SocialSecurityNumber = owner.SocialSecurityNumber
                     };
                     var amount = FreeParkingPlaces();
-                    TempData["AvailiblePlacesMessage"] = $"There are {amount.ToString()} places left in the garage.";
+                    TempData["AvailiblePlacesMessage"] = $"There are {amount} places left in the garage.";
                     return View(model);
                 }
             
@@ -263,18 +251,10 @@ namespace Garage3.Controllers
                 .ToList();
 
 
-            //var Capacity = new ConfigurationBuilder().AddJsonFile("launchSettings.json").Build().GetSection("Capacity")["maxCapacity"];
             int availibleplaces = GarageCapacity- freeplaces.Count;
 
             return availibleplaces;
         }
-
-
-        //private bool OwnerExists(string id)
-        //{
-        //    return db.Owner.Any(e => e.OwnerId == id);
-        //}
-
 
         [ActionName("Overview")]
         public IActionResult Overview()

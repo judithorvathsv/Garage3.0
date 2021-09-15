@@ -24,8 +24,6 @@ namespace Garage3
             var builder = new ConfigurationBuilder()
                 .AddJsonFile(Path.Combine(Directory.GetCurrentDirectory(), "Properties", "launchSettings.json"))
                 .AddEnvironmentVariables();
-            var configurationRoot = builder.Build();
-            var appConfig = configurationRoot.GetSection(nameof(Capacity)).Get<Capacity>();
 
             Configuration = configuration;
         }

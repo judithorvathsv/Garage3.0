@@ -160,17 +160,6 @@ namespace Garage3.Controllers
                         FullName = m.FirstName + " " + m.LastName,
                     }).FirstOrDefaultAsync();
 
-                var vehicle = await db.Vehicle
-                .Where(v => v.OwnerId == id)
-                .Join(db.Owner, v => v.Owner.OwnerId, o => o.OwnerId, (v, o) => new { v, o })
-                .Select(m => new OwnerDetailsViewModel
-                {
-                    Id = id,
-                    SocialSecurityNumber = m.o.SocialSecurityNumber,
-                    FullName = m.o.FirstName + " " + m.o.LastName,
-                    VehicleId = m.v.VehicleId,
-                }).FirstOrDefaultAsync();
-
                 var vehicles = await db.Vehicle
                     .Where(v => v.OwnerId == id)
                     .Select(m => new VehicleViewModel
@@ -190,9 +179,8 @@ namespace Garage3.Controllers
                     var model = new OwnerDetailsViewModel
                     {
                         Id = id,
-                        VehicleId = vehicle.VehicleId,
-                        FullName = vehicle.FullName,
-                        SocialSecurityNumber = vehicle.SocialSecurityNumber,
+                        FullName = owner.FullName,
+                        SocialSecurityNumber = owner.SocialSecurityNumber,
                         Vehicles = _parkingStatus
                     };
                     var amount = FreeParkingPlaces();
